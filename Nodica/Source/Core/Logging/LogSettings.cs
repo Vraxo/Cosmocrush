@@ -9,7 +9,7 @@ public class LogSettings
 
     private LogSettings()
     {
-        string jsonFilePath = "Resources/Nodica/LogSettings.json";
+        string jsonFilePath = "Res/Nodica/LogSettings.json";
         string jsonString = File.ReadAllText(jsonFilePath);
         Settings = JsonSerializer.Deserialize<Dictionary<string, bool>>(jsonString);
     }

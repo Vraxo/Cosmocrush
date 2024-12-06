@@ -9,7 +9,7 @@ public sealed class Input
     public static Input Instance => _instance;
 
     private readonly Dictionary<string, List<InputAction>> actionKeyMap = new();
-    private readonly string mappingsFilePath = "Resources/Nodica/InputMappings.json";
+    private readonly string mappingsFilePath = "Res/Nodica/InputMappings.json";
 
     public static Vector2 MousePosition => Instance._GetMousePosition();
     public static bool IsActionDown(string actionName) => Instance._IsActionDown(actionName);

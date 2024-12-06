@@ -1,6 +1,6 @@
 ﻿using Nodica;
 
-namespace Cosmocrush;
+namespace HordeRush;
 
 public class EntryPoint
 {

@@ -40,12 +40,12 @@ public class Texture
 
     private string ConvertToPng(string imagePath)
     {
-        if (!Directory.Exists("Resources/Nodica/Temporary"))
+        if (!Directory.Exists("Res/Nodica/Temporary"))
         {
-            Directory.CreateDirectory("Resources/Temporary");
+            Directory.CreateDirectory("Res/Temporary");
         }
 
-        string pngPath = $"Resources/Nodica/Temporary/{Path.GetFileNameWithoutExtension(imagePath)}.png";
+        string pngPath = $"Res/Nodica/Temporary/{Path.GetFileNameWithoutExtension(imagePath)}.png";
 
         if (!File.Exists(pngPath))
         {

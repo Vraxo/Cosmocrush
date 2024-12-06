@@ -12,34 +12,64 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\Gunshot.mp3">
+    <None Update="Res\Audio\Music\CombatThemes\CombatTheme1.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Scenes\Menu.scene">
+    <None Update="Res\Audio\Music\CombatThemes\CombatTheme2.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Scenes\Enemy.scene">
+    <None Update="Res\Audio\Music\CombatThemes\CombatTheme3.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Sprites\Astronaut.png">
+    <None Update="Res\Audio\Music\CombatThemes\CombatTheme4.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Sprites\Enemy.png">
+    <None Update="Res\Audio\Music\CombatThemes\CombatTheme5.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Sprites\Gun.png">
+    <None Update="Res\Audio\Music\CombatThemes\CombatTheme6.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Icon\Icon.png">
+    <None Update="Res\Audio\Music\Menu.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Sprites\Player.png">
+    <None Update="Res\Audio\SFX\Gunshot.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Scenes\MainScene.scene">
+    <None Update="Res\Scenes\Menu\MenuParticle.scene">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Scenes\Player.scene">
+    <None Update="Res\Scenes\Menu\Menu.scene">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Scenes\Enemy.scene">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Scenes\Rock.scene">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Sprites\Astronaut.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Sprites\Enemy.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Sprites\Gun.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Icon\Icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Sprites\Player.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Scenes\MainScene.scene">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Scenes\Player.scene">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Sprites\Rock.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

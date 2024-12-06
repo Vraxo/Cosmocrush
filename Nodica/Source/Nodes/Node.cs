@@ -375,8 +375,6 @@ public class Node
 
         Children.Add(node);
 
-        Console.WriteLine("added node " + node.Name);
-
         return node;
     }
 

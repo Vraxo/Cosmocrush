@@ -1,0 +1,14 @@
+﻿[MainScene "Root"]
+
+[CombatThemePlayer "CombatThemePlayer" "Root"]
+
+[Player "Player" "Root" "Res/Scenes/Player.scene"]
+
+[Enemy "Enemy1" "Root" "Res/Scenes/Enemy.scene"]
+Position = Vector2(100, 100)
+
+#[Enemy "Enemy2" "Root" "Res/Scenes/Enemy.scene"]
+#Position = Vector2(100, 500)
+
+[NavigationObstacle "Rock" "Root" "Res/Scenes/Rock.scene"]
+Position = Vector2(600, 600)

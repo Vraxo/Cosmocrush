@@ -37,6 +37,14 @@ public abstract class VisualItem : Node
             color);
     }
 
+    protected void DrawRectangle(Vector2 position, Vector2 size, Color color)
+    {
+        Raylib.DrawRectangleV(
+            position,
+            size,
+            color);
+    }
+
     protected void DrawRoundedRectangle(Vector2 position, Vector2 size, float roundness, int segments, Color color)
     {
         Rectangle rectangle = new()
@@ -138,6 +146,17 @@ public abstract class VisualItem : Node
 
     protected void DrawLine(Vector2 from, Vector2 to, Color color)
     {
-        Raylib.DrawLineV(from, to, color);
+        Raylib.DrawLineV(
+            from,
+            to,
+            color);
+    }
+
+    protected void DrawCircle(Vector2 position, float radius, Color color)
+    {
+        Raylib.DrawCircleV(
+            position,
+            radius,
+            color);
     }
 }

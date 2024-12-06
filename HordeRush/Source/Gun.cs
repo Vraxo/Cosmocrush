@@ -1,14 +1,14 @@
 ﻿using Nodica;
 using Raylib_cs;
 
-namespace Cosmocrush;
+namespace HordeRush;
 
 public class Gun : Sprite
 {
     private RayCast rayCast = new();
-    private readonly string gunshotAudioPath = "Resources/Gunshot.mp3";
+    private readonly string gunshotAudioPath = "Res/Audio/SFX/Gunshot.mp3";
 
-    private float cooldown = 0.182f;
+    private readonly float cooldown = 0.182f;
     private float lastFiredTime = 0f;
 
     public override void Start()

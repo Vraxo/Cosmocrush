@@ -4,7 +4,18 @@ namespace Nodica;
 
 public class AudioPlayer : Node
 {
-    public Audio? Audio { get; set; }
+    private Audio? _audio;
+    public Audio? Audio
+    {
+        get => _audio;
+
+        set
+        {
+            _audio = value;
+            Volume = _volume;
+        }
+    }
+
     public bool AutoPlay { get; set; } = false;
     public bool Loop { get; set; } = false;
     public bool Playing => Raylib.IsMusicStreamPlaying(Audio!);

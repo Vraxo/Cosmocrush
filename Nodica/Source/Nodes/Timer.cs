@@ -6,43 +6,47 @@ public class Timer : Node
     public bool AutoStart { get; set; } = false;
     public bool Loop { get; set; } = false;
 
-    private float waitTime = 1.0f;
+    public float WaitTime { get; set; } = 1.0f;
     private bool fired = false;
 
-    public event EventHandler? TimedOut;
+    public delegate void TimerEventHandler(Timer sender);
+    public event TimerEventHandler? TimedOut;
 
-    public override void Start()
+    public override void Ready()
     {
+        base.Ready();
+
         if (AutoStart)
         {
-            Fire(waitTime);
+            Fire();
         }
     }
 
     public override void Update()
     {
+        base.Update();
+
         if (fired)
         {
             TimePassed += Time.Delta;
 
-            if (TimePassed >= waitTime)
+            if (TimePassed >= WaitTime)
             {
                 fired = false;
                 TimePassed = 0;
 
-                TimedOut?.Invoke(this, EventArgs.Empty);
+                TimedOut?.Invoke(this);
 
                 if (Loop)
                 {
-                    Fire(waitTime);
+                    Fire();
                 }
             }
         }
     }
 
-    public void Fire(float waitTime)
+    public void Fire()
     {
-        this.waitTime = waitTime;
         fired = true;
         TimePassed = 0;
     }

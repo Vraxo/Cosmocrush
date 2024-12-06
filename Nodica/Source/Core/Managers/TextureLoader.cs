@@ -31,7 +31,7 @@ public class TextureLoader
 
             string pngPath = Path.GetExtension(path).ToLower() == ".png"
                 ? path
-                : $"Resources/Temporary/{Path.GetFileNameWithoutExtension(path)}.png";
+                : $"Res/Temporary/{Path.GetFileNameWithoutExtension(path)}.png";
 
             if (pngPath != path && File.Exists(pngPath))
                 File.Delete(pngPath);

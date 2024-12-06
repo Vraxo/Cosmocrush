@@ -37,7 +37,7 @@ public class App
     {
         SetCurrentDirectory();
 
-        string configFilePath = "Resources/Nodica/Config.json";
+        string configFilePath = "Res/Nodica/Config.json";
         string configJson = File.ReadAllText(configFilePath);
         var config = JsonSerializer.Deserialize<Configuration>(configJson);
 
@@ -58,7 +58,7 @@ public class App
             config.MaxWidth,
             config.MaxHeight,
             config.Title,
-            "Resources/Icon/Icon.png");
+            "Res/Icon/Icon.png");
 
         backend.SetWindowMinSize(config.Width, config.Height);
 

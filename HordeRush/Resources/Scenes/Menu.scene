@@ -1,5 +1,0 @@
-[Menu "Root"]
-
-[Button "StartButton" "Root"]
-Position = Vector2(100, 100)
-Text = "Start"

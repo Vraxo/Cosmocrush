@@ -1,0 +1,5 @@
+[MenuParticle "Root"]
+
+[Timer "DestructionTimer" "Root"]
+WaitTime = 10
+AutoStart = true

@@ -10,7 +10,7 @@ public class PackedScene
 
     public PackedScene(string path)
     {
-        this.path = EnsureExtension(path.StartsWith("Resources/Scenes/") ? path : $"Resources/Scenes/{path}");
+        this.path = path;
     }
 
     public T Instantiate<T>(bool isRootNode = false) where T : new()
@@ -133,7 +133,6 @@ public class PackedScene
         {
             if (namedNode is Node childNode && childNode != instance as Node)
             {
-                Console.WriteLine("Starting node: " + childNode.Name);
                 childNode.Start();
             }
         }
@@ -177,7 +176,6 @@ public class PackedScene
             if (type is not null)
             {
                 return type;
-
             }
         }
 

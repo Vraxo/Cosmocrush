@@ -14,31 +14,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\Nodica\Config.json">
+    <None Update="Res\Nodica\Config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Nodica\Fonts\RobotoMono.ttf">
+    <None Update="Res\Nodica\Fonts\RobotoMono.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Nodica\InputMappings.json">
+    <None Update="Res\Nodica\InputMappings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Nodica\LogSettings.json">
+    <None Update="Res\Nodica\LogSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\ReturnIcon.png">
+    <None Update="Res\ReturnIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Nodica\Themes\Dark.json">
+    <None Update="Res\Nodica\Themes\Dark.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Nodica\Themes\Theme.txt">
+    <None Update="Res\Nodica\Themes\Theme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Nodica\Temporary\" />
+    <Folder Include="Res\Nodica\Temporary\" />
   </ItemGroup>
 
 </Project>

@@ -18,7 +18,7 @@ public class FontLoader
 
         (string fontName, int fontSize) = ParseFontName(fullName);
 
-        string fontPath = $"Resources/Fonts/{fontName}.ttf";
+        string fontPath = $"Res/Fonts/{fontName}.ttf";
 
         Font textFont = new(fontPath, fontSize);
 

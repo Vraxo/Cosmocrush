@@ -1,0 +1,16 @@
+[Player "Player"]
+Position = Vector2(500, 500)
+Size = Vector2(32, 96)
+
+[Sprite "Character" "Player"]
+Texture = Texture("Res/Sprites/Astronaut.png")
+Scale = Vector2(0.1, 0.1)
+
+[Gun "Gun" "Player"]
+Scale = Vector2(0.05, 0.05)
+Texture = Texture("Res/Sprites/Gun.png")
+FlipH = true
+
+[RayCast "RayCast" "Gun"]
+Length = 5000
+IgnoreFirst = true

@@ -1,6 +1,6 @@
 ﻿namespace Nodica;
 
-public class CollisionManager
+public sealed class CollisionManager
 {
     private static CollisionManager? _instance;
     public static CollisionManager Instance => _instance ??= new();
