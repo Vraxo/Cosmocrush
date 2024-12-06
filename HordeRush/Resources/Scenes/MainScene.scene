@@ -1,0 +1,9 @@
+﻿[MainScene "Root"]
+
+[Player "Player" "Root" "Player"]
+
+[Enemy "Enemy1" "Root" "Enemy"]
+Position = Vector2(100, 100)
+
+[Enemy "Enemy2" "Root" "Enemy"]
+Position = Vector2(100, 500)
