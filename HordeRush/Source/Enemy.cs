@@ -18,6 +18,7 @@ public class Enemy : ColliderRectangle
 
         Size = new(32, 32);
         navigationAgent = GetNode<NavigationAgent>("NavigationAgent");
+        navigationAgent.Region = GetNode<NavigationRegion>("/root/NavReg");
         sprite = GetNode<Sprite>("Sprite");
         player = GetNode<Player>("/root/Player");
     }
@@ -25,9 +26,6 @@ public class Enemy : ColliderRectangle
     public override void Update()
     {
         base.Update();
-
-        navigationAgent.TargetPosition = player.GlobalPosition;
-        navigationAgent.Update();
 
         ChasePlayer();
     }
@@ -53,6 +51,8 @@ public class Enemy : ColliderRectangle
         {
             return;
         }
+
+        navigationAgent.TargetPosition = player.GlobalPosition;
 
         Vector2 targetPosition = navigationAgent.Path[0];
         Vector2 direction = (targetPosition - GlobalPosition).Normalized();

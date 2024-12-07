@@ -1,26 +1,37 @@
-﻿namespace Nodica;
+﻿using Nodica;
 
 public class NavigationAgent : Node2D
 {
     public Vector2 TargetPosition { get; set; } = new(0, 0);
-    public List<Vector2> Path = [new()];
+    public List<Vector2> Path = new() { new() };
 
-    private static float CellSize => NavigationManager.Instance.CellSize;
-    private static int GridWidth => NavigationManager.Instance.GridWidth;
-    private static int GridHeight => NavigationManager.Instance.GridHeight;
+    public NavigationRegion? Region { get; set; }
+
+    private float CellSize => Region?.CellSize ?? 32f;
+    private int GridWidth => Region?.Width ?? 1024;
+    private int GridHeight => Region?.Height ?? 768;
+
+    private Vector2 lastTargetPosition;
 
     public override void Update()
     {
         base.Update();
-        UpdatePath();
+
+        // Only update the path if the target has changed
+        if (Region != null && TargetPosition != lastTargetPosition)
+        {
+            UpdatePath();
+            lastTargetPosition = TargetPosition;  // Remember the current target
+        }
     }
 
     protected override void Draw()
     {
-        DrawGrid();
-        DrawObstacles();
-        DrawTarget();
-        DrawPath();
+        if (Region != null)
+        {
+            DrawTarget();
+            DrawPath();
+        }
     }
 
     private void UpdatePath()
@@ -50,7 +61,7 @@ public class NavigationAgent : Node2D
 
             foreach (var neighbor in GetNeighbors(current))
             {
-                if (!NavigationManager.Instance.IsCellWalkable((int)neighbor.X, (int)neighbor.Y)) continue;
+                if (!Region.IsCellWalkable((int)neighbor.X, (int)neighbor.Y)) continue;
 
                 float tentativeGScore = gScore[current] + 1;
                 if (!gScore.ContainsKey(neighbor) || tentativeGScore < gScore[neighbor])
@@ -75,30 +86,6 @@ public class NavigationAgent : Node2D
             current = cameFrom[current];
         }
         Path.Reverse();
-    }
-
-    private void DrawGrid()
-    {
-        for (float x = 0; x < Window.Size.X; x += CellSize)
-            DrawLine(new(x, 0), new(x, Window.Size.Y), Color.White);
-
-        for (float y = 0; y < Window.Size.Y; y += CellSize)
-            DrawLine(new(0, y), new(Window.Size.X, y), Color.White);
-    }
-
-    private void DrawObstacles()
-    {
-        for (int x = 0; x < GridWidth / CellSize; x++)
-        {
-            for (int y = 0; y < GridHeight / CellSize; y++)
-            {
-                if (!NavigationManager.Instance.IsCellWalkable(x, y))
-                {
-                    Vector2 cellPosition = new(x * CellSize, y * CellSize);
-                    DrawRectangle(cellPosition, new(CellSize, CellSize), Color.Red);
-                }
-            }
-        }
     }
 
     private void DrawTarget()
@@ -127,16 +114,16 @@ public class NavigationAgent : Node2D
         }.Where(n => n.X >= 0 && n.Y >= 0).ToList();
     }
 
-    private static Vector2 GetLowestFScoreNode(List<Vector2> openList, Dictionary<Vector2, float> fScore)
+    private Vector2 GetLowestFScoreNode(List<Vector2> openList, Dictionary<Vector2, float> fScore)
     {
         return openList.OrderBy(v => fScore.ContainsKey(v) ? fScore[v] : float.MaxValue).First();
     }
 
-    private static Vector2 AdjustTargetPosition(Vector2 target)
+    private Vector2 AdjustTargetPosition(Vector2 target)
     {
         Vector2 targetGrid = GetGridPosition(target);
 
-        if (NavigationManager.Instance.IsCellWalkable((int)targetGrid.X, (int)targetGrid.Y))
+        if (Region?.IsCellWalkable((int)targetGrid.X, (int)targetGrid.Y) ?? false)
             return target;
 
         return FindNearbyWalkablePosition(targetGrid);
@@ -144,10 +131,10 @@ public class NavigationAgent : Node2D
 
     private static Vector2 GetGridPosition(Vector2 position)
     {
-        return new(MathF.Floor(position.X / NavigationManager.Instance.CellSize), MathF.Floor(position.Y / NavigationManager.Instance.CellSize));
+        return new(MathF.Floor(position.X / 32f), MathF.Floor(position.Y / 32f));
     }
 
-    private static Vector2 FindNearbyWalkablePosition(Vector2 targetGrid)
+    private Vector2 FindNearbyWalkablePosition(Vector2 targetGrid)
     {
         for (int radius = 1; radius <= 10; radius++)
         {
@@ -156,12 +143,12 @@ public class NavigationAgent : Node2D
                 for (int dy = -radius; dy <= radius; dy++)
                 {
                     Vector2 neighbor = targetGrid + new Vector2(dx, dy);
-                    if (NavigationManager.Instance.IsCellWalkable((int)neighbor.X, (int)neighbor.Y))
-                        return (neighbor * NavigationManager.Instance.CellSize) + new Vector2(NavigationManager.Instance.CellSize / 2, NavigationManager.Instance.CellSize / 2);
+                    if (Region?.IsCellWalkable((int)neighbor.X, (int)neighbor.Y) ?? false)
+                        return (neighbor * 32f) + new Vector2(16f, 16f);
                 }
             }
         }
-        return targetGrid * NavigationManager.Instance.CellSize;
+        return targetGrid * 32f;
     }
 
     private static float Heuristic(Vector2 a, Vector2 b)
