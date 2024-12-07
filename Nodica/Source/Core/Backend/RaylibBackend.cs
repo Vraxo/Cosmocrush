@@ -2,7 +2,7 @@
 
 using Raylib_cs;
 
-public class RaylibBackend : IGraphicsBackend
+public sealed class RaylibBackend : IGraphicsBackend
 {
     public void InitializeWindow(int width, int height, int minWidth, int minHeight, int maxWidth, int maxHeight, string title, string iconPath)
     {

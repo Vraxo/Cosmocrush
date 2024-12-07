@@ -18,7 +18,7 @@ public class FontLoader
 
         (string fontName, int fontSize) = ParseFontName(fullName);
 
-        string fontPath = $"Res/Fonts/{fontName}.ttf";
+        string fontPath = $"Res/Nodica/Fonts/{fontName}.ttf";
 
         Font textFont = new(fontPath, fontSize);
 

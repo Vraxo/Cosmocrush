@@ -1,6 +1,5 @@
 [NavigationObstacle "Rock"]
-Position = Vector2(500, 500)
-Size = Vector2(96, 96)
+Size = Vector2(96, 256)
 
 [Sprite "Sprite" "Rock"]
 Texture = Texture("Res/Sprites/Rock.png")

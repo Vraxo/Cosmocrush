@@ -83,8 +83,10 @@ public class Button : Control
 
     #endregion
 
-    public Button()
+    public override void Ready()
     {
+        base.Ready();
+
         Size = new(100, 26);
         Offset = new(0, 0);
         OriginPreset = OriginPreset.None;
@@ -92,6 +94,8 @@ public class Button : Control
 
     public override void Update()
     {
+        base.Update();
+
         if (!Disabled)
         {
             OnUpdate(this);
@@ -99,8 +103,6 @@ public class Button : Control
             HandleClicks();
             HandleKeyboardInput();
         }
-
-        base.Update();
     }
 
     private void HandleKeyboardInput()
@@ -246,16 +248,8 @@ public class Button : Control
 
     private void DrawText()
     {
-        //Raylib.DrawTextEx(
-        //    Themes.Current.Font,
-        //    displayedText,
-        //    GetTextPosition(),
-        //    Themes.Current.FontSize,
-        //    1,
-        //    Themes.Current.FontColor);
-
         DrawText(
-            Text,
+            displayedText,
             GetTextPosition(),
             Themes.Current.Font,
             Themes.Current.FontSize,
@@ -312,7 +306,10 @@ public class Button : Control
 
     private void ClipDisplayedText()
     {
-        if (!ClipText) return;
+        if (!ClipText)
+        {
+            return;
+        }
 
         float characterWidth = GetCharacterWidth();
         int numFittingCharacters = (int)(AvailableWidth / characterWidth);

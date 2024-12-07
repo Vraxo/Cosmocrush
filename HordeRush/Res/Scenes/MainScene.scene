@@ -11,4 +11,4 @@ Position = Vector2(100, 100)
 #Position = Vector2(100, 500)
 
 [NavigationObstacle "Rock" "Root" "Res/Scenes/Rock.scene"]
-Position = Vector2(600, 600)
+Position = Vector2(600, 200)

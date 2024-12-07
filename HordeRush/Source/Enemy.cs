@@ -4,11 +4,12 @@ namespace HordeRush;
 
 public class Enemy : ColliderRectangle
 {
-    private readonly float speed = 100f;  // You can adjust the speed as needed
-    private readonly float proximityThreshold = 10f;  // Threshold to switch to next path point
+    private readonly float speed = 100f;
+    private readonly float proximityThreshold = 10f;
     private int health = 1;
 
     private NavigationAgent navigationAgent = new();
+    private Sprite sprite = new();
     private Player player = new();
 
     public override void Ready()
@@ -17,6 +18,7 @@ public class Enemy : ColliderRectangle
 
         Size = new(32, 32);
         navigationAgent = GetNode<NavigationAgent>("NavigationAgent");
+        sprite = GetNode<Sprite>("Sprite");
         player = GetNode<Player>("/root/Player");
     }
 
@@ -24,11 +26,9 @@ public class Enemy : ColliderRectangle
     {
         base.Update();
 
-        // Update the navigation path to the player position
         navigationAgent.TargetPosition = player.GlobalPosition;
         navigationAgent.Update();
 
-        // Move towards the next path point
         ChasePlayer();
     }
 
@@ -54,19 +54,14 @@ public class Enemy : ColliderRectangle
             return;
         }
 
-        // Get the current target point (next point in the path)
         Vector2 targetPosition = navigationAgent.Path[0];
-
-        // Calculate the direction to the target point
         Vector2 direction = (targetPosition - GlobalPosition).Normalized();
-
-        // Move towards the target point
         GlobalPosition += direction * speed * Time.Delta;
 
-        // Check if the enemy is close enough to the target point
+        sprite.FlipH = !(direction.X < 0);
+
         if (GlobalPosition.DistanceTo(targetPosition) < proximityThreshold)
         {
-            // Remove the target point from the path, move to the next one
             navigationAgent.Path.RemoveAt(0);
         }
     }
