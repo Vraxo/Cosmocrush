@@ -1,0 +1,137 @@
+- type: Node
+  name: Menu
+  parent: null
+
+- type: PopUp
+  name: Poppy
+  parent: Menu
+  Position: '(500,300)'
+  Title: Project Settings
+
+- type: SexBox
+  name: Container
+  parent: Poppy
+  Position: (0,32)
+  Size: (640, 448)
+  Alignment/Vertical: Top
+
+- type: Button
+  name: Button1
+  parent: Container
+  AutoWidth: true
+  Text: Hello! Click me for a fun time!
+
+#- type: Button
+#  name: Button2
+#  parent: Container
+#  AutoWidth: true
+#  Text: Welcome to the show!
+#
+#- type: Button
+#  name: Button3
+#  parent: Container
+#  AutoWidth: true
+#  Text: Press me if you dare!
+#
+#- type: Button
+#  name: Button4
+#  parent: Container
+#  AutoWidth: true
+#  Text: Surprises await here!
+#
+#- type: Button
+#  name: Button5
+#  parent: Container
+#  AutoWidth: true
+#  Text: Just a casual button.
+#
+#- type: Button
+#  name: Button6
+#  parent: Container
+#  AutoWidth: true
+#  Text: Adventure starts here!
+#
+#- type: Button
+#  name: Button7
+#  parent: Container
+#  AutoWidth: true
+#  Text: You found me!
+#
+#- type: Button
+#  name: Button8
+#  parent: Container
+#  AutoWidth: true
+#  Text: Can you handle this?
+#
+#- type: Button
+#  name: Button9
+#  parent: Container
+#  AutoWidth: true
+#  Text: Explore the mystery!
+#
+#- type: Button
+#  name: Button10
+#  parent: Container
+#  AutoWidth: true
+#  Text: Fun button over here!
+#
+#- type: Button
+#  name: Button11
+#  parent: Container
+#  AutoWidth: true
+#  Text: Press for a surprise!
+#
+#- type: Button
+#  name: Button12
+#  parent: Container
+#  AutoWidth: true
+#  Text: This is the way.
+#
+#- type: Button
+#  name: Button13
+#  parent: Container
+#  AutoWidth: true
+#  Text: Unlock the fun!
+#
+#- type: Button
+#  name: Button14
+#  parent: Container
+#  AutoWidth: true
+#  Text: Click me, quick!
+#
+#- type: Button
+#  name: Button15
+#  parent: Container
+#  AutoWidth: true
+#  Text: Button extravaganza!
+#
+#- type: Button
+#  name: Button16
+#  parent: Container
+#  AutoWidth: true
+#  Text: Just another button.
+#
+#- type: Button
+#  name: Button17
+#  parent: Container
+#  AutoWidth: true
+#  Text: Find the hidden clue.
+#
+#- type: Button
+#  name: Button18
+#  parent: Container
+#  AutoWidth: true
+#  Text: Are you feeling lucky?
+#
+#- type: Button
+#  name: Button19
+#  parent: Container
+#  AutoWidth: true
+#  Text: A button to nowhere.
+#
+#- type: Button
+#  name: Button20
+#  parent: Container
+#  AutoWidth: true
+#  Text: Almost there, keep going!
+#

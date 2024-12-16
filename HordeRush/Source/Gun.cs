@@ -9,9 +9,14 @@ public class Gun : Sprite
 
     private readonly float cooldown = 0.182f;
     private float lastFiredTime = 0f;
+    private const float knockbackForce = 3f;
 
-    public override void Start()
+    public override void Ready()
     {
+        base.Ready();
+
+        RootNode.PrintChildren();
+
         Alignment.Horizontal = HorizontalAlignment.Left;
         Offset = new(8, 0);
 
@@ -37,7 +42,7 @@ public class Gun : Sprite
     {
         AudioPlayer newAudioPlayer = new()
         {
-            Audio = new(gunshotAudioPath)
+            Audio = ResourceLoader.Load<Audio>(gunshotAudioPath)
         };
 
         AddChild(newAudioPlayer);
@@ -78,6 +83,7 @@ public class Gun : Sprite
                 if (collider is Enemy enemy)
                 {
                     enemy.TakeDamage(1);
+                    enemy.ApplyKnockback(angleVector.Normalized() * knockbackForce);
                 }
             }
         }

@@ -1,6 +1,4 @@
-﻿using Raylib_cs;
-
-namespace Nodica;
+﻿namespace Nodica;
 
 public abstract class VisualItem : Node
 {
@@ -9,11 +7,13 @@ public abstract class VisualItem : Node
 
     public override void Update()
     {
+        base.Update();
+
         if (Visible && ReadyForVisibility)
         {
             Draw();
         }
-        base.Update();
+
         ReadyForVisibility = true;
     }
 
@@ -21,43 +21,22 @@ public abstract class VisualItem : Node
 
     protected void DrawCircleOutline(Vector2 position, float radius, Color color)
     {
-        Raylib.DrawCircleLinesV(
-            position,
-            radius,
-            color);
+        App.Instance.Backend.Drawing.DrawCircleOutline(position, radius, color);
     }
 
     protected void DrawRectangleOutline(Vector2 position, Vector2 size, Color color)
     {
-        Raylib.DrawRectangleLines(
-            (int)position.X,
-            (int)position.Y,
-            (int)size.X,
-            (int)size.Y,
-            color);
+        App.Instance.Backend.Drawing.DrawRectangleOutline(position, size, color);
     }
 
     protected void DrawRectangle(Vector2 position, Vector2 size, Color color)
     {
-        Raylib.DrawRectangleV(
-            position,
-            size,
-            color);
+        App.Instance.Backend.Drawing.DrawRectangle(position, size, color);
     }
 
     protected void DrawRoundedRectangle(Vector2 position, Vector2 size, float roundness, int segments, Color color)
     {
-        Rectangle rectangle = new()
-        {
-            Position = position,
-            Size = size
-        };
-
-        Raylib.DrawRectangleRounded(
-            rectangle,
-            roundness,
-            segments,
-            color);
+        App.Instance.Backend.Drawing.DrawRoundedRectangle(position, size, roundness, segments, color);
     }
 
     protected void DrawThemedRectangle(Vector2 position, Vector2 size, BoxTheme theme)
@@ -88,75 +67,41 @@ public abstract class VisualItem : Node
             theme.FillColor);
     }
 
-    protected void DrawTexture(Texture2D texture, Vector2 position, float rotation, Vector2 scale, Color tint)
+    protected static void DrawTexture(Texture texture, Vector2 position, float rotation, Vector2 scale, Color tint)
     {
-        Rectangle sourceRect = new Rectangle(0, 0, texture.Width, texture.Height);
-
-        Rectangle destRect = new Rectangle(
-            position.X,
-            position.Y,
-            texture.Width * scale.X,
-            texture.Height * scale.Y);
-
-        Vector2 origin = new Vector2(texture.Width / 2f, texture.Height / 2f);
-
-        Raylib.DrawTexturePro(
-            texture,
-            sourceRect,
-            destRect,
-            origin,
-            rotation,
-            tint);
+        App.Instance.Backend.Drawing.DrawTexture(texture, position, rotation, scale, tint);
     }
 
     protected void DrawTextureScaled(Texture texture, Vector2 position, Vector2 origin, float rotation, Vector2 scale, bool flipH = false, bool flipV = false)
     {
-        Rectangle source = new()
-        {
-            Position = new(0, 0),
-            Width = texture.Size.X * (flipH ? -1 : 1),
-            Height = texture.Size.Y * (flipV ? -1 : 1),
-        };
-
-        Rectangle destination = new()
-        {
-            Position = position,
-            Size = texture.Size * scale
-        };
-
-        Raylib.DrawTexturePro(
-            texture,
-            source,
-            destination,
-            origin,
-            rotation,
-            Color.White);
+        App.Instance.Backend.Drawing.DrawTextureScaled(texture, position, origin, rotation, scale, flipH, flipV);
     }
 
-    protected void DrawText(string text, Vector2 position, Raylib_cs.Font font, float fontSize, float spacing, Color color)
+    protected void DrawText(string text, Vector2 position, Font font, float fontSize, float spacing, Color color)
     {
-        Raylib.DrawTextEx(
-            font,
-            text,
-            position,
-            fontSize,
-            spacing,
-            color);
+        App.Instance.Backend.Drawing.DrawText(text, position, font, fontSize, spacing, color);
     }
 
     protected void DrawLine(Vector2 from, Vector2 to, Color color)
     {
-        Raylib.DrawLineV(
-            from,
-            to,
-            color);
+        App.Instance.Backend.Drawing.DrawLine(from, to, color);
     }
 
     protected void DrawCircle(Vector2 position, float radius, Color color)
     {
-        Raylib.DrawCircleV(
-            position,
-            radius,
-            color);
+        App.Instance.Backend.Drawing.DrawCircle(position, radius, color);
+    }
+
+    protected void DrawGrid(Vector2 size, float cellSize, Color color)
+    {
+        for (float x = 0; x < size.X; x += cellSize)
+        {
+            DrawLine(new(x, 0), new(x, size.Y), color);
+        }
+
+        for (float y = 0; y < size.Y; y += cellSize)
+        {
+            DrawLine(new(0, y), new(size.X, y), color);
+        }
     }
 }

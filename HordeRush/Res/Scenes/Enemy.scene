@@ -1,8 +1,0 @@
-[Enemy "Enemy"]
-Size = Vector2(32, 32)
-
-[Sprite "Sprite" "Enemy"]
-Texture = Texture("Res/Sprites/Enemy.png")
-Scale = Vector2(0.1, 0.1)
-
-[NavigationAgent "NavigationAgent" "Enemy"]

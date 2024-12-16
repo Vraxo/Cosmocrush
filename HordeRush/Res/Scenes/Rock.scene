@@ -1,6 +1,0 @@
-[NavigationObstacle "Rock"]
-Size = Vector2(96, 256)
-
-[Sprite "Sprite" "Rock"]
-Texture = Texture("Res/Sprites/Rock.png")
-Scale = Vector2(0.1, 0.1)

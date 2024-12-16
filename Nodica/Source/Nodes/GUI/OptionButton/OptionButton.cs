@@ -46,7 +46,7 @@ public partial class OptionButton : Button
         {
             bool isMouseOverAnyOption = IsMouseOver() || optionChildren.Any(option => option.IsMouseOver());
 
-            if (Input.IsMouseButtonPressed(MouseKey.Left) && !isMouseOverAnyOption)
+            if (Input.IsMouseButtonPressed(MouseButtonCode.Left) && !isMouseOverAnyOption)
             {
                 Close();
             }

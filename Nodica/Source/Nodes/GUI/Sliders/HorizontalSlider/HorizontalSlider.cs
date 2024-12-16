@@ -68,7 +68,7 @@ public partial class HorizontalSlider : BaseSlider
     {
         if (IsMouseOver())
         {
-            if (Input.IsMouseButtonPressed(MouseKey.Left) && OnTopLeft)
+            if (Input.IsMouseButtonPressed(MouseButtonCode.Left) && OnTopLeft)
             {
                 float x = Raylib.GetMousePosition().X;
                 float y = Grabber.GlobalPosition.Y;
@@ -77,7 +77,7 @@ public partial class HorizontalSlider : BaseSlider
                 Grabber.Pressed = true;
             }
 
-            if (Input.IsMouseButtonPressed(MouseKey.Right) && OnTopRight)
+            if (Input.IsMouseButtonPressed(MouseButtonCode.Right) && OnTopRight)
             {
                 if (ResetOnRitghtClick)
                 {

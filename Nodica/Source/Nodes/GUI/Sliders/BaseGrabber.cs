@@ -38,7 +38,7 @@ public partial class BaseSlider
 
         private void CheckForClicks()
         {
-            if (Input.IsMouseButtonDown(MouseKey.Left))
+            if (Input.IsMouseButtonDown(MouseButtonCode.Left))
             {
                 if (!IsMouseOver())
                 {
@@ -50,7 +50,7 @@ public partial class BaseSlider
             {
                 Themes.Current = Themes.Hover;
 
-                if (Input.IsMouseButtonDown(MouseKey.Left) && !alreadyClicked && OnTopLeft)
+                if (Input.IsMouseButtonDown(MouseButtonCode.Left) && !alreadyClicked && OnTopLeft)
                 {
                     OnTopLeft = false;
                     Pressed = true;
@@ -72,7 +72,7 @@ public partial class BaseSlider
                 Themes.Current = Themes.Pressed;
             }
 
-            if (Input.IsMouseButtonReleased(MouseKey.Left))
+            if (Input.IsMouseButtonReleased(MouseButtonCode.Left))
             {
                 Pressed = false;
                 Themes.Current = Themes.Normal;

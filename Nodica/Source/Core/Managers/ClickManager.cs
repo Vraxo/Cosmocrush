@@ -1,13 +1,13 @@
 ﻿namespace Nodica;
 
-public class ClickManager
+public sealed class ClickManager
 {
     private static ClickManager? _instance;
     public static ClickManager Instance => _instance ??= new();
 
     public int MinLayer = -1;
 
-    private List<Clickable> clickables = [];
+    private readonly List<Clickable> clickables = [];
 
     private ClickManager() { }
 
@@ -23,14 +23,14 @@ public class ClickManager
 
     public void Process()
     {
-        if (Input.IsMouseButtonPressed(MouseKey.Left))
+        if (Input.IsMouseButtonPressed(MouseButtonCode.Left))
         {
-            SignalClick(MouseKey.Left);
+            SignalClick(MouseButtonCode.Left);
         }
 
-        if (Input.IsMouseButtonPressed(MouseKey.Right))
+        if (Input.IsMouseButtonPressed(MouseButtonCode.Right))
         {
-            SignalClick(MouseKey.Right);
+            SignalClick(MouseButtonCode.Right);
         }
     }
 
@@ -49,7 +49,7 @@ public class ClickManager
         return highestLayer;
     }
 
-    private void SignalClick(MouseKey mouseButton)
+    private void SignalClick(MouseButtonCode mouseButton)
     {
         List<Clickable> viableClickables = GetViableClickables();
 
@@ -59,7 +59,7 @@ public class ClickManager
 
             if (topClickable != null)
             {
-                if (mouseButton == MouseKey.Left)
+                if (mouseButton == MouseButtonCode.Left)
                 {
                     topClickable.OnTopLeft = true;
                     Log.Info($"[ClickManager] '{topClickable}' has been left clicked.", "ClickManager");

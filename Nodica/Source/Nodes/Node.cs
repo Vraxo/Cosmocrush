@@ -1,6 +1,4 @@
 ﻿using Spectre.Console;
-using System.Xml.Linq;
-using Spectre.Console;
 
 namespace Nodica;
 
@@ -10,7 +8,7 @@ namespace Nodica;
 public class Node
 {
     /// <summary>Gets the root node of the application scene tree.</summary>
-    public static Node RootNode => App.Instance.RootNode;
+    public static Node RootNode => App.Instance.RootNode!;
 
     public string Name { get; set; } = "";
     public Node? Parent { get; set; } = null;
@@ -46,6 +44,9 @@ public class Node
 
     private bool started = false;
 
+    public delegate void NodeChildAddedEventHandler(Node sender, Node child);
+    public NodeChildAddedEventHandler? ChildAdded;
+
     /// <summary>Add the node's children to it before starting it.</summary>
     public virtual void Make() { }
 
@@ -72,7 +73,7 @@ public class Node
     }
 
     /// <summary>Processes the node and its children, handling initialization and updating.</summary>
-    public void Process()
+    public virtual void Process()
     {
         if (!Active)
         {
@@ -111,19 +112,41 @@ public class Node
     //    }
     //}
 
+    //public void PrintChildren()
+    //{
+    //    Console.OutputEncoding = System.Text.Encoding.UTF8;
+    //
+    //    Tree root = new($"🍎[green]{Name}[/]");
+    //    AddChildrenToTree(this, root);
+    //    AnsiConsole.Write(root);
+    //}
+
     public void PrintChildren()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
-        Tree root = new($"🍎[green]{Name}[/]");
+
+        // Create root tree node with emoji based on root node type
+        string rootEmoji = NodeEmoji.GetEmojiForNodeType(this);
+        Tree root = new($"{rootEmoji}[green]{Name}[/]");
+
+        // Add children nodes recursively, each with its own emoji
         AddChildrenToTree(this, root);
+
+        // Print the tree structure using Spectre.Console
         AnsiConsole.Write(root);
     }
-    
+
     private static void AddChildrenToTree(Node node, IHasTreeNodes parentNode)
     {
         foreach (var child in node.Children)
         {
-            TreeNode childNode = parentNode.AddNode($"[blue]{child.Name}[/]");
+            // Get emoji for each child node based on its type
+            string childEmoji = NodeEmoji.GetEmojiForNodeType(child);
+
+            // Add the child node to the tree with the emoji
+            TreeNode childNode = parentNode.AddNode($"{childEmoji} [blue]{child.Name}[/]");
+
+            // Recursively add children to this child node
             AddChildrenToTree(child, childNode);
         }
     }
@@ -374,6 +397,7 @@ public class Node
         }
 
         Children.Add(node);
+        ChildAdded?.Invoke(this, node);
 
         return node;
     }

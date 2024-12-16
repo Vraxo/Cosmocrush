@@ -83,10 +83,8 @@ public class Button : Control
 
     #endregion
 
-    public override void Ready()
+    public Button()
     {
-        base.Ready();
-
         Size = new(100, 26);
         Offset = new(0, 0);
         OriginPreset = OriginPreset.None;
@@ -102,12 +100,13 @@ public class Button : Control
             ClipDisplayedText();
             HandleClicks();
             HandleKeyboardInput();
+            ResizeToFitText();
         }
     }
 
     private void HandleKeyboardInput()
     {
-        if (Focused && Input.IsKeyPressed(Key.Enter))
+        if (Focused && Input.IsKeyPressed(KeyCode.Enter))
         {
             if (Behavior == ClickBehavior.Left || Behavior == ClickBehavior.Both)
             {
@@ -137,7 +136,7 @@ public class Button : Control
             HandleClick(
                 ref PressedLeft,
                 ref OnTopLeft,
-                MouseKey.Left,
+                MouseButtonCode.Left,
                 LeftClickActionMode,
                 LeftClicked);
 
@@ -149,7 +148,7 @@ public class Button : Control
             HandleClick(
                 ref PressedRight,
                 ref OnTopRight,
-                MouseKey.Right,
+                MouseButtonCode.Right,
                 RightClickActionMode,
                 RightClicked);
 
@@ -181,7 +180,7 @@ public class Button : Control
         }
     }
 
-    private void HandleClick(ref bool pressed, ref bool onTop, MouseKey button, ActionMode actionMode, EventHandler? clickHandler)
+    private void HandleClick(ref bool pressed, ref bool onTop, MouseButtonCode button, ActionMode actionMode, EventHandler? clickHandler)
     {
         if (Disabled) return;
 
@@ -207,6 +206,7 @@ public class Button : Control
             if (mouseOver && pressed && onTop && actionMode == ActionMode.Release) // (mouseOver || StayPressed)
             {
                 clickHandler?.Invoke(this, EventArgs.Empty);
+                Console.WriteLine(Name);
             }
 
             onTop = false;
@@ -298,10 +298,11 @@ public class Button : Control
         //    Themes.Current.FontSize,
         //    1).X;
 
-        int textWidth = (int)Themes.Current.Font.Dimensions.X;
+        int textWidth = (int)Themes.Current.Font.Dimensions.X * Text.Length;
 
         //Dimensions = new(textWidth + TextPadding.X * 2 + TextMargin.X, Dimensions.Y + TextMargin.Y);
-        Size = new(textWidth + TextMargin.X, Size.Y + TextMargin.Y);
+        //Size = new(textWidth + TextMargin.X, Size.Y + TextMargin.Y);
+        Size = new(textWidth + TextMargin.X, Size.Y);
     }
 
     private void ClipDisplayedText()

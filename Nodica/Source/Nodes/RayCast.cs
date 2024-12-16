@@ -34,9 +34,10 @@ public class RayCast : Node2D
 
     protected override void Draw()
     {
-        Vector2 rayEnd = GlobalPosition + TargetPosition;
-        DrawLine(GlobalPosition, rayEnd, Color.Red);
         base.Draw();
+
+        Vector2 rayEnd = GlobalPosition + TargetPosition;
+        DrawLine(GlobalPosition, rayEnd, Color.Yellow);
     }
 
     private void PerformRaycast()
@@ -50,26 +51,41 @@ public class RayCast : Node2D
         float closestDistance = float.MaxValue;
         bool firstHitSkipped = false;
 
+        Collider? closestCollider = null;
+        float closestColliderDistance = float.MaxValue;
+
+        // Store all potential hits
+        List<(Collider collider, float distance)> hits = new List<(Collider, float)>();
+
         foreach (Collider collider in CollisionManager.Instance.Colliders)
         {
             if (collider.RayIntersects(rayStart, rayEnd))
             {
-                if (IgnoreFirst && !firstHitSkipped)
-                {
-                    firstHitSkipped = true;
-                    continue;
-                }
-
                 float distance = Vector2.Distance(rayStart, collider.GlobalPosition);
+                hits.Add((collider, distance));
+            }
+        }
 
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    IsColliding = true;
-                    Collider = collider;
+        // Sort hits by distance
+        hits.Sort((a, b) => a.distance.CompareTo(b.distance));
 
-                    Log.Info($"[RayCast] Hit {collider.Name}.", "RayCast");
-                }
+        // Loop through sorted hits and apply IgnoreFirst logic
+        foreach (var (collider, distance) in hits)
+        {
+            if (IgnoreFirst && !firstHitSkipped)
+            {
+                firstHitSkipped = true;
+                continue; // Skip the first hit (which is the closest)
+            }
+
+            // Once we find the closest hit, mark it
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                IsColliding = true;
+                Collider = collider;
+
+                Log.Info($"[RayCast] Hit {Collider.Name}.", "RayCast");
             }
         }
     }

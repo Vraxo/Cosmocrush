@@ -29,8 +29,15 @@ public class Menu : Node
 
     private void OnStartButtonLeftClicked(object? sender, EventArgs e)
     {
-        PackedScene packedMainScene = new("Res/Scenes/MainScene.scene");
-        var mainScene = packedMainScene.Instantiate<MainScene>();
+        //PackedScene2 packedMainScene2 = new("Res/Scenes/MainScene.scene");
+        //var mainScene2 = packedMainScene2.Instantiate<MainScene>();
+
+        //PackedScene2 packedMainScene = new("Res/Scenes/MainScene.yaml");
+        //var mainScene = packedMainScene.Instantiate<MainScene>();
+        //ChangeScene(mainScene);
+
+        PackedScene2 packedMainScene = new("Res/Scenes/MainScene.yaml");
+        var mainScene = packedMainScene.Instantiate<Node>();
         ChangeScene(mainScene);
     }
 
@@ -53,7 +60,7 @@ public class Menu : Node
 
         float y = random.Next(0, (int)Window.Size.Y);
 
-        PackedScene packedScene = new("Res/Scenes/Menu/MenuParticle.scene");
+        PackedScene2 packedScene = new("Res/Scenes/Menu/MenuParticle.yaml");
         var particle = packedScene.Instantiate<MenuParticle>();
 
         particle.GlobalPosition = new(0, y);

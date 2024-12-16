@@ -1,6 +1,4 @@
-﻿using Raylib_cs;
-
-namespace Nodica;
+﻿namespace Nodica;
 
 public class AudioPlayer : Node
 {
@@ -13,13 +11,17 @@ public class AudioPlayer : Node
         {
             _audio = value;
             Volume = _volume;
+            Pitch = _pitch;
+            Pan = _pan;
         }
     }
 
+    private static Backends.Backend Backend => App.Instance.Backend;
+
     public bool AutoPlay { get; set; } = false;
     public bool Loop { get; set; } = false;
-    public bool Playing => Raylib.IsMusicStreamPlaying(Audio!);
-    public float TimePlayed => Raylib.GetMusicTimePlayed(Audio!);
+    public bool Playing = false;
+    public float TimePlayed => Backend.Audio.GetAudioTimePlayed(Audio!);
 
     private float _volume = 1;
     public float Volume
@@ -35,7 +37,7 @@ public class AudioPlayer : Node
                 return;
             }
 
-            Raylib.SetMusicVolume(Audio, _volume);
+            Backend.Audio.SetAudioVolume(Audio, _volume);
         }
     }
 
@@ -53,11 +55,11 @@ public class AudioPlayer : Node
                 return;
             }
 
-            Raylib.SetMusicPitch(Audio, _pitch);
+            Backend.Audio.SetAudioPitch(Audio, _pitch);
         }
     }
 
-    private float _pan = 0.5f;
+    private float _pan = 1f;
     public float Pan
     {
         get => _pan;
@@ -70,7 +72,7 @@ public class AudioPlayer : Node
             }
 
             _pan = value;
-            Raylib.SetMusicPan(Audio, _pan);
+            Backend.Audio.SetAudioPan(Audio, _pan);
         }
     }
 
@@ -99,7 +101,7 @@ public class AudioPlayer : Node
             return;
         }
 
-        Raylib.UpdateMusicStream(Audio);
+        Backend.Audio.UpdateAudio(Audio);
 
         if (TimePlayed >= Audio.Length - 0.1 && Playing)
         {
@@ -115,20 +117,14 @@ public class AudioPlayer : Node
         }
     }
 
-    public void Load(string path)
-    {
-        Audio = new(path);
-        Volume = Volume;
-        Pitch = Pitch;
-        Pan = Pan;
-    }
-
     public void Play(float timestamp = 0.1f)
     {
         if (Audio is null)
         {
             return;
         }
+
+        Playing = true;
 
         timestamp = Math.Clamp(timestamp, 0.1f, Audio.Length);
 
@@ -138,8 +134,8 @@ public class AudioPlayer : Node
         }
         else
         {
-            Raylib.SeekMusicStream(Audio, timestamp);
-            Raylib.PlayMusicStream(Audio);
+            Backend.Audio.SeekAudio(Audio, timestamp);
+            Backend.Audio.PlayAudio(Audio);
         }
     }
 
@@ -150,7 +146,7 @@ public class AudioPlayer : Node
             return;
         }
 
-        Raylib.ResumeMusicStream(Audio);
+        Backend.Audio.ResumeAudio(Audio);
         Resumed?.Invoke(this);
     }
 
@@ -161,7 +157,7 @@ public class AudioPlayer : Node
             return;
         }
 
-        Raylib.PauseMusicStream(Audio);
+        Backend.Audio.PauseAudio(Audio);
         Paused?.Invoke(this);
     }
 
@@ -172,7 +168,9 @@ public class AudioPlayer : Node
             return;
         }
 
-        Raylib.StopMusicStream(Audio);
+        Playing = false;
+
+        Backend.Audio.StopAudio(Audio);
         Finished?.Invoke(this);
     }
 
@@ -185,6 +183,6 @@ public class AudioPlayer : Node
 
         timestamp = Math.Clamp(timestamp, 0.1f, Audio.Length);
 
-        Raylib.SeekMusicStream(Audio, timestamp);
+        Backend.Audio.SeekAudio(Audio, timestamp);
     }
 }

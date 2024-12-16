@@ -75,7 +75,6 @@ public class CheckBox : Control
     public void Toggle()
     {
         Checked = !Checked;
-        Console.WriteLine("checked = " + Checked);
         Toggled?.Invoke(this, Checked);
     }
 
@@ -105,7 +104,7 @@ public class CheckBox : Control
         {
             HandleClick(
                 ref PressedLeft,
-                MouseKey.Left,
+                MouseButtonCode.Left,
                 LeftClickActionMode);
 
             if (PressedLeft) anyPressed = true;
@@ -115,7 +114,7 @@ public class CheckBox : Control
         {
             HandleClick(
                 ref PressedRight,
-                MouseKey.Right,
+                MouseButtonCode.Right,
                 RightClickActionMode);
 
             if (PressedRight) anyPressed = true;
@@ -146,7 +145,7 @@ public class CheckBox : Control
         }
     }
 
-    private void HandleClick(ref bool pressed, MouseKey button, ActionMode actionMode)
+    private void HandleClick(ref bool pressed, MouseButtonCode button, ActionMode actionMode)
     {
         if (Disabled) return;
 

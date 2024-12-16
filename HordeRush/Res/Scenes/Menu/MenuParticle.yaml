@@ -1,0 +1,8 @@
+- type: MenuParticle
+  name: Root
+
+- type: Timer
+  name: DestructionTimer
+  parent: Root
+  WaitTime: 10
+  AutoStart: true

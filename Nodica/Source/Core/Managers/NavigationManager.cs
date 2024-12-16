@@ -5,7 +5,7 @@ public sealed class NavigationManager
     private static NavigationManager? _instance;
     public static NavigationManager Instance => _instance ??= new();
 
-    public List<NavigationRegion> Regions = new();
+    public List<NavigationRegion> Regions = [];
 
     private NavigationManager() { }
 
@@ -25,7 +25,7 @@ public sealed class NavigationManager
     public void RegisterObstacle(NavigationObstacle obstacle)
     {
         Vector2 start = obstacle.GlobalPosition - obstacle.Origin;
-        Vector2 end = start + obstacle.Size;
+        Vector2 end = start + obstacle.Size * obstacle.Scale;
 
         foreach (var region in Regions)
         {

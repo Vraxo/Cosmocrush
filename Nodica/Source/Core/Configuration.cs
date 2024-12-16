@@ -12,4 +12,5 @@ public class Configuration
     public bool ResizableWindow { get; set; }
     public bool AntiAliasing { get; set; }
     public string MainScenePath { get; set; }
+    public string Backend { get; set; }
 }

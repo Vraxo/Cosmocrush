@@ -2,8 +2,12 @@
 
 public abstract class Collider : Node2D
 {
-    public Collider()
+    public bool IsStatic { get; set; } = false;
+
+    public override void Ready()
     {
+        base.Ready();
+
         Visible = true;
     }
 

@@ -6,7 +6,7 @@ public class Node2D : VisualItem
     public OriginPreset OriginPreset { get; set; } = OriginPreset.Center;
     public bool InheritPosition { get; set; } = true;
     public bool InheritOrigin { get; set; } = false;
-    public bool InheritScale { get; set; } = false;
+    public bool InheritScale { get; set; } = true;
     public Alignment Alignment { get; set; } = new();
     public float Rotation { get; set; } = 0;
 
@@ -120,11 +120,13 @@ public class Node2D : VisualItem
             {
                 HorizontalAlignment.Center => Size.X * Scale.X / 2,
                 HorizontalAlignment.Left => 0,
+                HorizontalAlignment.Right => Size.X,
                 _ => 0
             };
 
             float y = Alignment.Vertical switch
             {
+                VerticalAlignment.Top => 0,
                 VerticalAlignment.Center => Size.Y * Scale.Y / 2,
                 _ => 0
             };

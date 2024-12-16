@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "HordeRush": {
+      "commandName": "Project",
+      "commandLineArgs": "Desktop\\WindowsTerminal\\wt.exe"
+    },
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "D:\\Program Files\\WindowsTerminal\\wt.exe",
+      "commandLineArgs": "HordeRush.exe",
+      "workingDirectory": "D:\\Parsa Stuff\\Visual Studio\\HordeRush\\HordeRush\\bin\\Debug\\net8.0"
+    }
+  }
+}

@@ -317,7 +317,7 @@ public class PackedScene
         if (stringValue.StartsWith("Texture(") && stringValue.EndsWith(")"))
         {
             string texturePath = ExtractQuotedString(stringValue[8..^1]);
-            return TextureLoader.Instance.Get(texturePath);
+            return TextureManager.Instance.Get(texturePath);
         }
         else
         {

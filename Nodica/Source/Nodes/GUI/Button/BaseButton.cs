@@ -64,18 +64,18 @@ public abstract class BaseButton : Control
 
         if (Behavior == ClickBehavior.Left || Behavior == ClickBehavior.Both)
         {
-            HandleClick(ref PressedLeft, MouseKey.Left, LeftClickActionMode);
+            HandleClick(ref PressedLeft, MouseButtonCode.Left, LeftClickActionMode);
             if (PressedLeft) anyPressed = true;
         }
 
         if (Behavior == ClickBehavior.Right || Behavior == ClickBehavior.Both)
         {
-            HandleClick(ref PressedRight, MouseKey.Right, RightClickActionMode);
+            HandleClick(ref PressedRight, MouseButtonCode.Right, RightClickActionMode);
             if (PressedRight) anyPressed = true;
         }
     }
 
-    private void HandleClick(ref bool pressed, MouseKey button, ActionMode actionMode)
+    private void HandleClick(ref bool pressed, MouseButtonCode button, ActionMode actionMode)
     {
         if (Disabled) return;
 

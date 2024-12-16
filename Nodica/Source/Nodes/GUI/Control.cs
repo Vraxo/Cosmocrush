@@ -76,7 +76,7 @@ public class Control : ClickableRectangle
 
     private void UpdateFocusOnMouseOut()
     {
-        if (!IsMouseOver() && Input.IsMouseButtonPressed(MouseKey.Left))
+        if (!IsMouseOver() && Input.IsMouseButtonPressed(MouseButtonCode.Left))
         {
             Focused = false;
             ClickedOutside?.Invoke(this, EventArgs.Empty);

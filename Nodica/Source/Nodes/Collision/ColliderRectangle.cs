@@ -30,7 +30,7 @@ public class ColliderRectangle : Collider
         base.Draw();
         DrawRectangleOutline(
             GlobalPosition - Origin,
-            Size,
+            Size * Scale,
             Color.SkyBlue);
     }
 

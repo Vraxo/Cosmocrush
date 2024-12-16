@@ -1,6 +1,6 @@
 ﻿namespace Nodica;
 
-public class PhysicsManager
+public sealed class PhysicsManager
 {
     private static PhysicsManager? _instance;
     public static PhysicsManager Instance => _instance ??= new();

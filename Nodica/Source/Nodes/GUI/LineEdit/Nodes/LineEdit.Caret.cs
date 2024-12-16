@@ -95,7 +95,7 @@ public partial class LineEdit : Button
                 }
             }
 
-            if (Input.IsMouseButtonPressed(MouseKey.Left))
+            if (Input.IsMouseButtonPressed(MouseButtonCode.Left))
             {
                 MoveIntoPosition(Raylib.GetMousePosition().X);
             }

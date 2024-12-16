@@ -12,8 +12,11 @@ public static class PropertyLoader
         foreach (string line in fileLines)
         {
             string trimmedLine = line.Trim();
-            if (string.IsNullOrEmpty(trimmedLine) || !trimmedLine.Contains("="))
+            
+            if (string.IsNullOrEmpty(trimmedLine) || !trimmedLine.Contains('='))
+            {
                 continue;
+            }
 
             int equalsIndex = trimmedLine.IndexOf("=");
             string propertyPath = trimmedLine.Substring(0, equalsIndex).Trim();
@@ -34,14 +37,14 @@ public static class PropertyLoader
         for (int i = 0; i < segments.Length; i++)
         {
             string segment = segments[i];
-            propertyInfo = type.GetProperty(segment, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            propertyInfo = type.GetProperty(segment, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)!;
 
             if (propertyInfo == null)
                 throw new Exception($"Property '{segment}' not found on type '{type.Name}'.");
 
             if (i < segments.Length - 1)
             {
-                obj = propertyInfo.GetValue(obj);
+                obj = propertyInfo.GetValue(obj)!;
                 type = obj.GetType();
             }
         }

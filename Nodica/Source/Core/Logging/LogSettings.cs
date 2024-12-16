@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using YamlDotNet.Serialization;
 
 public class LogSettings
 {
@@ -9,9 +9,14 @@ public class LogSettings
 
     private LogSettings()
     {
-        string jsonFilePath = "Res/Nodica/LogSettings.json";
-        string jsonString = File.ReadAllText(jsonFilePath);
-        Settings = JsonSerializer.Deserialize<Dictionary<string, bool>>(jsonString);
+        string yamlFilePath = "Res/Nodica/LogSettings.yaml";
+        string yamlString = File.ReadAllText(yamlFilePath);
+
+        var deserializer = new DeserializerBuilder()
+            .WithNamingConvention(YamlDotNet.Serialization.NamingConventions.CamelCaseNamingConvention.Instance)
+            .Build();
+
+        Settings = deserializer.Deserialize<Dictionary<string, bool>>(yamlString);
     }
 
     public bool GetLogCondition(string key)

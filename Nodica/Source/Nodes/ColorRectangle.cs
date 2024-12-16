@@ -4,10 +4,8 @@ public class ColorRectangle : Node2D
 {
     public Color Color { get; set; } = Color.White;
 
-    public override void Ready()
+    public ColorRectangle()
     {
-        base.Ready();
-
         Size = new(32, 32);
         OriginPreset = OriginPreset.TopLeft;
     }

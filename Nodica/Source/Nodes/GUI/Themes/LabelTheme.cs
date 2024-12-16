@@ -2,7 +2,7 @@
 
 public class LabelTheme
 {
-    public Font Font { get; set; } = FontLoader.Instance.Get("RobotoMono 16");
+    public Font Font { get; set; } = FontManager.Instance.Get("RobotoMono 16");
     public Color FontColor { get; set; } = DefaultTheme.Text;
     public uint FontSize { get; set; } = 16;
     public int FontSpacing { get; set; } = 0;

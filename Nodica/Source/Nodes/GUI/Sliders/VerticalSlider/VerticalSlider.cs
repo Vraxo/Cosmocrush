@@ -39,7 +39,7 @@ public partial class VerticalSlider : BaseSlider
     {
         if (IsMouseOver())
         {
-            if (Input.IsMouseButtonPressed(MouseKey.Left) && OnTopLeft)
+            if (Input.IsMouseButtonPressed(MouseButtonCode.Left) && OnTopLeft)
             {
                 float x = Grabber.GlobalPosition.X;
                 float y = Raylib.GetMousePosition().Y;
