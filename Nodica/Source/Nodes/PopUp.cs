@@ -1,4 +1,7 @@
-﻿namespace Nodica;
+﻿using System.Data;
+using System.IO.Compression;
+
+namespace Nodica;
 
 public class PopUp : ClickableRectangle
 {
@@ -7,7 +10,7 @@ public class PopUp : ClickableRectangle
     public Color TitleBarColor { get; set; } = DefaultTheme.Accent;
     public Alignment TitleAlignment = new();
     public Vector2 MinSize { get; set; } = new(640, 480);
-    public Vector2 MaxSize { get; set; } = new(1280, 720);
+    public Vector2 MaxSize { get; set; } = new(960, 720);
 
     private bool isDragging = false;
     private bool isResizingRight = false;
@@ -30,45 +33,58 @@ public class PopUp : ClickableRectangle
 
         float width = Math.Clamp(Size.X, MinSize.X, MaxSize.X);
         float height = Math.Clamp(Size.Y, MinSize.Y, MaxSize.Y);
-        //Size = new(width, height);
+        Size = new(width, height);
     }
 
     protected override void Draw()
     {
         base.Draw();
 
+        DrawBackground();
+        DrawTitleBar();
+        DrawTitle();
+    }
+
+    // Drawing
+
+    private void DrawBackground()
+    {
         DrawRoundedRectangle(
             GlobalPosition - Origin,
             Size,
             0,
             0,
             Color.DarkGray);
+    }
 
+    private void DrawTitleBar()
+    {
         DrawRoundedRectangle(
             GlobalPosition - Origin,
             new(Size.X, TitleBarHeight),
             0,
             0,
             TitleBarColor);
+    }
 
-        Vector2 titleSize = Font.MeasureText(
-            ResourceLoader.Load<Font>("RobotoMono 32"),
-            Title,
-            16);
-
-        Vector2 titlePosition = CalculateTitlePosition(titleSize);
-
+    private void DrawTitle()
+    {
         DrawText(
             Title,
-            titlePosition,
+            GetTitlePosition(),
             FontManager.Instance.Get("RobotoMono 32"),
             16,
             0,
             Color.White);
     }
 
-    private Vector2 CalculateTitlePosition(Vector2 titleSize)
+    private Vector2 GetTitlePosition()
     {
+        Vector2 titleSize = Font.MeasureText(
+            ResourceLoader.Load<Font>("RobotoMono 32"),
+            Title,
+            16);
+
         Vector2 topBarPosition = GlobalPosition - Origin;
         Vector2 topBarSize = new(Size.X, TitleBarHeight);
 
@@ -90,6 +106,8 @@ public class PopUp : ClickableRectangle
 
         return new(x, y);
     }
+
+    // Dragging & resizing
 
     private void HandleDragging()
     {
@@ -145,39 +163,40 @@ public class PopUp : ClickableRectangle
 
             if (isResizingRight)
             {
-                float newWidth = mousePosition.X - (GlobalPosition.X - Origin.X);
+                float difference = mousePosition.X - (GlobalPosition.X + Size.X);
 
-                float previousWidth = Size.X;
-                Size = new(MathF.Max(newWidth, MinSize.X), Size.Y);
+                DrawLine(GlobalPosition + Size, mousePosition, Color.White);
 
-                float scalingFactor = Size.X / previousWidth;
+                float previousX = Size.X;
+
+                float width = Math.Clamp(Size.X + difference, MinSize.X, MaxSize.X);
+                Size = new(width, Size.Y);
 
                 foreach (Node node in Children)
                 {
                     if (node is Node2D child)
                     {
-                        child.Position = new(child.Position.X * scalingFactor, child.Position.Y);
+                        child.Position = new(child.Position.X + (Size.X - previousX) / 2, child.Position.Y);
                     }
                 }
             }
 
             if (isResizingLeft)
             {
-                float newWidth = (GlobalPosition.X - Origin.X) - mousePosition.X;
+                float difference = GlobalPosition.X - Size.X - mousePosition.X;
 
-                // Calculate the new size but clamp it to the minimum size
-                float clampedWidth = MathF.Max(Size.X + newWidth, MinSize.X);
-                float difference = clampedWidth - Size.X; // The actual amount the size changes
-                Size = new(clampedWidth, Size.Y);
+                DrawLine(GlobalPosition - new Vector2(Size.X, 0), mousePosition, Color.White);
 
-                DrawLine(mousePosition, GlobalPosition - Origin, Color.White);
+                float previousX = Size.X;
 
-                // Move children based on the actual change in size
+                float width = Math.Clamp(Size.X + difference, MinSize.X, MaxSize.X);
+                Size = new(width, Size.Y);
+
                 foreach (Node node in Children)
                 {
                     if (node is Node2D child)
                     {
-                        child.Position = new(child.Position.X - difference / 2, child.Position.Y);
+                        child.Position = new(child.Position.X - (Size.X - previousX) / 2, child.Position.Y);
                     }
                 }
             }
@@ -205,10 +224,12 @@ public class PopUp : ClickableRectangle
                 Alignment.Horizontal = HorizontalAlignment.Center;
                 GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
 
-                 MoveChildrenToLeft();
+                MoveChildrenToLeft();
             }
         }
     }
+
+    // Edges
 
     private bool IsMouseOnRightEdge()
     {
@@ -218,7 +239,7 @@ public class PopUp : ClickableRectangle
 
         return mousePosition.X >= rightEdgePosition.X &&
                mousePosition.X <= rightEdgePosition.X + edgeWidth &&
-               mousePosition.Y >= rightEdgePosition.Y + TitleBarHeight && 
+               mousePosition.Y >= rightEdgePosition.Y + TitleBarHeight &&
                mousePosition.Y <= rightEdgePosition.Y + Size.Y;
     }
 
@@ -258,6 +279,8 @@ public class PopUp : ClickableRectangle
                mousePosition.Y >= topArea.Position.Y &&
                mousePosition.Y <= topArea.Position.Y + topArea.Size.Y;
     }
+
+    // Move children
 
     private void MoveChildrenToRight()
     {
