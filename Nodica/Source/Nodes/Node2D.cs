@@ -128,6 +128,7 @@ public class Node2D : VisualItem
             {
                 VerticalAlignment.Top => 0,
                 VerticalAlignment.Center => Size.Y * Scale.Y / 2,
+                VerticalAlignment.Bottom => Size.Y * Scale.Y,
                 _ => 0
             };
 

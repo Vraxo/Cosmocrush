@@ -1,5 +1,7 @@
 ﻿using System.Data;
 using System.IO.Compression;
+using System.Security;
+using Microsoft.Win32.SafeHandles;
 
 namespace Nodica;
 
@@ -16,6 +18,7 @@ public class PopUp : ClickableRectangle
     private bool isResizingRight = false;
     private bool isResizingLeft = false;
     private bool isResizingBottom = false;
+    private bool isResizingTop = false;
     private Vector2 dragOffset;
 
     public PopUp()
@@ -28,8 +31,8 @@ public class PopUp : ClickableRectangle
     public override void Update()
     {
         base.Update();
-        HandleDragging();
         HandleResizing();
+        HandleDragging();
 
         float width = Math.Clamp(Size.X, MinSize.X, MaxSize.X);
         float height = Math.Clamp(Size.Y, MinSize.Y, MaxSize.Y);
@@ -115,7 +118,7 @@ public class PopUp : ClickableRectangle
 
         if (Input.IsMouseButtonDown(MouseButtonCode.Left))
         {
-            if (!isDragging && !isResizingRight && !isResizingLeft && !isResizingBottom && IsMouseOnTitleBar())
+            if (!isDragging && !IsResizing() && IsMouseOnTitleBar())
             {
                 isDragging = true;
                 dragOffset = mousePosition - GlobalPosition;
@@ -138,34 +141,40 @@ public class PopUp : ClickableRectangle
 
         if (Input.IsMouseButtonDown(MouseButtonCode.Left))
         {
-            if (!isResizingRight && IsMouseOnRightEdge())
+            if (!isResizingRight && IsMouseOnRightEdge() && !isResizingLeft)
             {
                 isResizingRight = true;
                 Alignment.Horizontal = HorizontalAlignment.Left;
                 GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
-
                 MoveChildrenToLeft();
             }
 
-            if (!isResizingLeft && IsMouseOnLeftEdge())
+            if (!isResizingLeft && IsMouseOnLeftEdge() && !isResizingRight)
             {
                 isResizingLeft = true;
                 Alignment.Horizontal = HorizontalAlignment.Right;
                 GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
-
                 MoveChildrenToRight();
             }
 
-            if (!isResizingBottom && IsMouseOnBottomEdge())
+            if (!isResizingBottom && IsMouseOnBottomEdge() && !isResizingTop)
             {
                 isResizingBottom = true;
             }
 
+            if (!isResizingTop && IsMouseOnTopEdge() && !isResizingBottom)
+            {
+                isResizingTop = true;
+                Alignment.Vertical = VerticalAlignment.Bottom;
+                GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y + Size.Y);
+                MoveChildrenDown();
+            }
+
             if (isResizingRight)
             {
-                float difference = mousePosition.X - (GlobalPosition.X + Size.X);
+                DrawCircle(GlobalPosition - Origin, 1, Color.Blue);
 
-                DrawLine(GlobalPosition + Size, mousePosition, Color.White);
+                float difference = mousePosition.X - (GlobalPosition.X + Size.X);
 
                 float previousX = Size.X;
 
@@ -184,8 +193,6 @@ public class PopUp : ClickableRectangle
             if (isResizingLeft)
             {
                 float difference = GlobalPosition.X - Size.X - mousePosition.X;
-
-                DrawLine(GlobalPosition - new Vector2(Size.X, 0), mousePosition, Color.White);
 
                 float previousX = Size.X;
 
@@ -206,12 +213,31 @@ public class PopUp : ClickableRectangle
                 float newHeight = mousePosition.Y - (GlobalPosition.Y - Origin.Y) - Size.Y;
                 Size = new(Size.X, MathF.Max(Size.Y + newHeight, MinSize.Y));
             }
+
+            if (isResizingTop)
+            {
+                float difference = mousePosition.Y - (GlobalPosition.Y - Origin.Y);
+
+                float previousY = Size.Y;
+
+                float height = Math.Clamp(Size.Y - difference, MinSize.Y, MaxSize.Y);
+                Size = new(Size.X, height);
+
+                foreach (Node node in Children)
+                {
+                    if (node is Node2D child)
+                    {
+                        child.Position = new(child.Position.X, child.Position.Y - (Size.Y - previousY));
+                    }
+                }
+            }
         }
         else
         {
             isResizingRight = false;
             isResizingLeft = false;
             isResizingBottom = false;
+            isResizingTop = false;
 
             if (Alignment.Horizontal == HorizontalAlignment.Left)
             {
@@ -223,19 +249,24 @@ public class PopUp : ClickableRectangle
             {
                 Alignment.Horizontal = HorizontalAlignment.Center;
                 GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
-
                 MoveChildrenToLeft();
+            }
+            else if (Alignment.Vertical == VerticalAlignment.Bottom)
+            {
+                Alignment.Vertical = VerticalAlignment.Top;
+                GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y - Size.Y);
+                MoveChildrenUp();
             }
         }
     }
 
-    // Edges
+    // Checks
 
     private bool IsMouseOnRightEdge()
     {
-        Vector2 mousePosition = Input.MousePosition;
-        Vector2 rightEdgePosition = GlobalPosition - Origin + new Vector2(Size.X - 4, 0);
         float edgeWidth = 8;
+        Vector2 mousePosition = Input.MousePosition;
+        Vector2 rightEdgePosition = GlobalPosition - Origin + new Vector2(Size.X - edgeWidth / 2, 0);
 
         return mousePosition.X >= rightEdgePosition.X &&
                mousePosition.X <= rightEdgePosition.X + edgeWidth &&
@@ -245,9 +276,9 @@ public class PopUp : ClickableRectangle
 
     private bool IsMouseOnLeftEdge()
     {
-        Vector2 mousePosition = Input.MousePosition;
-        Vector2 leftEdgePosition = GlobalPosition - Origin + new Vector2(-4, 0);
         float edgeWidth = 8;
+        Vector2 mousePosition = Input.MousePosition;
+        Vector2 leftEdgePosition = GlobalPosition - Origin + new Vector2(-edgeWidth / 2, 0);
 
         return mousePosition.X >= leftEdgePosition.X &&
                mousePosition.X <= leftEdgePosition.X + edgeWidth &&
@@ -257,27 +288,47 @@ public class PopUp : ClickableRectangle
 
     private bool IsMouseOnBottomEdge()
     {
-        Vector2 mousePosition = Input.MousePosition;
-        Vector2 bottomEdgePosition = GlobalPosition - Origin + new Vector2(0, Size.Y - 4);
         float edgeHeight = 8;
+        Vector2 mousePosition = Input.MousePosition;
+        Vector2 bottomEdgePosition = GlobalPosition - Origin + new Vector2(0, Size.Y - edgeHeight / 2);
+
+        DrawCircle(GlobalPosition - Origin + new Vector2(0, Size.Y - 4), 1, Color.Red);
 
         return mousePosition.X >= bottomEdgePosition.X &&
                mousePosition.X <= bottomEdgePosition.X + Size.X &&
                mousePosition.Y >= bottomEdgePosition.Y &&
                mousePosition.Y <= bottomEdgePosition.Y + edgeHeight;
     }
+    private bool IsMouseOnTopEdge()
+    {
+        float edgeHeight = TitleBarHeight / 3; // Top third
+        Vector2 mousePosition = Input.MousePosition;
+        Vector2 titleBarPosition = GlobalPosition - Origin; // Top-left corner of the title bar
+
+        // Check if the mouse is within the top third of the title bar
+        return mousePosition.X >= titleBarPosition.X &&
+               mousePosition.X <= titleBarPosition.X + Size.X &&
+               mousePosition.Y >= titleBarPosition.Y &&
+               mousePosition.Y <= titleBarPosition.Y + edgeHeight;
+    }
 
     private bool IsMouseOnTitleBar()
     {
         Vector2 mousePosition = Input.MousePosition;
-        Vector2 topAreaPosition = GlobalPosition - Origin;
-        Vector2 topAreaSize = new(Size.X, TitleBarHeight);
-        Rectangle topArea = new(topAreaPosition, topAreaSize);
+        Vector2 titleBarPosition = GlobalPosition - Origin; // Top-left corner of the title bar
+        float topEdgeHeight = TitleBarHeight / 3;          // Top third
+        float bottomAreaHeight = TitleBarHeight - topEdgeHeight; // Bottom two-thirds
 
-        return mousePosition.X >= topArea.Position.X &&
-               mousePosition.X <= topArea.Position.X + topArea.Size.X &&
-               mousePosition.Y >= topArea.Position.Y &&
-               mousePosition.Y <= topArea.Position.Y + topArea.Size.Y;
+        // Check if the mouse is within the bottom two-thirds of the title bar
+        return mousePosition.X >= titleBarPosition.X &&
+               mousePosition.X <= titleBarPosition.X + Size.X &&
+               mousePosition.Y >= titleBarPosition.Y + topEdgeHeight &&
+               mousePosition.Y <= titleBarPosition.Y + TitleBarHeight;
+    }
+
+    private bool IsResizing()
+    {
+        return isResizingRight || isResizingBottom || isResizingLeft || isResizingTop;
     }
 
     // Move children
@@ -300,6 +351,28 @@ public class PopUp : ClickableRectangle
             if (node is Node2D child)
             {
                 child.Position = new(child.Position.X + Size.X / 2, child.Position.Y);
+            }
+        }
+    }
+
+    private void MoveChildrenDown()
+    {
+        foreach (Node node in Children)
+        {
+            if (node is Node2D child)
+            {
+                child.Position = new(child.Position.X, child.Position.Y - Size.Y);
+            }
+        }
+    }
+
+    private void MoveChildrenUp()
+    {
+        foreach (Node node in Children)
+        {
+            if (node is Node2D child)
+            {
+                child.Position = new(child.Position.X, child.Position.Y + Size.Y);
             }
         }
     }
