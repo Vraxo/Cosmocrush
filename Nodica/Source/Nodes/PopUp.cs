@@ -14,6 +14,8 @@ public class PopUp : ClickableRectangle
     public Vector2 MinSize { get; set; } = new(640, 480);
     public Vector2 MaxSize { get; set; } = new(960, 720);
 
+    public BoxTheme TitleBarTheme { get; set; } = new();
+
     private bool isDragging = false;
     private bool isResizingRight = false;
     private bool isResizingLeft = false;
@@ -26,17 +28,16 @@ public class PopUp : ClickableRectangle
         Size = new(640, 480);
         InheritPosition = false;
         Alignment.Vertical = VerticalAlignment.Top;
+        TitleBarTheme.Roundness = 0;
     }
 
     public override void Update()
     {
         base.Update();
+
+        UpdateResizingCursor();
         HandleResizing();
         HandleDragging();
-
-        float width = Math.Clamp(Size.X, MinSize.X, MaxSize.X);
-        float height = Math.Clamp(Size.Y, MinSize.Y, MaxSize.Y);
-        Size = new(width, height);
     }
 
     protected override void Draw()
@@ -62,12 +63,10 @@ public class PopUp : ClickableRectangle
 
     private void DrawTitleBar()
     {
-        DrawRoundedRectangle(
+        DrawThemedRectangle(
             GlobalPosition - Origin,
             new(Size.X, TitleBarHeight),
-            0,
-            0,
-            TitleBarColor);
+            TitleBarTheme);
     }
 
     private void DrawTitle()
@@ -139,146 +138,210 @@ public class PopUp : ClickableRectangle
         }
     }
 
+    // Resizing
+
+    private void UpdateResizingCursor()
+    {
+        if (IsMouseOnRightEdge())
+        {
+            Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeEw);
+
+            if (IsMouseOnBottomEdge())
+            {
+                Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeNwse);
+            }
+
+            if (IsMouseOnTopEdge())
+            {
+                Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeNesw);
+            }
+        }
+        else if (IsMouseOnLeftEdge())
+        {
+            Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeEw);
+
+            if (IsMouseOnBottomEdge())
+            {
+                Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeNesw);
+            }
+
+            if (IsMouseOnTopEdge())
+            {
+                Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeNwse);
+            }
+        }
+        else if (IsMouseOnBottomEdge() || IsMouseOnTopEdge())
+        {
+            Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeNs);
+        }
+        else
+        {
+            Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.Default);
+        }
+    }
+
     private void HandleResizing()
     {
-        Vector2 mousePosition = Input.MousePosition;
-
         if (Input.IsMouseButtonDown(MouseButtonCode.Left) && !isDragging)
         {
-            if (!isResizingRight && IsMouseOnRightEdge() && !isResizingLeft)
-            {
-                isResizingRight = true;
-                Alignment.Horizontal = HorizontalAlignment.Left;
-                GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
-                MoveChildrenToLeft();
-            }
+            CheckForResizeStart();
 
-            if (!isResizingLeft && IsMouseOnLeftEdge() && !isResizingRight)
-            {
-                isResizingLeft = true;
-                Alignment.Horizontal = HorizontalAlignment.Right;
-                GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
-                MoveChildrenToRight();
-            }
-
-            if (!isResizingBottom && IsMouseOnBottomEdge() && !isResizingTop)
-            {
-                isResizingBottom = true;
-            }
-
-            if (!isResizingTop && IsMouseOnTopEdge() && !isResizingBottom)
-            {
-                Console.WriteLine("this");
-
-                isResizingTop = true;
-                Alignment.Vertical = VerticalAlignment.Bottom;
-                GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y + Size.Y);
-                MoveChildrenDown();
-            }
+            Vector2 mousePosition = Input.MousePosition;
 
             if (isResizingRight)
             {
-                DrawCircle(GlobalPosition - Origin, 1, Color.Blue);
-
-                float difference = mousePosition.X - (GlobalPosition.X + Size.X);
-
-                float previousX = Size.X;
-
-                // Ensure resizing stays within window boundaries
-                if (mousePosition.X >= 0 && mousePosition.X <= Window.Size.X)
-                {
-                    float width = Math.Clamp(Size.X + difference, MinSize.X, MaxSize.X);
-                    Size = new(width, Size.Y);
-
-                    foreach (Node node in Children)
-                    {
-                        if (node is Node2D child)
-                        {
-                            child.Position = new(child.Position.X + (Size.X - previousX) / 2, child.Position.Y);
-                        }
-                    }
-                }
+                ResizeRight(mousePosition);
             }
 
             if (isResizingLeft)
             {
-                float difference = GlobalPosition.X - Size.X - mousePosition.X;
-
-                float previousX = Size.X;
-
-                // Ensure resizing stays within window boundaries
-                if (mousePosition.X >= 0 && mousePosition.X <= Window.Size.X)
-                {
-                    float width = Math.Clamp(Size.X + difference, MinSize.X, MaxSize.X);
-                    Size = new(width, Size.Y);
-
-                    foreach (Node node in Children)
-                    {
-                        if (node is Node2D child)
-                        {
-                            child.Position = new(child.Position.X - (Size.X - previousX) / 2, child.Position.Y);
-                        }
-                    }
-                }
+                ResizeLeft(mousePosition);
             }
 
             if (isResizingBottom)
             {
-                float newHeight = mousePosition.Y - (GlobalPosition.Y - Origin.Y) - Size.Y;
-
-                // Ensure resizing stays within window boundaries
-                if (mousePosition.Y >= 0 && mousePosition.Y <= Window.Size.Y)
-                {
-                    Size = new(Size.X, MathF.Max(Size.Y + newHeight, MinSize.Y));
-                }
+                ResizeDown(mousePosition);
             }
 
             if (isResizingTop)
             {
-                float difference = mousePosition.Y - (GlobalPosition.Y - Origin.Y);
-
-                float previousY = Size.Y;
-
-                // Ensure resizing stays within window boundaries
-                if (mousePosition.Y >= 0 && mousePosition.Y <= Window.Size.Y)
-                {
-                    float height = Math.Clamp(Size.Y - difference, MinSize.Y, MaxSize.Y);
-                    Size = new(Size.X, height);
-
-                    foreach (Node node in Children)
-                    {
-                        if (node is Node2D child)
-                        {
-                            child.Position = new(child.Position.X, child.Position.Y - (Size.Y - previousY));
-                        }
-                    }
-                }
+                ResizeUp(mousePosition);
             }
         }
         else
         {
-            isResizingRight = false;
-            isResizingLeft = false;
-            isResizingBottom = false;
-            isResizingTop = false;
+            ResetAfterResize();
+        }
+    }
 
-            if (Alignment.Horizontal == HorizontalAlignment.Left)
+    private void ResetAfterResize()
+    {
+        isResizingRight = false;
+        isResizingLeft = false;
+        isResizingBottom = false;
+        isResizingTop = false;
+
+        if (Alignment.Horizontal == HorizontalAlignment.Left)
+        {
+            Alignment.Horizontal = HorizontalAlignment.Center;
+            GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
+            MoveChildrenToRight();
+        }
+        else if (Alignment.Horizontal == HorizontalAlignment.Right)
+        {
+            Alignment.Horizontal = HorizontalAlignment.Center;
+            GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
+            MoveChildrenToLeft();
+        }
+        else if (Alignment.Vertical == VerticalAlignment.Bottom)
+        {
+            Alignment.Vertical = VerticalAlignment.Top;
+            GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y - Size.Y);
+            MoveChildrenUp();
+        }
+    }
+
+    private void CheckForResizeStart()
+    {
+        if (!isResizingRight && IsMouseOnRightEdge() && !isResizingLeft)
+        {
+            isResizingRight = true;
+            Alignment.Horizontal = HorizontalAlignment.Left;
+            GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
+            MoveChildrenToLeft();
+        }
+
+        if (!isResizingLeft && IsMouseOnLeftEdge() && !isResizingRight)
+        {
+            isResizingLeft = true;
+            Alignment.Horizontal = HorizontalAlignment.Right;
+            GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
+            MoveChildrenToRight();
+        }
+
+        if (!isResizingBottom && IsMouseOnBottomEdge() && !isResizingTop)
+        {
+            isResizingBottom = true;
+        }
+
+        if (!isResizingTop && IsMouseOnTopEdge() && !isResizingBottom)
+        {
+            isResizingTop = true;
+            Alignment.Vertical = VerticalAlignment.Bottom;
+            GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y + Size.Y);
+            MoveChildrenDown();
+        }
+    }
+    
+    private void ResizeRight(Vector2 mousePosition)
+    {
+        float difference = mousePosition.X - (GlobalPosition.X + Size.X);
+
+        float previousX = Size.X;
+
+        if (mousePosition.X >= 0 && mousePosition.X <= Window.Size.X)
+        {
+            float width = Math.Clamp(Size.X + difference, MinSize.X, MaxSize.X);
+            Size = new(width, Size.Y);
+
+            foreach (Node node in Children)
             {
-                Alignment.Horizontal = HorizontalAlignment.Center;
-                GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
-                MoveChildrenToRight();
+                if (node is Node2D child)
+                {
+                    child.Position = new(child.Position.X + (Size.X - previousX) / 2, child.Position.Y);
+                }
             }
-            else if (Alignment.Horizontal == HorizontalAlignment.Right)
+        }
+    }
+
+    private void ResizeLeft(Vector2 mousePosition)
+    {
+        float difference = GlobalPosition.X - Size.X - mousePosition.X;
+
+        float previousX = Size.X;
+
+        if (mousePosition.X >= 0 && mousePosition.X <= Window.Size.X)
+        {
+            float width = Math.Clamp(Size.X + difference, MinSize.X, MaxSize.X);
+            Size = new(width, Size.Y);
+
+            foreach (Node node in Children)
             {
-                Alignment.Horizontal = HorizontalAlignment.Center;
-                GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
-                MoveChildrenToLeft();
+                if (node is Node2D child)
+                {
+                    child.Position = new(child.Position.X - (Size.X - previousX) / 2, child.Position.Y);
+                }
             }
-            else if (Alignment.Vertical == VerticalAlignment.Bottom)
+        }
+    }
+
+    private void ResizeDown(Vector2 mousePosition)
+    {
+        float newHeight = mousePosition.Y - (GlobalPosition.Y - Origin.Y) - Size.Y;
+
+        if (mousePosition.Y >= 0 && mousePosition.Y <= Window.Size.Y)
+        {
+            Size = new(Size.X, MathF.Max(Size.Y + newHeight, MinSize.Y));
+        }
+    }
+
+    private void ResizeUp(Vector2 mousePosition)
+    {
+        float difference = mousePosition.Y - (GlobalPosition.Y - Origin.Y);
+
+        float previousY = Size.Y;
+
+        if (mousePosition.Y >= 0 && mousePosition.Y <= Window.Size.Y)
+        {
+            float height = Math.Clamp(Size.Y - difference, MinSize.Y, MaxSize.Y);
+            Size = new(Size.X, height);
+
+            foreach (Node node in Children)
             {
-                Alignment.Vertical = VerticalAlignment.Top;
-                GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y - Size.Y);
-                MoveChildrenUp();
+                if (node is Node2D child)
+                {
+                    child.Position = new(child.Position.X, child.Position.Y - (Size.Y - previousY));
+                }
             }
         }
     }
@@ -293,7 +356,7 @@ public class PopUp : ClickableRectangle
 
         return mousePosition.X >= rightEdgePosition.X &&
                mousePosition.X <= rightEdgePosition.X + edgeWidth &&
-               mousePosition.Y >= rightEdgePosition.Y + TitleBarHeight &&
+               mousePosition.Y >= rightEdgePosition.Y && // Remove TitleBarHeight condition
                mousePosition.Y <= rightEdgePosition.Y + Size.Y;
     }
 
@@ -305,10 +368,9 @@ public class PopUp : ClickableRectangle
 
         return mousePosition.X >= leftEdgePosition.X &&
                mousePosition.X <= leftEdgePosition.X + edgeWidth &&
-               mousePosition.Y >= leftEdgePosition.Y + TitleBarHeight &&
+               mousePosition.Y >= leftEdgePosition.Y && // Remove TitleBarHeight condition
                mousePosition.Y <= leftEdgePosition.Y + Size.Y;
     }
-
     private bool IsMouseOnBottomEdge()
     {
         float edgeHeight = 8;
@@ -325,7 +387,7 @@ public class PopUp : ClickableRectangle
 
     private bool IsMouseOnTopEdge()
     {
-        float edgeHeight = TitleBarHeight / 3; // Top third
+        float edgeHeight = TitleBarHeight / 4; // Top third
         Vector2 mousePosition = Input.MousePosition;
         Vector2 titleBarPosition = GlobalPosition - Origin; // Top-left corner of the title bar
 
@@ -340,7 +402,7 @@ public class PopUp : ClickableRectangle
     {
         Vector2 mousePosition = Input.MousePosition;
         Vector2 titleBarPosition = GlobalPosition - Origin; // Top-left corner of the title bar
-        float topEdgeHeight = TitleBarHeight / 3;          // Top third
+        float topEdgeHeight = TitleBarHeight / 4;          // Top third
         float bottomAreaHeight = TitleBarHeight - topEdgeHeight; // Bottom two-thirds
 
         // Check if the mouse is within the bottom two-thirds of the title bar
