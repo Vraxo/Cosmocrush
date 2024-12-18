@@ -104,6 +104,7 @@ public class Button : Control
         }
     }
 
+    protected virtual void OnEnterPressed() { }
     private void HandleKeyboardInput()
     {
         if (Focused && Input.IsKeyPressed(KeyCode.Enter))
@@ -121,8 +122,6 @@ public class Button : Control
             }
         }
     }
-
-    protected virtual void OnEnterPressed() { }
 
     private void HandleClicks()
     {
@@ -214,6 +213,8 @@ public class Button : Control
         }
     }
 
+    // Draw
+
     protected override void Draw()
     {
         DrawBox();
@@ -256,6 +257,8 @@ public class Button : Control
             Themes.Current.FontSpacing,
             Themes.Current.FontColor);
     }
+
+    // Text
 
     private Vector2 GetTextPosition()
     {

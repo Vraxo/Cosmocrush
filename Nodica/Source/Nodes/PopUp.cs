@@ -1,9 +1,4 @@
-﻿using System.Data;
-using System.IO.Compression;
-using System.Security;
-using Microsoft.Win32.SafeHandles;
-
-namespace Nodica;
+﻿namespace Nodica;
 
 public class PopUp : ClickableRectangle
 {
@@ -142,41 +137,73 @@ public class PopUp : ClickableRectangle
 
     private void UpdateResizingCursor()
     {
-        if (IsMouseOnRightEdge())
+        if (isResizingRight)
         {
-            Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeEw);
+            Input.Cursor = MouseCursorCode.ResizeEw;
 
-            if (IsMouseOnBottomEdge())
+            if (isResizingBottom)
             {
-                Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeNwse);
+                Input.Cursor = MouseCursorCode.ResizeNwse;
             }
+
+            if (isResizingTop)
+            {
+                Input.Cursor = MouseCursorCode.ResizeNesw;
+            }
+        }
+        else if (isResizingLeft)
+        {
+            Input.Cursor = MouseCursorCode.ResizeEw;
+
+            if (isResizingBottom)
+            {
+                Input.Cursor = MouseCursorCode.ResizeNesw;
+            }
+
+            if (isResizingTop)
+            {
+                Input.Cursor = MouseCursorCode.ResizeNwse;
+            }
+        }
+        else if (isResizingTop || isResizingBottom)
+        {
+            Input.Cursor = MouseCursorCode.ResizeNs;
+        }
+        else if (IsMouseOnRightEdge())
+        {
+            Input.Cursor = MouseCursorCode.ResizeEw;
 
             if (IsMouseOnTopEdge())
             {
-                Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeNesw);
+                Input.Cursor = MouseCursorCode.ResizeNesw;
+            }
+
+            if (IsMouseOnBottomEdge())
+            {
+                Input.Cursor = MouseCursorCode.ResizeNwse;
             }
         }
         else if (IsMouseOnLeftEdge())
         {
-            Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeEw);
-
-            if (IsMouseOnBottomEdge())
-            {
-                Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeNesw);
-            }
+            Input.Cursor = MouseCursorCode.ResizeEw;
 
             if (IsMouseOnTopEdge())
             {
-                Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeNwse);
+                Input.Cursor = MouseCursorCode.ResizeNwse;
+            }
+
+            if (IsMouseOnBottomEdge())
+            {
+                Input.Cursor = MouseCursorCode.ResizeNesw;
             }
         }
-        else if (IsMouseOnBottomEdge() || IsMouseOnTopEdge())
+        else if (IsMouseOnTopEdge() || IsMouseOnRightEdge())
         {
-            Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.ResizeNs);
+            Input.Cursor = MouseCursorCode.ResizeNs;
         }
         else
         {
-            Raylib_cs.Raylib.SetMouseCursor(Raylib_cs.MouseCursor.Default);
+            Input.Cursor = MouseCursorCode.Default;
         }
     }
 
@@ -371,6 +398,7 @@ public class PopUp : ClickableRectangle
                mousePosition.Y >= leftEdgePosition.Y && // Remove TitleBarHeight condition
                mousePosition.Y <= leftEdgePosition.Y + Size.Y;
     }
+
     private bool IsMouseOnBottomEdge()
     {
         float edgeHeight = 8;
@@ -387,7 +415,7 @@ public class PopUp : ClickableRectangle
 
     private bool IsMouseOnTopEdge()
     {
-        float edgeHeight = TitleBarHeight / 4; // Top third
+        float edgeHeight = TitleBarHeight / 8; // Top third
         Vector2 mousePosition = Input.MousePosition;
         Vector2 titleBarPosition = GlobalPosition - Origin; // Top-left corner of the title bar
 
@@ -402,7 +430,7 @@ public class PopUp : ClickableRectangle
     {
         Vector2 mousePosition = Input.MousePosition;
         Vector2 titleBarPosition = GlobalPosition - Origin; // Top-left corner of the title bar
-        float topEdgeHeight = TitleBarHeight / 4;          // Top third
+        float topEdgeHeight = TitleBarHeight / 8;          // Top third
         float bottomAreaHeight = TitleBarHeight - topEdgeHeight; // Bottom two-thirds
 
         // Check if the mouse is within the bottom two-thirds of the title bar

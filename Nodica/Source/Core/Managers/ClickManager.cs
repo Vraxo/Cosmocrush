@@ -79,7 +79,7 @@ public sealed class ClickManager
 
         foreach (Clickable clickable in clickables)
         {
-            if (clickable.IsMouseOver())
+            if (IsMouseOverNode2D(clickable))
             {
                 viableClickables.Add(clickable);
             }
@@ -107,5 +107,22 @@ public sealed class ClickManager
         Log.Info($"[ClickManager] The highest layer is {viableClickables.Count}.", "ClickManager");
 
         return topClickable;
+    }
+
+    private static bool IsMouseOverNode2D(Node2D node)
+    {
+        Vector2 mousePosition = Input.MousePosition;
+
+        Vector2 position = node.GlobalPosition;
+        Vector2 scaledOrigin = node.Scale * node.Origin;
+        Vector2 scaledSize = node.Scale * node.Size;
+
+        bool isMouseOver =
+            mousePosition.X > position.X - scaledOrigin.X &&
+            mousePosition.X < position.X + scaledSize.X - scaledOrigin.X &&
+            mousePosition.Y > position.Y - scaledOrigin.Y &&
+            mousePosition.Y < position.Y + scaledSize.Y - scaledOrigin.Y;
+
+        return isMouseOver;
     }
 }

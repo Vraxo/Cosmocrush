@@ -12,9 +12,8 @@ public class Enemy : ColliderRectangle
     private Sprite sprite = new();
     private Player player = new();
 
-    // Add a knockback vector and a knockback recovery speed
     private Vector2 knockback = Vector2.Zero;
-    private readonly float knockbackRecoverySpeed = 0.1f; // How fast the knockback diminishes
+    private readonly float knockbackRecoverySpeed = 0.1f;
 
     public override void Ready()
     {
@@ -30,10 +29,7 @@ public class Enemy : ColliderRectangle
     {
         base.Update();
 
-        // Apply knockback reduction each frame
         knockback = Vector2.Lerp(knockback, Vector2.Zero, knockbackRecoverySpeed);
-
-        // Use the knockback in the movement calculation
         ChasePlayer();
     }
 
@@ -76,15 +72,12 @@ public class Enemy : ColliderRectangle
         }
     }
 
-    // This method applies a knockback force to the enemy
     public void ApplyKnockback(Vector2 force)
     {
-        // If the knockback force is greater than the current velocity, it pushes the enemy back
         if (knockback.Length() < force.Length())
         {
             knockback = force;
         }
-        // If the force is smaller than the current velocity, it slows down the enemy
         else
         {
             knockback += force;

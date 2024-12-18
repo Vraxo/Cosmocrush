@@ -11,6 +11,14 @@ public sealed class Input
     private readonly Dictionary<string, List<InputAction>> actionKeyMap = [];
     private readonly string mappingsFilePath = "Res/Nodica/InputMappings.yaml";
 
+    public static MouseCursorCode Cursor
+    {
+        set
+        {
+            Instance.CursorImpl = value;
+        }
+    }
+
     public static Vector2 MousePosition => Instance.GetMousePositionImpl();
     public static bool IsActionDown(string actionName) => Instance.IsActionDownImpl(actionName);
     public static bool IsActionPressed(string actionName) => Instance.IsActionPressedImpl(actionName);
@@ -26,6 +34,14 @@ public sealed class Input
     private Input()
     {
         LoadMappings(mappingsFilePath);
+    }
+
+    private MouseCursorCode CursorImpl
+    {
+        set
+        {
+            Raylib_cs.Raylib.SetMouseCursor((Raylib_cs.MouseCursor)value);
+        }
     }
 
     private bool IsActionDownImpl(string actionName)
