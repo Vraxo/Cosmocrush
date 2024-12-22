@@ -21,10 +21,21 @@ public class RayCast : Node2D
         }
     }
 
-    public Vector2 TargetPosition => new(
-        MathF.Cos(MathF.PI * Rotation / 180) * Length,
-        MathF.Sin(MathF.PI * Rotation / 180) * Length
-    );
+    public Vector2 TargetPosition
+    {
+        get
+        {
+            float x = MathF.Cos(MathF.PI * Rotation / 180) * Length;
+            float y = MathF.Sin(MathF.PI * Rotation / 180) * Length;
+
+            return new(x, y);
+        }
+    }
+
+    public RayCast()
+    {
+        ReadyForVisibility = true;
+    }
 
     public override void Update()
     {

@@ -5,7 +5,7 @@ namespace Nodica;
 public abstract class VisualItem : Node
 {
     public bool Visible { get; set; } = true;
-    public bool ReadyForVisibility { get; private set; } = false;
+    public bool ReadyForVisibility { get; set; } = false;
 
     public int Layer { get; set; } = 0;
 

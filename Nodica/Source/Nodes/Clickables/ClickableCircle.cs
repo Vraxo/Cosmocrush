@@ -9,7 +9,7 @@ public abstract class ClickableCircle : Clickable
     public override bool IsMouseOver()
     {
         Vector2 mousePosition = Raylib.GetMousePosition();
-        float distance = MathUtilities.GetDistance(mousePosition, GlobalPosition);
+        float distance = mousePosition.DistanceTo(GlobalPosition);
         bool isMouseOver = distance < Radius;
 
         return isMouseOver;

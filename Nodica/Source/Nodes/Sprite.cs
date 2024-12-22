@@ -13,7 +13,7 @@ public class Sprite : Node2D
         set
         {
             _texture = value;
-            Size = _texture.Size;
+            Size = _texture!.Size;
         }
     }
 

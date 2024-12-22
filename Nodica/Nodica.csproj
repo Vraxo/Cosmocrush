@@ -50,7 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Source\Core\Managers\Renderer\TextDrawCommand.cs" />
+    <None Include="Source\Core\DrawCommands\TextDrawCommand.cs" />
   </ItemGroup>
 
 </Project>
