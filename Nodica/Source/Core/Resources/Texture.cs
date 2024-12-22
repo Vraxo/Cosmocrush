@@ -43,6 +43,10 @@ public class Texture
         }
     }
 
+    public Texture()
+    {
+    }
+
     public static implicit operator Texture2D(Texture texture) => texture.raylibTexture;
 
     public static implicit operator IntPtr(Texture texture) => texture.sdl2Texture;

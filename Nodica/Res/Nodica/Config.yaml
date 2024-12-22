@@ -8,4 +8,4 @@ MaxWidth: -1
 MaxHeight: -1
 ResizableWindow: true
 AntiAliasing: true
-MainScenePath: Res/Scenes/Menu/Test.yaml
+MainScenePath: Res/Scenes/Menu/Menu.yaml

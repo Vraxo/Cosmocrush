@@ -224,7 +224,7 @@ public class Button : Control
 
     private void DrawBox()
     {
-        DrawThemedRectangle(
+        DrawRectangleThemed(
             GlobalPosition - Origin,
             Size,
             Themes.Current);

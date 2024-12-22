@@ -12,7 +12,7 @@ public class ThemedRectangle : Node2D
 
     protected override void Draw()
     {
-        DrawThemedRectangle(
+        DrawRectangleThemed(
             GlobalPosition - Origin,
             Size,
             Style);

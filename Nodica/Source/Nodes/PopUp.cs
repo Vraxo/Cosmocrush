@@ -48,7 +48,7 @@ public class PopUp : ClickableRectangle
 
     private void DrawBackground()
     {
-        DrawRoundedRectangle(
+        DrawRectangleRounded(
             GlobalPosition - Origin,
             Size,
             0,
@@ -58,7 +58,7 @@ public class PopUp : ClickableRectangle
 
     private void DrawTitleBar()
     {
-        DrawThemedRectangle(
+        DrawRectangleThemed(
             GlobalPosition - Origin,
             new(Size.X, TitleBarHeight),
             TitleBarTheme);
@@ -139,67 +139,67 @@ public class PopUp : ClickableRectangle
     {
         if (isResizingRight)
         {
-            Input.Cursor = MouseCursorCode.ResizeEw;
+            Input.Cursor = MouseCursorCode.ResizeHorizontal;
 
             if (isResizingBottom)
             {
-                Input.Cursor = MouseCursorCode.ResizeNwse;
+                Input.Cursor = MouseCursorCode.ResizeBottomLeftToTopRight;
             }
 
             if (isResizingTop)
             {
-                Input.Cursor = MouseCursorCode.ResizeNesw;
+                Input.Cursor = MouseCursorCode.ResizeTopLeftToBottomRight;
             }
         }
         else if (isResizingLeft)
         {
-            Input.Cursor = MouseCursorCode.ResizeEw;
+            Input.Cursor = MouseCursorCode.ResizeHorizontal;
 
             if (isResizingBottom)
             {
-                Input.Cursor = MouseCursorCode.ResizeNesw;
+                Input.Cursor = MouseCursorCode.ResizeTopLeftToBottomRight;
             }
 
             if (isResizingTop)
             {
-                Input.Cursor = MouseCursorCode.ResizeNwse;
+                Input.Cursor = MouseCursorCode.ResizeBottomLeftToTopRight;
             }
         }
         else if (isResizingTop || isResizingBottom)
         {
-            Input.Cursor = MouseCursorCode.ResizeNs;
+            Input.Cursor = MouseCursorCode.ResizeVertical;
         }
         else if (IsMouseOnRightEdge())
         {
-            Input.Cursor = MouseCursorCode.ResizeEw;
+            Input.Cursor = MouseCursorCode.ResizeHorizontal;
 
             if (IsMouseOnTopEdge())
             {
-                Input.Cursor = MouseCursorCode.ResizeNesw;
+                Input.Cursor = MouseCursorCode.ResizeTopLeftToBottomRight;
             }
 
             if (IsMouseOnBottomEdge())
             {
-                Input.Cursor = MouseCursorCode.ResizeNwse;
+                Input.Cursor = MouseCursorCode.ResizeBottomLeftToTopRight;
             }
         }
         else if (IsMouseOnLeftEdge())
         {
-            Input.Cursor = MouseCursorCode.ResizeEw;
+            Input.Cursor = MouseCursorCode.ResizeHorizontal;
 
             if (IsMouseOnTopEdge())
             {
-                Input.Cursor = MouseCursorCode.ResizeNwse;
+                Input.Cursor = MouseCursorCode.ResizeBottomLeftToTopRight;
             }
 
             if (IsMouseOnBottomEdge())
             {
-                Input.Cursor = MouseCursorCode.ResizeNesw;
+                Input.Cursor = MouseCursorCode.ResizeTopLeftToBottomRight;
             }
         }
         else if (IsMouseOnTopEdge() || IsMouseOnRightEdge())
         {
-            Input.Cursor = MouseCursorCode.ResizeNs;
+            Input.Cursor = MouseCursorCode.ResizeVertical;
         }
         else
         {

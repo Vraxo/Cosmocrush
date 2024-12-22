@@ -1,4 +1,6 @@
-﻿namespace Nodica;
+﻿using Nodica.RenderCommands;
+
+namespace Nodica;
 
 public abstract class VisualItem : Node
 {
@@ -21,25 +23,55 @@ public abstract class VisualItem : Node
 
     protected void DrawCircleOutline(Vector2 position, float radius, Color color)
     {
-        App.Instance.Backend.Drawing.DrawCircleOutline(position, radius, color);
+        CircleDrawCommand circleOutline = new()
+        {
+            Position = position,
+            Radius = radius,
+            Color = color
+        };
+
+        RenderManager.Instance.Submit(circleOutline);
     }
 
     protected void DrawRectangleOutline(Vector2 position, Vector2 size, Color color)
     {
-        App.Instance.Backend.Drawing.DrawRectangleOutline(position, size, color);
+        RectangleOutlineDrawCommand rectangleOutline = new()
+        {
+            Position = position,
+            Size = size,
+            Color = color
+        };
+
+        RenderManager.Instance.Submit(rectangleOutline);
     }
 
     protected void DrawRectangle(Vector2 position, Vector2 size, Color color)
     {
-        App.Instance.Backend.Drawing.DrawRectangle(position, size, color);
+        RectangleDrawCommand rectangle = new()
+        {
+            Position = position,
+            Size = size,
+            Color = color
+        };
+
+        RenderManager.Instance.Submit(rectangle);
     }
 
-    protected void DrawRoundedRectangle(Vector2 position, Vector2 size, float roundness, int segments, Color color)
+    protected void DrawRectangleRounded(Vector2 position, Vector2 size, float roundness, int segments, Color color)
     {
-        App.Instance.Backend.Drawing.DrawRoundedRectangle(position, size, roundness, segments, color);
+        RectangleRoundedDrawCommand roundedRectangle = new()
+        {
+            Position = position,
+            Size = size,
+            Roundness = roundness,
+            Segments = segments,
+            Color = color
+        };
+
+        RenderManager.Instance.Submit(roundedRectangle);
     }
 
-    protected void DrawThemedRectangle(Vector2 position, Vector2 size, BoxTheme theme)
+    protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
     {
         float top = theme.BorderLengthUp;
         float right = theme.BorderLengthRight;
@@ -51,7 +83,7 @@ public abstract class VisualItem : Node
 
         if (top > 0 || right > 0 || bottom > 0 || left > 0)
         {
-            DrawRoundedRectangle(
+            DrawRectangleRounded(
                 outerRectanglePosition,
                 outerRectangleSize,
                 theme.Roundness,
@@ -59,7 +91,7 @@ public abstract class VisualItem : Node
                 theme.BorderColor);
         }
 
-        DrawRoundedRectangle(
+        DrawRectangleRounded(
             position,
             size,
             theme.Roundness,
@@ -69,27 +101,71 @@ public abstract class VisualItem : Node
 
     protected static void DrawTexture(Texture texture, Vector2 position, float rotation, Vector2 scale, Color tint)
     {
-        App.Instance.Backend.Drawing.DrawTexture(texture, position, rotation, scale, tint);
+        TextureDrawCommand textureDrawCommand = new()
+        {
+            Texture = texture,
+            Position = position,
+            Rotation = rotation,
+            Scale = scale,
+            Tint = tint
+        };
+
+        RenderManager.Instance.Submit(textureDrawCommand);
     }
 
     protected void DrawTextureScaled(Texture texture, Vector2 position, Vector2 origin, float rotation, Vector2 scale, bool flipH = false, bool flipV = false)
     {
-        App.Instance.Backend.Drawing.DrawTextureScaled(texture, position, origin, rotation, scale, flipH, flipV);
+        TextureScaledDrawCommand textureDrawCommand = new()
+        {
+            Texture = texture,
+            Position = position,
+            Origin = origin,
+            Rotation = rotation,
+            Scale = scale,
+            FlipH = flipH,
+            FlipV = flipV
+        };
+
+        RenderManager.Instance.Submit(textureDrawCommand);
     }
 
-    protected void DrawText(string text, Vector2 position, Font font, float fontSize, float spacing, Color color)
+    protected void DrawText(string content, Vector2 position, Font font, float fontSize, float spacing, Color color)
     {
-        App.Instance.Backend.Drawing.DrawText(text, position, font, fontSize, spacing, color);
+        TextDrawCommand text = new()
+        {
+            Content = content,
+            Position = position,
+            Font = font,
+            FontSize = fontSize,
+            Spacing = spacing,
+            Color = color
+        };
+
+        RenderManager.Instance.Submit(text);
     }
 
-    protected void DrawLine(Vector2 from, Vector2 to, Color color)
+    protected void DrawLine(Vector2 start, Vector2 end, Color color)
     {
-        App.Instance.Backend.Drawing.DrawLine(from, to, color);
+        LineDrawCommand line = new()
+        {
+            Start = start,
+            End = end,
+            Color = color
+        };
+
+        RenderManager.Instance.Submit(line);
     }
 
     protected void DrawCircle(Vector2 position, float radius, Color color)
     {
-        App.Instance.Backend.Drawing.DrawCircle(position, radius, color);
+        CircleDrawCommand circle = new()
+        {
+            Position = position,
+            Radius = radius,
+            Color = color
+        };
+
+        RenderManager.Instance.Submit(circle);
     }
 
     protected void DrawGrid(Vector2 size, float cellSize, Color color)

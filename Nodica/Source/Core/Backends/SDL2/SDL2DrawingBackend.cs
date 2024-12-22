@@ -204,7 +204,7 @@ public sealed class SDL2DrawingBackend : IDrawingBackend
         }
     }
 
-    public override void DrawTextureScaled(Texture texture, Vector2 position, Vector2 origin, float rotation, Vector2 scale, bool flipH = false, bool flipV = false)
+    public override void DrawScaledTexture(Texture texture, Vector2 position, Vector2 origin, float rotation, Vector2 scale, bool flipH = false, bool flipV = false)
     {
         _ = SDL.SDL_SetTextureColorMod(texture, 255, 255, 255);
 

@@ -30,22 +30,22 @@ public enum MouseCursorCode
     /// <summary>
     /// Horizontal resize/move arrow shape
     /// </summary>
-    ResizeEw = 5,
+    ResizeHorizontal = 5,
 
     /// <summary>
     /// Vertical resize/move arrow shape
     /// </summary>
-    ResizeNs = 6,
+    ResizeVertical = 6,
 
     /// <summary>
     /// Top-left to bottom-right diagonal resize/move arrow shape
     /// </summary>
-    ResizeNwse = 7,
+    ResizeBottomLeftToTopRight = 7,
 
     /// <summary>
     /// The top-right to bottom-left diagonal resize/move arrow shape
     /// </summary>
-    ResizeNesw = 8,
+    ResizeTopLeftToBottomRight = 8,
 
     /// <summary>
     /// The omnidirectional resize/move cursor shape

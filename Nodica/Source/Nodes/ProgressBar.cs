@@ -33,7 +33,7 @@ public class ProgressBar : Node2D
 
     private void DrawEmpty()
     {
-        DrawThemedRectangle(
+        DrawRectangleThemed(
             GlobalPosition - Origin,
             Size,
             BackgroundTheme);
@@ -48,7 +48,7 @@ public class ProgressBar : Node2D
 
         Vector2 filledSize = new(Size.X * Percentage, Size.Y);
 
-        DrawThemedRectangle(
+        DrawRectangleThemed(
             GlobalPosition - Origin,
             filledSize,
             ProgressTheme);

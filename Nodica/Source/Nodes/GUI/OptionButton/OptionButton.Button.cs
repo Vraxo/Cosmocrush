@@ -37,7 +37,7 @@ public partial class OptionButton : Button
                 return;
             }
 
-            DrawThemedRectangle(
+            DrawRectangleThemed(
                 GlobalPosition - Origin + new Vector2(10, 7.5f),
                 new(10, 10),
                 CheckTheme);

@@ -105,6 +105,7 @@ public sealed class App
         Time.Process();
         ClickManager.Instance.Process();
         CollisionManager.Instance.Process();
+        RenderManager.Instance.Process();
     }
 
     private void PrintTree()

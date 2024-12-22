@@ -21,6 +21,10 @@
   AutoWidth: true
   Text: Hello! Click me for a fun time!
 
+- type: PersianText
+  name: Sex
+  parent: Menu
+
 #- type: Button
 #  name: Button2
 #  parent: Container

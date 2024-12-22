@@ -23,7 +23,7 @@ public partial class LineEdit : Button
                 return;
             }
 
-            DrawThemedRectangle(
+            DrawRectangleThemed(
                 parent.GlobalPosition - parent.Offset,
                 parent.Size,
                 parent.Themes.Current);
