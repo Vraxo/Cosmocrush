@@ -43,21 +43,21 @@ public class Node2D : VisualItem
         }
     }
 
-    private int _layer = 0;
-    public int Layer
-    {
-        get => _layer;
-
-        set
-        {
-            _layer = value;
-
-            foreach (Node2D child in Children.Cast<Node2D>())
-            {
-                child.Layer = Layer + 1;
-            }
-        }
-    }
+    //private int _layer = 0;
+    //public int Layer
+    //{
+    //    get => _layer;
+    //
+    //    set
+    //    {
+    //        _layer = value;
+    //
+    //        foreach (Node2D child in Children.Cast<Node2D>())
+    //        {
+    //            child.Layer = Layer + 1;
+    //        }
+    //    }
+    //}
 
     private Vector2 _globalPosition = Vector2.Zero;
     public Vector2 GlobalPosition

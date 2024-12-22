@@ -7,6 +7,8 @@ public abstract class VisualItem : Node
     public bool Visible { get; set; } = true;
     public bool ReadyForVisibility { get; private set; } = false;
 
+    public int Layer { get; set; } = 0;
+
     public override void Update()
     {
         base.Update();
@@ -27,7 +29,8 @@ public abstract class VisualItem : Node
         {
             Position = position,
             Radius = radius,
-            Color = color
+            Color = color,
+            Layer = Layer
         };
 
         RenderManager.Instance.Submit(circleOutline);
@@ -39,7 +42,8 @@ public abstract class VisualItem : Node
         {
             Position = position,
             Size = size,
-            Color = color
+            Color = color,
+            Layer = Layer
         };
 
         RenderManager.Instance.Submit(rectangleOutline);
@@ -51,7 +55,8 @@ public abstract class VisualItem : Node
         {
             Position = position,
             Size = size,
-            Color = color
+            Color = color,
+            Layer = Layer
         };
 
         RenderManager.Instance.Submit(rectangle);
@@ -65,7 +70,8 @@ public abstract class VisualItem : Node
             Size = size,
             Roundness = roundness,
             Segments = segments,
-            Color = color
+            Color = color,
+            Layer = Layer
         };
 
         RenderManager.Instance.Submit(roundedRectangle);
@@ -99,7 +105,7 @@ public abstract class VisualItem : Node
             theme.FillColor);
     }
 
-    protected static void DrawTexture(Texture texture, Vector2 position, float rotation, Vector2 scale, Color tint)
+    protected void DrawTexture(Texture texture, Vector2 position, float rotation, Vector2 scale, Color tint)
     {
         TextureDrawCommand textureDrawCommand = new()
         {
@@ -107,7 +113,8 @@ public abstract class VisualItem : Node
             Position = position,
             Rotation = rotation,
             Scale = scale,
-            Tint = tint
+            Tint = tint,
+            Layer = Layer
         };
 
         RenderManager.Instance.Submit(textureDrawCommand);
@@ -123,7 +130,8 @@ public abstract class VisualItem : Node
             Rotation = rotation,
             Scale = scale,
             FlipH = flipH,
-            FlipV = flipV
+            FlipV = flipV,
+            Layer = Layer
         };
 
         RenderManager.Instance.Submit(textureDrawCommand);
@@ -138,7 +146,8 @@ public abstract class VisualItem : Node
             Font = font,
             FontSize = fontSize,
             Spacing = spacing,
-            Color = color
+            Color = color,
+            Layer = Layer
         };
 
         RenderManager.Instance.Submit(text);
@@ -150,7 +159,8 @@ public abstract class VisualItem : Node
         {
             Start = start,
             End = end,
-            Color = color
+            Color = color,
+            Layer = Layer
         };
 
         RenderManager.Instance.Submit(line);
@@ -162,7 +172,8 @@ public abstract class VisualItem : Node
         {
             Position = position,
             Radius = radius,
-            Color = color
+            Color = color,
+            Layer = Layer
         };
 
         RenderManager.Instance.Submit(circle);

@@ -18,6 +18,7 @@
   parent: Menu
   Position: "(100,100)"
   Text: Start
+  Layer: 2
 
 - type: Player
   name: CoolPlayer

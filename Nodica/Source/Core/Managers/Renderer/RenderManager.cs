@@ -11,7 +11,7 @@ public sealed class RenderManager
 
     public void Process()
     {
-        foreach (DrawCommand command in drawCommands)
+        foreach (DrawCommand command in drawCommands.OrderBy(c => c.Layer))
         {
             command.Draw();
         }
