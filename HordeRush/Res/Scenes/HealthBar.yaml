@@ -1,0 +1,4 @@
+- type: HealthBar
+  name: HealthBar
+  parent: null
+  Size: (250, 20)

@@ -11,14 +11,12 @@ public static class PackedSceneUtils
         foreach (KeyValuePair<string, object> property in element)
         {
             string propertyName = property.Key;
-
             if (SpecialProperties.Contains(propertyName))
             {
                 continue;
             }
 
             object value = property.Value;
-
             SetNestedProperty(node, propertyName, value);
         }
     }
@@ -31,13 +29,11 @@ public static class PackedSceneUtils
         for (int i = 0; i < pathParts.Length; i++)
         {
             string part = pathParts[i];
-            PropertyInfo? propertyInfo = currentObject.GetType().GetProperty(part, BindingFlags.Public | BindingFlags.Instance);
-
+            PropertyInfo? propertyInfo = currentObject!.GetType().GetProperty(part, BindingFlags.Public | BindingFlags.Instance);
             if (propertyInfo == null)
             {
                 throw new Exception($"Property '{part}' not found on type '{currentObject.GetType().Name}'.");
             }
-
             if (i == pathParts.Length - 1)
             {
                 object propertyValue = PackedSceneUtils.ConvertValue(propertyInfo.PropertyType, value);
@@ -51,7 +47,7 @@ public static class PackedSceneUtils
                     nextObject = Activator.CreateInstance(propertyInfo.PropertyType);
                     propertyInfo.SetValue(currentObject, nextObject);
                 }
-                currentObject = nextObject;
+                currentObject = nextObject!;
             }
         }
     }
@@ -78,21 +74,21 @@ public static class PackedSceneUtils
     {
         var stringValue = (string)value;
 
-            return targetType switch
-            {
-                Type t when t == typeof(Vector2) => ParseVector2(stringValue),
-                Type t when t == typeof(Color) => ParseColor(stringValue),
-                Type t when t == typeof(Audio) => ParseAudio(stringValue),
-                Type t when t == typeof(Texture) => ParseTexture(stringValue),
-                Type t when t.IsEnum => Enum.Parse(targetType, stringValue),
-                Type t when t == typeof(int) => int.Parse(stringValue),
-                Type t when t == typeof(uint) => uint.Parse(stringValue),
-                Type t when t == typeof(float) => float.Parse(stringValue),
-                Type t when t == typeof(double) => double.Parse(stringValue),
-                Type t when t == typeof(bool) => bool.Parse(stringValue),
-                Type t when t == typeof(string) => stringValue,
-                _ => throw new Exception($"Unsupported type {targetType.Name} for value {stringValue}")
-            };
+        return targetType switch
+        {
+            Type t when t == typeof(Vector2) => ParseVector2(stringValue),
+            Type t when t == typeof(Color) => ParseColor(stringValue),
+            Type t when t == typeof(Audio) => ParseAudio(stringValue),
+            Type t when t == typeof(Texture) => ParseTexture(stringValue),
+            Type t when t.IsEnum => Enum.Parse(targetType, stringValue),
+            Type t when t == typeof(int) => int.Parse(stringValue),
+            Type t when t == typeof(uint) => uint.Parse(stringValue),
+            Type t when t == typeof(float) => float.Parse(stringValue),
+            Type t when t == typeof(double) => double.Parse(stringValue),
+            Type t when t == typeof(bool) => bool.Parse(stringValue),
+            Type t when t == typeof(string) => stringValue,
+            _ => throw new Exception($"Unsupported type {targetType.Name} for value {stringValue}")
+        };
     }
 
     private static Vector2 ParseVector2(string value)

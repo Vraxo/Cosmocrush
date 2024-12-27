@@ -9,4 +9,3 @@ global using Font = Raylib_cs.Font;
 
 global using Button      = Nodica.Button;
 global using CheckBox    = Nodica.CheckBox;
-global using ProgressBar = Nodica.ProgressBar;

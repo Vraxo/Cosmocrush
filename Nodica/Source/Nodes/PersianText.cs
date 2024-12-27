@@ -1,70 +1,96 @@
 ﻿using Raylib_cs;
 using System.Drawing;
 using System.IO;
+using System.Drawing.Imaging;
 
-namespace Nodica
+namespace Nodica;
+
+public class PersianText : Node2D
 {
-    public class PersianText : Node2D
+    private Texture2D texture;
+    private string textToRender = "سلام";
+    private string fontFamily = "Arial"; // Consider using a font that fully supports Persian like Tahoma, B Nazanin, etc.
+    private int fontSize = 20;
+    private System.Drawing.Color textColor = System.Drawing.Color.White;
+
+    public PersianText()
     {
-        private Texture2D texture;
+        LoadTextTexture();
+    }
 
-        public PersianText()
-        {
-            // Create texture from GDI+ (System.Drawing) rendered text
-            var bitmap = new Bitmap(200, 50);
-            using (var graphics = Graphics.FromImage(bitmap))
-            {
-                graphics.Clear(System.Drawing.Color.Transparent); // Ensure transparent background
+    private void LoadTextTexture()
+    {
+        // Dispose of the old texture if it exists
+        //if (texture.Id != 0)
+        //{
+        //    Raylib.UnloadTexture(texture);
+        //}
+        //
+        //// Measure the text to determine bitmap size
+        //using (var tempBitmap = new Bitmap(1, 1))
+        //using (var graphics = Graphics.FromImage(tempBitmap))
+        //using (var font = new Font(fontFamily, fontSize))
+        //{
+        //    var stringFormat = new StringFormat
+        //    {
+        //        FormatFlags = StringFormatFlags.DirectionRightToLeft,
+        //        Alignment = StringAlignment.Near,
+        //        LineAlignment = StringAlignment.Near
+        //    };
+        //    SizeF textSize = graphics.MeasureString(textToRender, font, new PointF(0, 0), stringFormat);
+        //
+        //    // Create the bitmap with appropriate size
+        //    using (var bitmap = new Bitmap((int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height)))
+        //    using (var g = Graphics.FromImage(bitmap))
+        //    {
+        //        g.Clear(System.Drawing.Color.Transparent);
+        //        g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias; // Optional: for smoother text
+        //
+        //        using (var fontToUse = new Font(fontFamily, fontSize))
+        //        {
+        //            var drawPoint = new PointF(bitmap.Width, 0); // Start drawing from the right
+        //            g.DrawString(textToRender, fontToUse, new SolidBrush(textColor), drawPoint, stringFormat);
+        //        }
+        //
+        //        // Save the Bitmap to a MemoryStream in PNG format
+        //        using (MemoryStream ms = new MemoryStream())
+        //        {
+        //            bitmap.Save(ms, ImageFormat.Png);
+        //            byte[] imageData = ms.ToArray();
+        //
+        //            // Load the image from memory
+        //            Image image = Raylib.LoadImageFromMemory(".png", imageData);
+        //
+        //            // Check if the image is valid
+        //            if (image.Width == 0 || image.Height == 0)
+        //            {
+        //                Raylib.TraceLog(TraceLogLevel.Error, "Failed to load image from memory.");
+        //                texture = new Texture2D(); // Return an invalid texture
+        //            }
+        //            else
+        //            {
+        //                // Load the texture from the image
+        //                texture = Raylib.LoadTextureFromImage(image);
+        //                Raylib.UnloadImage(image); // Unload the CPU image once the texture is on the GPU
+        //            }
+        //        }
+        //    }
+        //}
+    }
 
-                using (var font = new System.Drawing.Font("Arial", 20)) // Choose an appropriate font for Persian text
-                {
-                    var stringFormat = new StringFormat();
-                    stringFormat.FormatFlags = StringFormatFlags.DirectionRightToLeft; // Ensures RTL text for Persian
-                    graphics.DrawString("سلام", font, Brushes.White, new PointF(10, 10), stringFormat);
-                }
-            }
+    protected override void Draw()
+    {
+        base.Draw();
 
-            // Save the Bitmap to a MemoryStream
-            texture = LoadTextureFromBitmap(bitmap);
-        }
-
-        protected override void Draw()
-        {
-            base.Draw();
-
-            if (texture.Id != 0)
-            {
-                // Draw the texture on screen
-                Raylib.DrawTexture(texture, 100, 100, Color.White);
-            }
-            else
-            {
-                // Draw an error message if texture failed to load
-                Raylib.DrawText("Failed to load texture", 100, 100, 20, Color.Red);
-            }
-        }
-
-        private Texture2D LoadTextureFromBitmap(Bitmap bitmap)
-        {
-            // Convert the Bitmap to a MemoryStream in PNG format
-            using (MemoryStream ms = new MemoryStream())
-            {
-                bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                byte[] imageData = ms.ToArray();
-
-                // Load the texture from memory
-                Image image = Raylib.LoadImageFromMemory("png", imageData);
-
-                // Check if the image is valid
-                if (image.Width == 0 || image.Height == 0)
-                {
-                    Raylib.TraceLog(TraceLogLevel.Error, "Failed to load image from memory.");
-                    return new Texture2D(); // Return an invalid texture
-                }
-
-                // Load the texture from the image
-                return Raylib.LoadTextureFromImage(image);
-            }
-        }
+        //if (texture.Id != 0)
+        //{
+        //    // Draw the texture on screen
+        //    Raylib.DrawTexture(texture, GlobalPosition.X, GlobalPosition.Y, Color.White);
+        //}
+        //else
+        //{
+        //    // Draw an error message if texture failed to load
+        //    Raylib.DrawText("Failed to load texture", (int)GlobalPosition.X, (int)GlobalPosition.Y, 20, Color.Red);
+        //}
     }
 }

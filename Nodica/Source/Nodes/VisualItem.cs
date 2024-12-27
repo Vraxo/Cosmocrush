@@ -7,7 +7,23 @@ public abstract class VisualItem : Node
     public bool Visible { get; set; } = true;
     public bool ReadyForVisibility { get; set; } = false;
 
-    public int Layer { get; set; } = 0;
+    private int _layer = 0;
+    public int Layer
+    {
+        get => _layer;
+
+        set
+        {
+            if (_layer != value)
+            {
+                _layer = value;
+                LayerChanged?.Invoke(this, _layer);
+            }
+        }
+    }
+
+    public delegate void VisualItemEventHandler(VisualItem sender, int layer);
+    public event VisualItemEventHandler? LayerChanged;
 
     public override void Update()
     {
@@ -84,8 +100,8 @@ public abstract class VisualItem : Node
         float bottom = theme.BorderLengthDown;
         float left = theme.BorderLengthLeft;
 
-        Vector2 outerRectanglePosition = new(position.X - left, position.Y - top);
-        Vector2 outerRectangleSize = new(size.X + left + right, size.Y + top + bottom);
+        Vector2 outerRectanglePosition = new(position.X - left, position.Y - top + 10);
+        Vector2 outerRectangleSize = new(size.X + left + right, size.Y + top + bottom - 10);
 
         if (top > 0 || right > 0 || bottom > 0 || left > 0)
         {
@@ -104,6 +120,71 @@ public abstract class VisualItem : Node
             (int)size.Y,
             theme.FillColor);
     }
+
+    //protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
+    //{
+    //    float top = theme.BorderLengthUp;
+    //    float right = theme.BorderLengthRight;
+    //    float bottom = theme.BorderLengthDown;
+    //    float left = theme.BorderLengthLeft;
+    //
+    //    if (top > 0)
+    //    {
+    //        Vector2 borderPosition = new(position.X - left, position.Y - top);
+    //        Vector2 borderSize = new(size.X + left + right, top);
+    //        DrawRectangleRounded(
+    //            borderPosition,
+    //            borderSize,
+    //            theme.Roundness,
+    //            (int)size.Y,
+    //            theme.BorderColor);
+    //    }
+    //
+    //    if (right > 0)
+    //    {
+    //        Vector2 borderPosition = new(position.X + size.X, position.Y - top);
+    //        Vector2 borderSize = new(right, size.Y + top + bottom);
+    //        DrawRectangleRounded(
+    //             borderPosition,
+    //            borderSize,
+    //            theme.Roundness,
+    //             (int)size.Y,
+    //            theme.BorderColor);
+    //    }
+    //
+    //
+    //    if (bottom > 0)
+    //    {
+    //        Vector2 borderPosition = new(position.X - left, position.Y + size.Y);
+    //        Vector2 borderSize = new(size.X + left + right, bottom);
+    //        DrawRectangleRounded(
+    //            borderPosition,
+    //           borderSize,
+    //            theme.Roundness,
+    //            (int)size.Y,
+    //            theme.BorderColor);
+    //    }
+    //
+    //    if (left > 0)
+    //    {
+    //        Vector2 borderPosition = new(position.X - left, position.Y - top);
+    //        Vector2 borderSize = new(left, size.Y + top + bottom);
+    //        DrawRectangleRounded(
+    //           borderPosition,
+    //           borderSize,
+    //           theme.Roundness,
+    //           (int)size.Y,
+    //           theme.BorderColor);
+    //    }
+    //
+    //
+    //    DrawRectangleRounded(
+    //        position,
+    //        size,
+    //        theme.Roundness,
+    //        (int)size.Y,
+    //        theme.FillColor);
+    //}
 
     protected void DrawTexture(Texture texture, Vector2 position, float rotation, Vector2 scale, Color tint)
     {

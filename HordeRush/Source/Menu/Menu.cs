@@ -36,7 +36,7 @@ public class Menu : Node
         //var mainScene = packedMainScene.Instantiate<MainScene>();
         //ChangeScene(mainScene);
 
-        PackedScene2 packedMainScene = new("Res/Scenes/MainScene.yaml");
+        PackedSceneYaml packedMainScene = new("Res/Scenes/MainScene.yaml");
         var mainScene = packedMainScene.Instantiate<Node>();
         ChangeScene(mainScene);
     }
@@ -60,7 +60,7 @@ public class Menu : Node
 
         float y = random.Next(0, (int)Window.Size.Y);
 
-        PackedScene2 packedScene = new("Res/Scenes/Menu/MenuParticle.yaml");
+        PackedSceneYaml packedScene = new("Res/Scenes/Menu/MenuParticle.yaml");
         var particle = packedScene.Instantiate<MenuParticle>();
 
         particle.GlobalPosition = new(0, y);

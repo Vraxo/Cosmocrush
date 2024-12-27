@@ -2,15 +2,15 @@
 
 public class Configuration
 {
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public int MinWidth { get; set; }
-    public int MinHeight { get; set; }
-    public int MaxWidth { get; set; }
-    public int MaxHeight { get; set; }
-    public string Title { get; set; }
-    public bool ResizableWindow { get; set; }
-    public bool AntiAliasing { get; set; }
-    public string MainScenePath { get; set; }
-    public string Backend { get; set; }
+    public int Width { get; set; } = 0;
+    public int Height { get; set; } = 0;
+    public int MinWidth { get; set; } = 0;
+    public int MinHeight { get; set; } = 0;
+    public int MaxWidth { get; set; } = 0;
+    public int MaxHeight { get; set; } = 0;
+    public string Title { get; set; } = "Nodica";
+    public bool ResizableWindow { get; set; } = true;
+    public bool AntiAliasing { get; set; } = true;
+    public string MainScenePath { get; set; } = "";
+    public string Backend { get; set; } = "Raylib";
 }

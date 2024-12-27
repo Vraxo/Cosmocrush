@@ -3,11 +3,7 @@
 public class ProgressBar : Node2D
 {
     public BoxTheme BackgroundTheme = new();
-
-    public BoxTheme ProgressTheme = new()
-    { 
-        FillColor = DefaultTheme.Accent
-    };
+    public BoxTheme ProgressTheme = new();
 
     private float _percentage = 0;
     public float Percentage
@@ -23,6 +19,7 @@ public class ProgressBar : Node2D
     public ProgressBar()
     {
         Size = new(250, 10);
+        ProgressTheme.FillColor = DefaultTheme.Accent;
     }
 
     protected override void Draw()

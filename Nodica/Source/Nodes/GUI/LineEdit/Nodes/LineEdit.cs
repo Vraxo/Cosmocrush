@@ -6,9 +6,9 @@ public partial class LineEdit : Button
 {
     #region [ - - - Properties & Fields - - - ]
 
-    public static readonly Vector2 DefaultSize = new(300, 25);
+    public static readonly Vector2 DefaultSize = new(300, 26);
 
-    public string Text { get; set; } = "";
+    public new string Text { get; set; } = "";
     public string DefaultText { get; set; } = "";
     public string PlaceholderText { get; set; } = "";
     public Vector2 TextOrigin { get; set; } = new(8, 0);
@@ -22,20 +22,7 @@ public partial class LineEdit : Button
     public bool TemporaryDefaultText { get; set; } = true;
     public bool Secret { get; set; } = false;
     public char SecretCharacter { get; set; } = '*';
-
-    //public ButtonThemePack Themes { get; set; } = new()
-    //{
-    //    Pressed = new()
-    //    {
-    //        BorderLength = 1,
-    //        FillColor = DefaultTheme.TextBoxPressedFill,
-    //        BorderColor = DefaultTheme.Accent
-    //    },
-    //};
-
-    public int TextStartIndex = 0;
-
-    public Action<LineEdit> OnUpdate = (textBox) => { };
+    public int TextStartIndex { get; private set; } = 0;
 
     public event EventHandler? FirstCharacterEntered;
     public event EventHandler? Cleared;
@@ -43,9 +30,8 @@ public partial class LineEdit : Button
     public event EventHandler<string>? Confirmed;
 
     protected Caret caret;
-    private Shape shape;
-    private TextDisplayer textDisplayer;
-    private PlaceholderTextDisplayer placeholderTextDisplayer;
+    private readonly TextDisplayer textDisplayer;
+    private readonly PlaceholderTextDisplayer placeholderTextDisplayer;
 
     private const int minAscii = 32;
     private const int maxAscii = 125;
@@ -63,40 +49,18 @@ public partial class LineEdit : Button
     {
         Size = DefaultSize;
         FocusOnClick = true;
-        FocusChanged += LineEdit_FocusChanged;
-
-        LeftClicked += LineEdit_LeftClicked;
-        ClickedOutside += LineEdit_ClickedOutisde;
-        
         Themes.Focused.BorderLength = 0;
         Themes.Focused.BorderLengthDown = 1;
-    }
-    
-    private void LineEdit_ClickedOutisde(object? sender, EventArgs e)
-    {
-        Selected = false;
-    }
 
-    private void LineEdit_LeftClicked(object? sender, EventArgs e)
-    {
-        Selected = true;
-    }
-
-    private void LineEdit_FocusChanged(object sender, bool e)
-    {
-        Selected = e;
-    }
-
-    public override void Start()
-    {
-        shape = new(this);
         caret = new(this);
         textDisplayer = new(this);
         placeholderTextDisplayer = new(this);
 
+        FocusChanged += OnFocusChanged;
+        LeftClicked += OnLeftClicked;
+        ClickedOutside += OnClickedOutside;
+        LayerChanged += OnLayerChanged;
         SizeChanged += OnSizeChanged;
-        
-        base.Start();
     }
 
     public override void Update()
@@ -106,10 +70,10 @@ public partial class LineEdit : Button
         UpdateSizeToFitText();
 
         base.Update();
-        //shape.Process();
-        caret.Update();
-        textDisplayer.Update();
-        placeholderTextDisplayer.Update();
+
+        caret?.Update();
+        textDisplayer?.Update();
+        placeholderTextDisplayer?.Update();
     }
 
     protected override void OnEnterPressed()
@@ -119,6 +83,28 @@ public partial class LineEdit : Button
         Themes.Current = base.Themes.Normal;
 
         base.OnEnterPressed();
+    }
+
+    private void OnLayerChanged(VisualItem sender, int layer)
+    {
+        caret.Layer = layer + 1;
+        textDisplayer.Layer = layer + 1;
+        placeholderTextDisplayer.Layer = layer + 1;
+    }
+
+    private void OnClickedOutside(object? sender, EventArgs e)
+    {
+        Selected = false;
+    }
+
+    private void OnLeftClicked(object? sender, EventArgs e)
+    {
+        Selected = true;
+    }
+
+    private void OnFocusChanged(object? sender, bool e)
+    {
+        Selected = e;
     }
 
     private void OnSizeChanged(object? sender, Vector2 e)
@@ -163,8 +149,6 @@ public partial class LineEdit : Button
             return;
         }
 
-        HandleClicks();
-
         if (!Selected)
         {
             return;
@@ -173,38 +157,6 @@ public partial class LineEdit : Button
         GetTypedCharacters();
         HandleBackspace();
         Confirm();
-    }
-
-    private void HandleClicks()
-    {
-        //if (Raylib.IsMouseButtonPressed(MouseKey.Left))
-        //{
-        //    if (!IsMouseOver())
-        //    {
-        //        Selected = false;
-        //        Themes.Current = Themes.Normal;
-        //    }
-        //}
-        //
-        //if (IsMouseOver())
-        //{
-        //    if (Raylib.IsMouseButtonDown(MouseKey.Left))
-        //    {
-        //        if (OnTopLeft)
-        //        {
-        //            Selected = true;
-        //            Themes.Current = Themes.Pressed;
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    if (Raylib.IsMouseButtonDown(MouseKey.Left))
-        //    {
-        //        Selected = false;
-        //        Themes.Current = Themes.Normal;
-        //    }
-        //}
     }
 
     private void GetTypedCharacters()
@@ -416,43 +368,6 @@ public partial class LineEdit : Button
             Cleared?.Invoke(this, EventArgs.Empty);
         }
     }
-
-    //private void DeleteLastCharacter()
-    //{
-    //    int textLengthBeforeDeletion = Text.Length;
-    //
-    //    if (Text.Length > 0 && caret.X > 0)
-    //    {
-    //        Text = Text.Remove(caret.X - 1 + TextStartIndex, 1);
-    //
-    //        if (Text.Length % GetDisplayableCharactersCount() < GetDisplayableCharactersCount())
-    //        {
-    //            if (TextStartIndex > 0)
-    //            {
-    //                TextStartIndex--;
-    //            }
-    //        }
-    //
-    //        //if (caret.X != GetDisplayableCharactersCount() || Text.Length < GetDisplayableCharactersCount())
-    //        //{
-    //        //    caret.X--;
-    //        //}
-    //
-    //        if (caret.X != GetDisplayableCharactersCount() && TextStartIndex == 0)
-    //        {
-    //            caret.X--;
-    //        }
-    //    }
-    //
-    //    RevertTextToDefaultIfEmpty();
-    //
-    //    TextChanged?.Invoke(this, Text);
-    //
-    //    if (Text.Length == 0 && textLengthBeforeDeletion != 0)
-    //    {
-    //        Cleared?.Invoke(this, EventArgs.Empty);
-    //    }
-    //}
 
     private void PasteText()
     {

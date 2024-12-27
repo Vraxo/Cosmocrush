@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Res\Nodica\Config.yaml">
+    <None Update="Res\Nodica\Config.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Nodica\Fonts\RobotoMono.ttf">

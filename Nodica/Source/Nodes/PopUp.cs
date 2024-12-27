@@ -11,6 +11,8 @@ public class PopUp : ClickableRectangle
 
     public BoxTheme TitleBarTheme { get; set; } = new();
 
+    public bool ClipChildren { get; set; } = false;
+
     private bool isDragging = false;
     private bool isResizingRight = false;
     private bool isResizingLeft = false;
@@ -26,13 +28,28 @@ public class PopUp : ClickableRectangle
         TitleBarTheme.Roundness = 0;
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        if (ClipChildren)
+        {
+            int x = (int)(GlobalPosition.X - Origin.X);
+            int y = (int)(GlobalPosition.Y - Origin.Y);
+            int width = (int)Size.X;
+            int height = (int)Size.Y;
+
+            Raylib_cs.Raylib.BeginScissorMode(x, y, width, height);
+        }
+
+        base.Process();
 
         UpdateResizingCursor();
         HandleResizing();
         HandleDragging();
+
+        if (ClipChildren)
+        {
+            Raylib_cs.Raylib.EndScissorMode();
+        }
     }
 
     protected override void Draw()

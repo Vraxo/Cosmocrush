@@ -23,7 +23,6 @@ public partial class LineEdit : Button
                 parent.Text.Substring(parent.TextStartIndex, Math.Max(0, displayableLength));
         }
 
-
         protected override bool ShouldSkipDrawing()
         {
             return false;

@@ -59,3 +59,9 @@
   parent: Root
   path: Res/Scenes/Enemy.yaml
   Position: "(100,150)"
+
+- type: HealthBar
+  name: HealthBar
+  parent: Root
+  path: Res/Scenes/HealthBar.yaml
+  #Position: (300,100)

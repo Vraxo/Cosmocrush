@@ -59,6 +59,8 @@ public class Node
     /// <summary>Updates the node on each frame while active.</summary>
     public virtual void Update() { }
 
+    public virtual void Update(float delta) { }
+
     /// <summary>Recursively destroys this node and its children, removing it from the parent's children.</summary>
     public virtual void Destroy()
     {

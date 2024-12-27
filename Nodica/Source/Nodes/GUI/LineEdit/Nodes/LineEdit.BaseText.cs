@@ -2,16 +2,11 @@
 
 public partial class LineEdit : Button
 {
-    private abstract class BaseText : Node2D
+    private abstract class BaseText(LineEdit parent) : Node2D
     {
-        protected LineEdit parent;
+        protected LineEdit parent = parent;
 
         private new Vector2 GlobalPosition => parent.GlobalPosition + Position;
-
-        public BaseText(LineEdit parent)
-        {
-            this.parent = parent;
-        }
 
         protected override void Draw()
         {

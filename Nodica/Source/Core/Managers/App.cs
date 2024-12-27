@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
-using YamlDotNet.Serialization;
+using IniParser;
+using IniParser.Model;
 using Nodica.Backends;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Nodica;
 
@@ -12,10 +14,12 @@ public sealed class App
     public readonly Backend Backend;
     public Node? RootNode;
 
+    private readonly Configuration config;
+
     private App()
     {
-        string configFilePath = "Res/Nodica/Config.yaml";
-        Configuration config = LoadConfig(configFilePath);
+        string configFilePath = "Res/Nodica/Config.ini";
+        config = LoadConfig(configFilePath);
 
         if (config?.Backend == "Raylib")
         {
@@ -35,8 +39,8 @@ public sealed class App
 
     public void Run()
     {
-        Initialize();
-        Loop();
+        Start();
+        Update();
     }
 
     public void SetRootNode(Node node, bool packedScene = false)
@@ -49,12 +53,9 @@ public sealed class App
         }
     }
 
-    private void Initialize()
+    private void Start()
     {
         SetCurrentDirectory();
-
-        string configFilePath = "Res/Nodica/Config.yaml";
-        Configuration config = LoadConfig(configFilePath);
 
         if (config is null)
         {
@@ -75,18 +76,20 @@ public sealed class App
             config.Title,
             "Res/Icon/Icon.png");
 
-        Backend.Window.SetWindowMinSize(config.Width, config.Height);
+        Backend.Window.SetWindowMinSize(config.MinWidth, config.MinHeight);
 
         SetRootNodeFromConfig(config.MainScenePath);
     }
 
     private void SetRootNodeFromConfig(string scenePath)
     {
-        PackedScene2 packedScene = new(scenePath);
+        PackedSceneINI packedScene = new(scenePath);
         RootNode = packedScene.Instantiate<Node>(true);
+
+        Console.WriteLine(RootNode is null);
     }
 
-    private void Loop()
+    private void Update()
     {
         while (!Backend.Window.WindowShouldClose())
         {
@@ -132,8 +135,27 @@ public sealed class App
 
     private static Configuration LoadConfig(string filePath)
     {
-        var yaml = new DeserializerBuilder().Build();
-        using StreamReader reader = new(filePath);
-        return yaml.Deserialize<Configuration>(reader);
+        var parser = new FileIniDataParser();
+        IniData data = parser.ReadFile(filePath);
+
+        Configuration config = new();
+
+        KeyDataCollection windowSection = data.Sections["Window"];
+        KeyDataCollection systemSection = data.Sections["System"];
+
+        config.Title = windowSection["Title"];
+        config.Width = int.Parse(windowSection["Width"]);
+        config.Height = int.Parse(windowSection["Height"]);
+        config.MinWidth = int.Parse(windowSection["MinWidth"]);
+        config.MinHeight = int.Parse(windowSection["MinHeight"]);
+        config.MaxWidth = int.Parse(windowSection["MaxWidth"]);
+        config.MaxHeight = int.Parse(windowSection["MaxHeight"]);
+        config.ResizableWindow = bool.Parse(windowSection["ResizableWindow"]);
+        config.AntiAliasing = bool.Parse(windowSection["AntiAliasing"]);
+
+        config.Backend = systemSection["Backend"];
+        config.MainScenePath = systemSection["MainScenePath"];
+
+        return config;
     }
 }
