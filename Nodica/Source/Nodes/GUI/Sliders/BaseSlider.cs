@@ -130,12 +130,12 @@ public abstract partial class BaseSlider : ClickableRectangle
 
     public abstract void MoveGrabber(int direction);
 
-    private void OnDecrementButtonLeftClicked(object? sender, EventArgs e)
+    private void OnDecrementButtonLeftClicked(Button sender)
     {
         MoveGrabber(-1);
     }
 
-    private void OnIncrementButtonLeftClicked(object? sender, EventArgs e)
+    private void OnIncrementButtonLeftClicked(Button sender)
     {
         MoveGrabber(1);
     }

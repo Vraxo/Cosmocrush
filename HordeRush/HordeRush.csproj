@@ -58,28 +58,28 @@
     <None Update="Res\Audio\SFX\Damage.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Gun.yaml">
+    <None Update="Res\Scenes\Gun.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\HealthBar.yaml">
+    <None Update="Res\Scenes\HealthBar.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Menu\Test.yaml">
+    <None Update="Res\Scenes\Menu\Test.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Scenes\Menu\Menu.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Menu\MenuParticle.yaml">
+    <None Update="Res\Scenes\Menu\MenuParticle.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Scenes\Menu\Menu.scene">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Enemy.yaml">
+    <None Update="Res\Scenes\Enemy.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Rock.yaml">
+    <None Update="Res\Scenes\Rock.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Sprites\Astronaut.png">
@@ -97,10 +97,10 @@
     <None Update="Res\Sprites\Player.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\MainScene.yaml">
+    <None Update="Res\Scenes\MainScene.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Player.yaml">
+    <None Update="Res\Scenes\Player.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Sprites\Rock.png">

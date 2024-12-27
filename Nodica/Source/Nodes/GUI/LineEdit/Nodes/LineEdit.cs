@@ -97,7 +97,7 @@ public partial class LineEdit : Button
         Selected = false;
     }
 
-    private void OnLeftClicked(object? sender, EventArgs e)
+    private void OnLeftClicked(Button sender)
     {
         Selected = true;
     }

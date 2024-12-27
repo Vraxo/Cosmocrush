@@ -2,7 +2,6 @@
 using IniParser;
 using IniParser.Model;
 using Nodica.Backends;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Nodica;
 
@@ -83,7 +82,7 @@ public sealed class App
 
     private void SetRootNodeFromConfig(string scenePath)
     {
-        PackedSceneINI packedScene = new(scenePath);
+        PackedSceneIni packedScene = new(scenePath);
         RootNode = packedScene.Instantiate<Node>(true);
 
         Console.WriteLine(RootNode is null);

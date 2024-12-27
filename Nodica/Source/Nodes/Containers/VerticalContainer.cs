@@ -10,6 +10,7 @@ public class VerticalContainer : ClickableRectangle
     public float StartY
     {
         get => _startY;
+
         set
         {
             float totalHeight = 0;
@@ -48,6 +49,7 @@ public class VerticalContainer : ClickableRectangle
             (int)Size.Y);
 
         SortChildren();
+        RedirectClicksToChildren();
         base.Process();
         Raylib.EndScissorMode();
         HandleScrolling();
@@ -73,7 +75,10 @@ public class VerticalContainer : ClickableRectangle
                 child.Layer = -10;
             }
         }
+    }
 
+    private void RedirectClicksToChildren()
+    {
         if (Input.IsMouseButtonPressed(MouseButtonCode.Left) && OnTopLeft)
         {
             for (int i = 0; i < Children.Count; i++)

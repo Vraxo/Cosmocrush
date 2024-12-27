@@ -27,16 +27,16 @@ public class Menu : Node
         UpdateStartButton();
     }
 
-    private void OnStartButtonLeftClicked(object? sender, EventArgs e)
+    private void OnStartButtonLeftClicked(Button sender)
     {
         //PackedScene2 packedMainScene2 = new("Res/Scenes/MainScene.scene");
         //var mainScene2 = packedMainScene2.Instantiate<MainScene>();
 
-        //PackedScene2 packedMainScene = new("Res/Scenes/MainScene.yaml");
+        //PackedScene2 packedMainScene = new("Res/Scenes/MainScene.ini");
         //var mainScene = packedMainScene.Instantiate<MainScene>();
         //ChangeScene(mainScene);
 
-        PackedSceneYaml packedMainScene = new("Res/Scenes/MainScene.yaml");
+        PackedSceneIni packedMainScene = new("Res/Scenes/MainScene.ini");
         var mainScene = packedMainScene.Instantiate<Node>();
         ChangeScene(mainScene);
     }
@@ -60,7 +60,7 @@ public class Menu : Node
 
         float y = random.Next(0, (int)Window.Size.Y);
 
-        PackedSceneYaml packedScene = new("Res/Scenes/Menu/MenuParticle.yaml");
+        PackedSceneIni packedScene = new("Res/Scenes/Menu/MenuParticle.ini");
         var particle = packedScene.Instantiate<MenuParticle>();
 
         particle.GlobalPosition = new(0, y);

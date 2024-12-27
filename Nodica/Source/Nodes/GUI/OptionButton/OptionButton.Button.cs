@@ -43,7 +43,7 @@ public partial class OptionButton : Button
                 CheckTheme);
         }
 
-        private void OnLeftClicked(object? sender, EventArgs e)
+        private void OnLeftClicked(Button sender)
         {
             parent.Select(Index);
 

@@ -20,17 +20,17 @@ public class Button : Control
     public Vector2 TextMargin { get; set; } = new(10, 5);
     public string Ellipsis { get; set; } = "...";
     public ClickBehavior Behavior { get; set; } = ClickBehavior.Left;
+    public Texture? Icon { get; set; } = null;
     public float IconMargin { get; set; } = 12;
 
-    public Texture? Icon { get; set; }
-
-    public bool PressedLeft = false;
-    public bool PressedRight = false;
+    private bool pressedLeft = false;
+    private bool pressedRight = false;
 
     public Action<Button> OnUpdate = (button) => { };
 
-    public event EventHandler? LeftClicked;
-    public event EventHandler? RightClicked;
+    public delegate void ButtonEventHandler(Button sender);
+    public event ButtonEventHandler? LeftClicked;
+    public event ButtonEventHandler? RightClicked;
 
     private bool _disabled = false;
     public bool Disabled
@@ -105,19 +105,20 @@ public class Button : Control
     }
 
     protected virtual void OnEnterPressed() { }
+
     private void HandleKeyboardInput()
     {
         if (Focused && Input.IsKeyPressed(KeyCode.Enter))
         {
             if (Behavior == ClickBehavior.Left || Behavior == ClickBehavior.Both)
             {
-                LeftClicked?.Invoke(this, EventArgs.Empty);
+                LeftClicked?.Invoke(this);
                 OnEnterPressed();
             }
 
             if (Behavior == ClickBehavior.Right || Behavior == ClickBehavior.Both)
             {
-                RightClicked?.Invoke(this, EventArgs.Empty);
+                RightClicked?.Invoke(this);
                 OnEnterPressed();
             }
         }
@@ -125,61 +126,37 @@ public class Button : Control
 
     private void HandleClicks()
     {
-        if (Disabled) return;
-
-        bool mouseOver = IsMouseOver();
-        bool anyPressed = false;
+        bool isMouseOver = IsMouseOver();
+        bool isAnyPressed = false;
 
         if (Behavior == ClickBehavior.Left || Behavior == ClickBehavior.Both)
         {
             HandleClick(
-                ref PressedLeft,
+                ref pressedLeft,
                 ref OnTopLeft,
                 MouseButtonCode.Left,
                 LeftClickActionMode,
                 LeftClicked);
 
-            if (PressedLeft) anyPressed = true;
+            if (pressedLeft) isAnyPressed = true;
         }
 
         if (Behavior == ClickBehavior.Right || Behavior == ClickBehavior.Both)
         {
             HandleClick(
-                ref PressedRight,
+                ref pressedRight,
                 ref OnTopRight,
                 MouseButtonCode.Right,
                 RightClickActionMode,
                 RightClicked);
 
-            if (PressedRight) anyPressed = true;
+            if (pressedRight) isAnyPressed = true;
         }
 
-        if (StayPressed && (PressedLeft || PressedRight))
-        {
-            Themes.Current = Themes.Pressed;
-        }
-        else if (Focused)
-        {
-            if (mouseOver)
-            {
-                Themes.Current = anyPressed ? Themes.Pressed : Themes.Focused;
-            }
-            else
-            {
-                Themes.Current = Focused ? Themes.Focused : Themes.Normal;
-            }
-        }
-        else if (mouseOver)
-        {
-            Themes.Current = anyPressed ? Themes.Pressed : Themes.Hover;
-        }
-        else
-        {
-            Themes.Current = Themes.Normal;
-        }
+        UpdateTheme(isMouseOver, isAnyPressed);
     }
 
-    private void HandleClick(ref bool pressed, ref bool onTop, MouseButtonCode button, ActionMode actionMode, EventHandler? clickHandler)
+    private void HandleClick(ref bool pressed, ref bool onTop, MouseButtonCode button, ActionMode actionMode, ButtonEventHandler? clickHandler)
     {
         if (Disabled) return;
 
@@ -194,7 +171,7 @@ public class Button : Control
 
                 if (actionMode == ActionMode.Press)
                 {
-                    clickHandler?.Invoke(this, EventArgs.Empty);
+                    clickHandler?.Invoke(this);
                     onTop = false;
                 }
             }
@@ -204,12 +181,38 @@ public class Button : Control
         {
             if (mouseOver && pressed && onTop && actionMode == ActionMode.Release) // (mouseOver || StayPressed)
             {
-                clickHandler?.Invoke(this, EventArgs.Empty);
-                Console.WriteLine(Name);
+                clickHandler?.Invoke(this);
             }
 
             onTop = false;
             pressed = false;
+        }
+    }
+
+    private void UpdateTheme(bool isMouseOver, bool isAnyPressed)
+    {
+        if (StayPressed && (pressedLeft || pressedRight))
+        {
+            Themes.Current = Themes.Pressed;
+        }
+        else if (Focused)
+        {
+            if (isMouseOver)
+            {
+                Themes.Current = isAnyPressed ? Themes.Pressed : Themes.Focused;
+            }
+            else
+            {
+                Themes.Current = Focused ? Themes.Focused : Themes.Normal;
+            }
+        }
+        else if (isMouseOver)
+        {
+            Themes.Current = isAnyPressed ? Themes.Pressed : Themes.Hover;
+        }
+        else
+        {
+            Themes.Current = Themes.Normal;
         }
     }
 

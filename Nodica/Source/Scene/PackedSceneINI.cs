@@ -3,7 +3,7 @@ using IniParser.Model;
 
 namespace Nodica;
 
-public sealed class PackedSceneINI(string path)
+public sealed class PackedSceneIni(string path)
 {
     private readonly string path = path;
     private readonly Dictionary<string, Node> namedNodes = new();
@@ -57,7 +57,7 @@ public sealed class PackedSceneINI(string path)
             if (element.TryGetValue("path", out object? value))
             {
                 string scenePath = (string)value;
-                PackedSceneINI nestedScene = new(scenePath);
+                PackedSceneIni nestedScene = new(scenePath);
                 var nestedRootNode = nestedScene.Instantiate<Node>();
                 node = nestedRootNode;
             }

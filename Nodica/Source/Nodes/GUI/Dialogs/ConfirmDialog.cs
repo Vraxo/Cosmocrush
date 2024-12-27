@@ -8,7 +8,8 @@ public partial class ConfirmDialog : Dialog
         base.Start();
     }
 
-    protected virtual void OnConfirmButtonLeftClicked(object? sender, EventArgs e)
+    protected virtual void OnConfirmButtonLeftClicked(Button sender)
     {
+
     }
 }

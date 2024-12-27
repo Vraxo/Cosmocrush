@@ -28,7 +28,7 @@ public partial class OptionButton : Button
         Options.Clear();
     }
 
-    private void OnLeftClicked(object? sender, EventArgs e)
+    private void OnLeftClicked(Button sender)
     {
         if (!Open)
         {

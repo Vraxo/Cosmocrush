@@ -20,7 +20,7 @@ public partial class Dialog : Node2D
         Destroy();
     }
 
-    private void OnCloseButtonLeftClicked(object? sender, EventArgs e)
+    private void OnCloseButtonLeftClicked(Button sender)
     {
         Close();
     }
