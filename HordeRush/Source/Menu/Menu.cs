@@ -6,6 +6,7 @@ public class Menu : Node
 {
     private Button startButton = new();
     private ColorRectangle background = new();
+    private Label title = new();
 
     public override void Ready()
     {
@@ -15,6 +16,7 @@ public class Menu : Node
         startButton.LeftClicked += OnStartButtonLeftClicked;
 
         background = GetNode<ColorRectangle>("Background");
+        title = GetNode<Label>("Title");
     }
 
     public override void Update()
@@ -23,6 +25,7 @@ public class Menu : Node
 
         GenerateParticle();
 
+        UpdateTitle();
         UpdateBackground();
         UpdateStartButton();
     }
@@ -50,6 +53,11 @@ public class Menu : Node
     {
         background.Position = Window.Size / 2;
         background.Size = Window.Size;
+    }
+
+    private void UpdateTitle()
+    {
+        title.Position = new(Window.Size.X / 2, title.Position.Y);
     }
 
     private void GenerateParticle()

@@ -82,10 +82,10 @@ public class CheckBoxThemePack
     {
         set
         {
-            Current.BorderLengthUp = value;
-            Normal.BorderLengthUp = value;
-            Hover.BorderLengthUp = value;
-            Pressed.BorderLengthUp = value;
+            Current.BorderLengthTop = value;
+            Normal.BorderLengthTop = value;
+            Hover.BorderLengthTop = value;
+            Pressed.BorderLengthTop = value;
         }
     }
 }

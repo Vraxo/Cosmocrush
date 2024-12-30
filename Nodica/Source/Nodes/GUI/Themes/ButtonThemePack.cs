@@ -133,29 +133,29 @@ public sealed class ButtonThemePack
         }
     }
 
-    public float BorderLengthUp
+    public float BorderLengthTop
     {
         set
         {
-            Current.BorderLengthUp = value;
-            Normal.BorderLengthUp = value;
-            Hover.BorderLengthUp = value;
-            Pressed.BorderLengthUp = value;
-            Disabled.BorderLengthUp = value;
-            Focused.BorderLengthUp = value;
+            Current.BorderLengthTop = value;
+            Normal.BorderLengthTop = value;
+            Hover.BorderLengthTop = value;
+            Pressed.BorderLengthTop = value;
+            Disabled.BorderLengthTop = value;
+            Focused.BorderLengthTop = value;
         }
     }
 
-    public float BorderLengthDown
+    public float BorderLengthBottom
     {
         set
         {
-            Current.BorderLengthDown = value;
-            Normal.BorderLengthDown = value;
-            Hover.BorderLengthDown = value;
-            Pressed.BorderLengthDown = value;
-            Disabled.BorderLengthDown = value;
-            Focused.BorderLengthDown = value;
+            Current.BorderLengthBottom = value;
+            Normal.BorderLengthBottom = value;
+            Hover.BorderLengthBottom = value;
+            Pressed.BorderLengthBottom = value;
+            Disabled.BorderLengthBottom = value;
+            Focused.BorderLengthBottom = value;
         }
     }
 }

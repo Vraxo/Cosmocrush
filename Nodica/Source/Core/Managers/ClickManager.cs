@@ -109,19 +109,15 @@ public sealed class ClickManager
         return topClickable;
     }
 
-    private static bool IsMouseOverNode2D(Node2D node)
+    private bool IsMouseOverNode2D(Node2D node)
     {
         Vector2 mousePosition = Input.MousePosition;
 
-        Vector2 position = node.GlobalPosition;
-        Vector2 scaledOrigin = node.Scale * node.Origin;
-        Vector2 scaledSize = node.Scale * node.Size;
-
         bool isMouseOver =
-            mousePosition.X > position.X - scaledOrigin.X &&
-            mousePosition.X < position.X + scaledSize.X - scaledOrigin.X &&
-            mousePosition.Y > position.Y - scaledOrigin.Y &&
-            mousePosition.Y < position.Y + scaledSize.Y - scaledOrigin.Y;
+            mousePosition.X > node.GlobalPosition.X - node.Origin.X &&
+            mousePosition.X < node.GlobalPosition.X + node.FinalSize.X - node.Origin.X &&
+            mousePosition.Y > node.GlobalPosition.Y - node.Origin.Y &&
+            mousePosition.Y < node.GlobalPosition.Y + node.FinalSize.Y - node.Origin.Y;
 
         return isMouseOver;
     }

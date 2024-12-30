@@ -50,7 +50,7 @@ public partial class LineEdit : Button
         Size = DefaultSize;
         FocusOnClick = true;
         Themes.Focused.BorderLength = 0;
-        Themes.Focused.BorderLengthDown = 1;
+        Themes.Focused.BorderLengthBottom = 1;
 
         caret = new(this);
         textDisplayer = new(this);

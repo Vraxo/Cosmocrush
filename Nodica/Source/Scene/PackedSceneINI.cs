@@ -16,11 +16,6 @@ public sealed class PackedSceneIni(string path)
         List<Node> createdNodes = ParseNodeList(nodeDataList);
         Node? rootNode = createdNodes.FirstOrDefault(); // Assume the first node is the root
 
-        if (rootNode != null && nodeDataList.Count > 0)
-        {
-            rootNode.Name = (string)nodeDataList[0]["name"];
-        }
-
         return (T)rootNode!;
     }
 
@@ -30,6 +25,7 @@ public sealed class PackedSceneIni(string path)
         foreach (SectionData section in iniData.Sections)
         {
             Dictionary<string, object> nodeData = new();
+            nodeData["name"] = section.SectionName;  // Use section name as node name
             foreach (KeyData keyData in section.Keys)
             {
                 string key = keyData.KeyName;

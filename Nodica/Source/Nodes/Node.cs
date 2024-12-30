@@ -362,6 +362,8 @@ public class Node
             }
         }
 
+        App.Instance.RootNode.PrintChildren();
+
         throw new InvalidOperationException($"Child node with name '{name}' not found.");
     }
 

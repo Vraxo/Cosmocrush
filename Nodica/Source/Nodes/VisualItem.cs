@@ -95,16 +95,24 @@ public abstract class VisualItem : Node
 
     protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
     {
-        float top = theme.BorderLengthUp;
+        // Border lengths for each side
+        float top = theme.BorderLengthTop;
         float right = theme.BorderLengthRight;
-        float bottom = theme.BorderLengthDown;
+        float bottom = theme.BorderLengthBottom;
         float left = theme.BorderLengthLeft;
 
-        Vector2 outerRectanglePosition = new(position.X - left, position.Y - top + 10);
-        Vector2 outerRectangleSize = new(size.X + left + right, size.Y + top + bottom - 10);
+        // Adjust the positions for borders to avoid visual artifacts.
+        Vector2 outerRectanglePosition = position;
+        Vector2 outerRectangleSize = size;
 
+        // Check if we need to adjust the borders
         if (top > 0 || right > 0 || bottom > 0 || left > 0)
         {
+            // We adjust the border size for the outer rectangle
+            outerRectanglePosition = new(position.X - left, position.Y - top);
+            outerRectangleSize = new(size.X + left + right, size.Y + top + bottom);
+
+            // Draw the border (only where needed)
             DrawRectangleRounded(
                 outerRectanglePosition,
                 outerRectangleSize,
@@ -113,6 +121,7 @@ public abstract class VisualItem : Node
                 theme.BorderColor);
         }
 
+        // Draw the inner rectangle (the actual filled area of the progress bar)
         DrawRectangleRounded(
             position,
             size,
@@ -120,6 +129,35 @@ public abstract class VisualItem : Node
             (int)size.Y,
             theme.FillColor);
     }
+
+
+    //protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
+    //{
+    //    float top = theme.BorderLengthUp;
+    //    float right = theme.BorderLengthRight;
+    //    float bottom = theme.BorderLengthDown;
+    //    float left = theme.BorderLengthLeft;
+    //
+    //    Vector2 outerRectanglePosition = new(position.X - left, position.Y - top + 10);
+    //    Vector2 outerRectangleSize = new(size.X + left + right, size.Y + top + bottom - 10);
+    //
+    //    if (top > 0 || right > 0 || bottom > 0 || left > 0)
+    //    {
+    //        DrawRectangleRounded(
+    //            outerRectanglePosition,
+    //            outerRectangleSize,
+    //            theme.Roundness,
+    //            (int)size.Y,
+    //            theme.BorderColor);
+    //    }
+    //
+    //    DrawRectangleRounded(
+    //        position,
+    //        size,
+    //        theme.Roundness,
+    //        (int)size.Y,
+    //        theme.FillColor);
+    //}
 
     //protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
     //{

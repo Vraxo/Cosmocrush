@@ -62,6 +62,8 @@ public class Label : Node2D
         }
     }
 
+    // Main
+
     public Label()
     {
         OriginPreset = OriginPreset.CenterLeft;
@@ -102,7 +104,7 @@ public class Label : Node2D
     {
         DrawText(
             displayedText,
-            GlobalPosition - Offset - new Vector2(0, Theme.FontSize / 2),
+            GlobalPosition - Origin - new Vector2(0, Theme.FontSize / 2),
             Theme.Font,
             Theme.FontSize,
             Theme.FontSpacing,

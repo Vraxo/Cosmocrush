@@ -229,7 +229,7 @@ public class Button : Control
     {
         DrawRectangleThemed(
             GlobalPosition - Origin,
-            Size,
+            FinalSize,
             Themes.Current);
     }
 
@@ -275,13 +275,13 @@ public class Button : Control
 
         float x = TextAlignment.Horizontal switch
         {
-            HorizontalAlignment.Center => Size.X / 2,
-            HorizontalAlignment.Right => Size.X - textSize.X / 2
+            HorizontalAlignment.Center => FinalSize.X / 2,
+            HorizontalAlignment.Right => FinalSize.X - textSize.X / 2
         };
 
         float y = TextAlignment.Vertical switch
         {
-            VerticalAlignment.Center => Size.Y / 2
+            VerticalAlignment.Center => FinalSize.Y / 2
         };
 
         Vector2 origin = new(x, y);

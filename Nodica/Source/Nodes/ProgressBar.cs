@@ -2,8 +2,8 @@
 
 public class ProgressBar : Node2D
 {
-    public BoxTheme BackgroundTheme = new();
-    public BoxTheme ProgressTheme = new();
+    public BoxTheme BackgroundTheme { get; set; } = new();
+    public BoxTheme ProgressTheme { get; set; } = new();
 
     private float _percentage = 0;
     public float Percentage
