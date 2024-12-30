@@ -61,23 +61,11 @@ public class Button : Control
         }
     }
 
-    private string _themeFile = "";
-    public string ThemeFile3
+    public string ThemeFile
     {
-        get => _themeFile;
-
         set
         {
-            _themeFile = value;
             Themes = PropertyLoader.Load<ButtonThemePack>(value);
-        }
-    }
-
-    public ButtonThemePack ThemeFile
-    {
-        set
-        {
-            Themes = value;
         }
     }
 

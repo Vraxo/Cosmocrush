@@ -1,4 +1,4 @@
-﻿namespace Nodica;
+﻿using Nodica;
 
 public class Label : Node2D
 {
@@ -18,7 +18,6 @@ public class Label : Node2D
     public int VisibleCharacters
     {
         get => _visibleCharacters;
-
         set
         {
             if (value == _visibleCharacters)
@@ -35,7 +34,6 @@ public class Label : Node2D
     public float VisibleRatio
     {
         get => _visibleRatio;
-
         set
         {
             if (value == _visibleRatio)
@@ -54,7 +52,6 @@ public class Label : Node2D
     public string Text
     {
         get => _text;
-
         set
         {
             _text = value;
@@ -82,6 +79,8 @@ public class Label : Node2D
     {
         DrawShadow();
         DrawDisplayedText();
+
+        Raylib_cs.Raylib.DrawPixelV(GlobalPosition, Color.Red);
     }
 
     private void DrawShadow()
@@ -115,8 +114,8 @@ public class Label : Node2D
 
     private void ClipDisplayedText()
     {
-        string textToConsider = VisibleCharacters == -1 ? 
-                                _text : 
+        string textToConsider = VisibleCharacters == -1 ?
+                                _text :
                                 _text[..Math.Min(VisibleCharacters, _text.Length)];
 
         if (!Clip)
@@ -193,6 +192,46 @@ public class Label : Node2D
         else
         {
             VisibleRatio = 1.0f; // Show all characters by default
+        }
+    }
+
+    // Calculate the size based on the text
+    public new Vector2 Size
+    {
+        get
+        {
+            // Measure the text size based on the font and font size
+            var textSize = Raylib_cs.Raylib.MeasureTextEx(Theme.Font, displayedText, Theme.FontSize, Theme.FontSpacing);
+            return new Vector2(textSize.X, textSize.Y);
+        }
+    }
+
+    // Calculate the origin based on the text dimensions
+    public new Vector2 Origin
+    {
+        get
+        {
+            // Measure the text size to calculate the alignment
+            var textSize = Raylib_cs.Raylib.MeasureTextEx(Theme.Font, displayedText, Theme.FontSize, Theme.FontSpacing);
+
+            float x = Alignment.Horizontal switch
+            {
+                HorizontalAlignment.Center => textSize.X / 2,
+                HorizontalAlignment.Left => 0,
+                HorizontalAlignment.Right => textSize.X,
+                _ => 0
+            };
+
+            float y = Alignment.Vertical switch
+            {
+                VerticalAlignment.Top => 0,
+                VerticalAlignment.Center => textSize.Y / 2,
+                VerticalAlignment.Bottom => textSize.Y,
+                _ => 0
+            };
+
+            Vector2 alignmentOffset = new(x, y);
+            return alignmentOffset + Offset;
         }
     }
 }
