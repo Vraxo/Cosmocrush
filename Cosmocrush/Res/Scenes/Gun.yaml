@@ -1,7 +1,0 @@
-﻿name: Gun
-type: Gun
-parent: null
-children:
-  - name: RayCast
-    type: RayCast
-    parent: Gun

@@ -61,16 +61,16 @@
     <None Update="Res\Fonts\RaceSport.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Gun.yaml">
+    <None Update="Res\Scenes\Gun.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\HealthBar.yaml">
+    <None Update="Res\Scenes\HealthBar.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Scenes\Menu\Test.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Menu\Menu.yaml">
+    <None Update="Res\Scenes\Menu\Menu.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Scenes\Menu\MenuParticle.ini">
@@ -79,10 +79,10 @@
     <None Update="Res\Scenes\Menu\Menu.scene">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Enemy.yaml">
+    <None Update="Res\Scenes\Enemy.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Rock.yaml">
+    <None Update="Res\Scenes\Rock.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Shaders\old_tv_shader.fs">
@@ -106,10 +106,10 @@
     <None Update="Res\Sprites\Player.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\MainScene.yaml">
+    <None Update="Res\Scenes\MainScene.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Player.yaml">
+    <None Update="Res\Scenes\Player.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Sprites\Rock.png">
