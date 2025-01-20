@@ -1,0 +1,16 @@
+name: Player
+type: Player
+parent: null
+Position: (500,500)
+Size: (32,96)
+children:
+  - name: Sprite
+    type: Sprite
+    parent: Player
+    Texture: Res/Sprites/Astronaut.png
+    Scale: (0.1,0.1)
+    InheritScale: false
+  - name: coolest_gun_ever
+    type: Gun
+    parent: Player
+    path: Res/Scenes/Gun.yaml

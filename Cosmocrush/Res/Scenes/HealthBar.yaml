@@ -1,0 +1,8 @@
+name: HealthBar
+type: HealthBar
+parent: null
+ProgressTheme/Roundness: 0
+ProgressTheme/FillColor: (34,139,34,255)
+ProgressTheme/BorderColor: (0,128,0,255)
+BackgroundTheme/FillColor: (50,50,50,255)
+BackgroundTheme/BorderColor: (0,100,0,255)

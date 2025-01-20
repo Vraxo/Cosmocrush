@@ -1,0 +1,68 @@
+﻿name: Root
+type: MainScene
+parent: null
+children:
+  - name: CombatThemePlayer
+    type: CombatThemePlayer
+    parent: Root
+
+  - name: Background
+    type: ColorRectangle
+    parent: Root
+    Color: 160,96,0,255
+    Size: 2000,2000
+
+  - name: NavReg
+    type: NavigationRegion
+    parent: Root
+
+  - name: Rock
+    type: NavigationObstacle
+    parent: Root
+    path: Res/Scenes/Rock.yaml
+    Position: 600,300
+
+  - name: UpperWall
+    type: NavigationObstacle
+    parent: Root
+    path: Res/Scenes/Rock.yaml
+    Position: 640,0
+    Scale: 10,0.1
+
+  - name: LeftWall
+    type: NavigationObstacle
+    parent: Root
+    path: Res/Scenes/Rock.yaml
+    Position: 0,0
+    Scale: 0.1,0.5
+
+  - name: Player
+    type: Player
+    parent: Root
+    path: Res/Scenes/Player.yaml
+    children:
+      - name: Gun
+        type: Gun
+        parent: Player
+        InheritScale: false
+        Scale: 0.05,0.05
+        Texture: Res/Sprites/Gun.png
+        FlipH: true
+        children:
+          - name: RayCast
+            type: RayCast
+            parent: Gun
+            Length: 5000
+            IgnoreFirst: true
+
+  - name: Enemy1
+    type: Enemy
+    parent: Root
+    path: Res/Scenes/Enemy.yaml
+    Position: 100,150
+
+  - name: HealthBar
+    type: HealthBar
+    parent: Root
+    path: Res/Scenes/HealthBar.yaml
+    # Position is commented out
