@@ -1,5 +1,8 @@
 ﻿using IniParser;
 using IniParser.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Cherris;
 
@@ -14,7 +17,7 @@ public sealed class PackedSceneIni(string path)
         IniData iniData = iniParser.ReadFile(path);
         List<Dictionary<string, object>> nodeDataList = ParseIniData(iniData);
         List<Node> createdNodes = ParseNodeList(nodeDataList);
-        Node? rootNode = createdNodes.FirstOrDefault(); // Assume the first node is the root
+        Node? rootNode = createdNodes.FirstOrDefault();
 
         return (T)rootNode!;
     }
@@ -25,12 +28,10 @@ public sealed class PackedSceneIni(string path)
         foreach (SectionData section in iniData.Sections)
         {
             Dictionary<string, object> nodeData = new();
-            nodeData["name"] = section.SectionName;  // Use section name as node name
+            nodeData["name"] = section.SectionName;
             foreach (KeyData keyData in section.Keys)
             {
-                string key = keyData.KeyName;
-                string value = keyData.Value;
-                nodeData[key] = value;
+                nodeData[keyData.KeyName] = keyData.Value;
             }
             nodes.Add(nodeData);
         }
@@ -41,7 +42,7 @@ public sealed class PackedSceneIni(string path)
     {
         List<Node> createdNodes = new();
 
-        // First pass: Create all nodes and populate namedNodes
+        // First pass: Create nodes
         foreach (var element in nodes)
         {
             string type = (string)element["type"];
@@ -50,9 +51,10 @@ public sealed class PackedSceneIni(string path)
             Type nodeType = PackedSceneUtils.ResolveType(type);
             Node node = (Node)Activator.CreateInstance(nodeType)!;
 
+            // Modified line: Added Trim('"') for path values
             if (element.TryGetValue("path", out object? value))
             {
-                string scenePath = (string)value;
+                string scenePath = ((string)value).Trim('"'); // <- THE CHANGED LINE
                 PackedSceneIni nestedScene = new(scenePath);
                 var nestedRootNode = nestedScene.Instantiate<Node>();
                 node = nestedRootNode;
@@ -63,7 +65,7 @@ public sealed class PackedSceneIni(string path)
             createdNodes.Add(node);
         }
 
-        // Second pass: Establish parent-child relationships
+        // Second pass: Parent-child relationships
         foreach (var element in nodes)
         {
             string name = (string)element["name"];
@@ -71,7 +73,7 @@ public sealed class PackedSceneIni(string path)
 
             if (parentName != null && namedNodes.TryGetValue(parentName, out Node? parent))
             {
-                namedNodes[name].Parent = parent; // Assuming your Node class has a Parent property
+                namedNodes[name].Parent = parent;
                 parent.AddChild(namedNodes[name], name);
             }
         }
