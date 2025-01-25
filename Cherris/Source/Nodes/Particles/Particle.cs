@@ -1,36 +1,40 @@
 ﻿namespace Cherris;
 
-public class Particle : ColorRectangle
+public partial class ParticleGenerator
 {
-    public float Speed { get; set; } = 100;
-    public float Lifetime { get; set; } = 10;
-    public float Acceleration { get; set; } = 0; // Optional acceleration
-
-    public override void Ready()
+    private class Particle : ColorRectangle
     {
-        base.Ready();
+        public float Speed { get; set; } = 100;
+        public float Lifetime { get; set; } = 10;
+        public float Acceleration { get; set; } = 0; // Optional acceleration
 
-        AddChild(new Timer(), "DestructionTimer");
-        GetNode<Timer>("DestructionTimer").TimedOut += OnDestructionTimerTimedOut;
-        GetNode<Timer>("DestructionTimer").WaitTime = Lifetime;
-    }
+        public override void Ready()
+        {
+            base.Ready();
 
-    private void OnDestructionTimerTimedOut(Timer sender)
-    {
-        Destroy();
-    }
+            AddChild(new Timer(), "DestructionTimer");
+            GetNode<Timer>("DestructionTimer").TimedOut += OnDestructionTimerTimedOut;
+            GetNode<Timer>("DestructionTimer").WaitTime = Lifetime;
+        }
 
-    public override void Update()
-    {
-        base.Update();
+        private void OnDestructionTimerTimedOut(Timer sender)
+        {
+            GetParent<ParticleGenerator>().Remove(this);
+            Destroy();
+        }
 
-        // Update speed with acceleration
-        Speed += Acceleration * TimeManager.Delta;
+        public override void Update()
+        {
+            base.Update();
 
-        // Update position
-        float x = Position.X + Speed * TimeManager.Delta;
-        float y = Position.Y;
+            // Update speed with acceleration
+            Speed += Acceleration * TimeManager.Delta;
 
-        Position = new(x, y);
+            // Update position
+            float x = Position.X + Speed * TimeManager.Delta;
+            float y = Position.Y;
+
+            Position = new(x, y);
+        }
     }
 }

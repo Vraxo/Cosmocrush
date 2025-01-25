@@ -73,9 +73,6 @@
     <None Update="Res\Scenes\Menu\Menu.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Menu\MenuParticle.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Res\Scenes\Menu\Menu.scene">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
