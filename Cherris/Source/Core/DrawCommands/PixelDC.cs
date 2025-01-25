@@ -2,7 +2,7 @@
 
 namespace Cherris.DrawCommands;
 
-public class Pixel : DrawCommand
+public class PixelDC : DrawCommand
 {
     public Vector2 Position { get; set; } = Vector2.Zero;
     public Color Color { get; set; } = Color.White;

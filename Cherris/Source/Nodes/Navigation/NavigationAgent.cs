@@ -110,6 +110,7 @@ public class NavigationAgent : Node2D
 
             DrawLine(start,
                 end,
+                1,
                 Color);
         }
     }
@@ -125,7 +126,7 @@ public class NavigationAgent : Node2D
         }.Where(n => n.X >= 0 && n.Y >= 0).ToList();
     }
 
-    private Vector2 GetLowestFScoreNode(List<Vector2> openList, Dictionary<Vector2, float> fScore)
+    private static Vector2 GetLowestFScoreNode(List<Vector2> openList, Dictionary<Vector2, float> fScore)
     {
         return openList.OrderBy(v => fScore.ContainsKey(v) ? fScore[v] : float.MaxValue).First();
     }

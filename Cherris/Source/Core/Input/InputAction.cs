@@ -1,13 +1,9 @@
-﻿using Cherris.Backends;
-
-namespace Cherris;
+﻿namespace Cherris;
 
 public sealed class InputAction
 {
     public string? Type { get; set; }
     public string? KeyOrButton { get; set; }
-
-    private static Backend Backend => App.Instance.Backend;
 
     public bool IsPressed()
     {
@@ -15,14 +11,14 @@ public sealed class InputAction
         {
             if (Enum.TryParse(KeyOrButton, true, out KeyCode key))
             {
-                return Backend.Input.IsKeyPressed(key);
+                return Input.IsKeyPressed(key);
             }
         }
         else if (Type == "MouseButton")
         {
             if (Enum.TryParse(KeyOrButton, true, out MouseButtonCode button))
             {
-                return Backend.Input.IsMouseButtonPressed(button);
+                return Input.IsMouseButtonPressed(button);
             }
         }
 
@@ -35,14 +31,14 @@ public sealed class InputAction
         {
             if (Enum.TryParse(KeyOrButton, true, out KeyCode key))
             {
-                return Backend.Input.IsKeyDown(key);
+                return Input.IsKeyDown(key);
             }
         }
         else if (Type == "MouseButton")
         {
             if (Enum.TryParse(KeyOrButton, true, out MouseButtonCode button))
             {
-                return Backend.Input.IsMouseButtonDown(button);
+                return Input.IsMouseButtonDown(button);
             }
         }
 

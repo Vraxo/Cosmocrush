@@ -5,9 +5,9 @@ public sealed class CollisionManager
     private static CollisionManager? _instance;
     public static CollisionManager Instance => _instance ??= new();
 
-    public List<Collider> Colliders = [];
-    public List<ColliderCircle> ColliderCircles = [];
-    public List<ColliderRectangle> ColliderRectangles = [];
+    public List<Collider> Colliders = new();
+    public List<ColliderCircle> ColliderCircles = new();
+    public List<ColliderRectangle> ColliderRectangles = new();
 
     private CollisionManager() { }
 
@@ -47,7 +47,10 @@ public sealed class CollisionManager
         {
             for (int j = i + 1; j < ColliderCircles.Count; j++)
             {
-                HandleCircleCollision(ColliderCircles[i], ColliderCircles[j]);
+                if (AreLayersMatching(ColliderCircles[i].CollisionLayers, ColliderCircles[j].CollisionLayers))
+                {
+                    HandleCircleCollision(ColliderCircles[i], ColliderCircles[j]);
+                }
             }
         }
     }
@@ -83,7 +86,10 @@ public sealed class CollisionManager
         {
             for (int j = i + 1; j < ColliderRectangles.Count; j++)
             {
-                HandleRectangleCollision(ColliderRectangles[i], ColliderRectangles[j]);
+                if (AreLayersMatching(ColliderRectangles[i].CollisionLayers, ColliderRectangles[j].CollisionLayers))
+                {
+                    HandleRectangleCollision(ColliderRectangles[i], ColliderRectangles[j]);
+                }
             }
         }
     }
@@ -170,5 +176,17 @@ public sealed class CollisionManager
             if (!colliderA.IsStatic) colliderA.Position += new Vector2(0, pushVectorY);
             if (!colliderB.IsStatic) colliderB.Position -= new Vector2(0, pushVectorY);
         }
+    }
+
+    private static bool AreLayersMatching(List<int> layersA, List<int> layersB)
+    {
+        foreach (var layerA in layersA)
+        {
+            if (layersB.Contains(layerA))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

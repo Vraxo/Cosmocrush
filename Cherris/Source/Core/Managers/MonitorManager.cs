@@ -2,7 +2,7 @@
 
 namespace Cherris;
 
-public static class Monitor
+public static class MonitorManager
 {
     public static Vector2 Size
     {

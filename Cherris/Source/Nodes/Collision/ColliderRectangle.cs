@@ -28,10 +28,11 @@ public class ColliderRectangle : Collider
     protected override void Draw()
     {
         base.Draw();
+
         DrawRectangleOutline(
             GlobalPosition - Origin,
-            Size * Scale,
-            Color.SkyBlue);
+            FinalSize,
+            Color);
     }
 
     private static bool RayIntersectsLine(Vector2 rayStart, Vector2 rayEnd, Vector2 lineStart, Vector2 lineEnd)

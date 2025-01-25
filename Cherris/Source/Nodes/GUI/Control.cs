@@ -6,10 +6,10 @@ public class Control : ClickableRectangle
 {
     public bool FocusOnClick { get; set; } = false;
     public bool ArrowNavigation { get; set; } = true;
-    public string? UpControlPath { get; set; }
-    public string? DownControlPath { get; set; }
-    public string? LeftControlPath { get; set; }
-    public string? RightControlPath { get; set; }
+    public string? FocusNeighborTop { get; set; }
+    public string? FocusNeighborBottom { get; set; }
+    public string? FocusNeighborLeft { get; set; }
+    public string? FocusNeighborRight { get; set; }
 
     public event EventHandler<bool>? FocusChanged;
     public event EventHandler? ClickedOutside;
@@ -46,32 +46,29 @@ public class Control : ClickableRectangle
 
     private void HandleArrowNavigation()
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.Up) && !string.IsNullOrEmpty(UpControlPath))
+        if (Raylib.IsKeyPressed(KeyboardKey.Up) && !string.IsNullOrEmpty(FocusNeighborTop))
         {
-            NavigateToControl(UpControlPath);
+            NavigateToControl(FocusNeighborTop);
         }
-        else if (Raylib.IsKeyPressed(KeyboardKey.Down) && !string.IsNullOrEmpty(DownControlPath))
+        else if (Raylib.IsKeyPressed(KeyboardKey.Down) && !string.IsNullOrEmpty(FocusNeighborBottom))
         {
-            NavigateToControl(DownControlPath);
+            NavigateToControl(FocusNeighborBottom);
         }
-        else if (Raylib.IsKeyPressed(KeyboardKey.Left) && !string.IsNullOrEmpty(LeftControlPath))
+        else if (Raylib.IsKeyPressed(KeyboardKey.Left) && !string.IsNullOrEmpty(FocusNeighborLeft))
         {
-            NavigateToControl(LeftControlPath);
+            NavigateToControl(FocusNeighborLeft);
         }
-        else if (Raylib.IsKeyPressed(KeyboardKey.Right) && !string.IsNullOrEmpty(RightControlPath))
+        else if (Raylib.IsKeyPressed(KeyboardKey.Right) && !string.IsNullOrEmpty(FocusNeighborRight))
         {
-            NavigateToControl(RightControlPath);
+            NavigateToControl(FocusNeighborRight);
         }
     }
 
     private void NavigateToControl(string controlPath)
     {
-        Control? targetControl = GetNode<Control>(controlPath);
-        if (targetControl != null)
-        {
-            Focused = false;
-            targetControl.Focused = true;
-        }
+        var targetControl = GetNode<Control>(controlPath);
+        Focused = false;
+        targetControl.Focused = true;
     }
 
     private void UpdateFocusOnMouseOut()

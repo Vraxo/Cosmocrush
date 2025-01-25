@@ -14,14 +14,18 @@ public class Player : ColliderRectangle
     {
         base.Ready();
         sprite = GetNode<Sprite>("Sprite");
+
+        //GetNode<ColliderRectangle>("ActualCollider").CollisionLayers = [10];
     }
 
     public override void Update()
     {
         base.Update();
-        sprite.FlipH = Input.MousePosition.X <= GlobalPosition.X;
-        Vector2 direction = Input.GetVector("MoveLeft", "MoveRight", "MoveUp", "MoveDown");
-        Position += direction * Time.Delta * speed;
+
+        LookAtMouse();
+        HandleMovement();
+
+        //GlobalPosition = GetNode<ColliderRectangle>("ActualCollider").GlobalPosition;
     }
 
     public void TakeDamage(int damage)
@@ -35,6 +39,17 @@ public class Player : ColliderRectangle
         }
     }
 
+    private void LookAtMouse()
+    {
+        sprite.FlipH = Input.WorldMousePosition.X <= GlobalPosition.X;
+    }
+
+    private void HandleMovement()
+    {
+        Vector2 direction = Input.GetVector("MoveLeft", "MoveRight", "MoveUp", "MoveDown");
+        Position += direction * TimeManager.Delta * speed;
+    }
+
     private void PlayDamageSound()
     {
         AudioPlayer audioPlayer = new()
@@ -43,13 +58,8 @@ public class Player : ColliderRectangle
         };
 
         AddChild(audioPlayer);
-        audioPlayer.Finished += OnAudioPlayerFinished;
+        audioPlayer.Finished += (audioPlayer) => audioPlayer.Destroy();
         audioPlayer.Play();
-    }
-
-    private void OnAudioPlayerFinished(AudioPlayer sender)
-    {
-        sender.Destroy();
     }
 
     private void Die()

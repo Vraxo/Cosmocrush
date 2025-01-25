@@ -1,6 +1,8 @@
-﻿namespace Cherris.DrawCommands;
+﻿using Raylib_cs;
 
-public class Circle : DrawCommand
+namespace Cherris.DrawCommands;
+
+public class CircleDC : DrawCommand
 {
     public Vector2 Position { get; set; } = Vector2.Zero;
     public float Radius { get; set; } = 0f;
@@ -8,6 +10,9 @@ public class Circle : DrawCommand
 
     public override void Draw()
     {
-        App.Instance.Backend.Drawing.DrawCircle(Position, Radius, Color);
+        Raylib.DrawCircleV(
+            Position,
+            Radius,
+            Color);
     }
 }

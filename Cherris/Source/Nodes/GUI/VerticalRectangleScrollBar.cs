@@ -50,7 +50,7 @@
 //
 //    private void DrawRectangle()
 //    {
-//        BasicRectangle rectangle = new()
+//        RectangleDC rectangle = new()
 //        {
 //            position = GlobalPosition - Offset,
 //            Dimensions = Dimensions

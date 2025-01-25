@@ -10,6 +10,7 @@ public class HealthBar : ProgressBar
     {
         base.Ready();
 
+        InheritPosition = false;
         ProgressTheme.FillColor = Color.Green;
         player = GetNode<Player>("/root/Player");
     }
@@ -18,7 +19,21 @@ public class HealthBar : ProgressBar
     {
         base.Update();
 
+        UpdatePosition();
+        UpdatePercentage();
+    }
+
+    private void UpdatePercentage()
+    {
         Percentage = ((float)player.Health / 100);
-        Position = new(Size.X / 1.5f, WindowManager.Size.Y - Size.Y * 4);
+    }
+
+    private void UpdatePosition()
+    {
+        float x = Size.X / 1.5f;
+        float y = WindowManager.Size.Y - Size.Y * 4;
+
+        GlobalPosition = new(x, y);
+        //GlobalPosition = Raylib_cs.Raylib.GetScreenToWorld2D(GlobalPosition, RenderManager.Instance.Camera);
     }
 }

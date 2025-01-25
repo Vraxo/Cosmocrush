@@ -51,7 +51,7 @@ public class RayCast : Node2D
         base.Draw();
 
         Vector2 rayEnd = GlobalPosition + TargetPosition;
-        //DrawLine(GlobalPosition, rayEnd, Color.Red);
+        DrawLine(GlobalPosition, rayEnd, 5, Color.Red);
     }
 
     private void PerformRaycast()

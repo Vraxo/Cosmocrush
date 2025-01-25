@@ -97,7 +97,7 @@ public partial class BaseSlider
 
         private void DrawInside()
         {
-            //BasicRectangle rectangle = new()
+            //RectangleDC rectangle = new()
             //{
             //    Position = GlobalPosition - Offset,
             //    Dimensions = Dimensions
@@ -119,7 +119,7 @@ public partial class BaseSlider
             //
             //Vector2 position = GlobalPosition - Offset;
             //
-            //BasicRectangle rectangle = new()
+            //RectangleDC rectangle = new()
             //{
             //    Position = position,
             //    Dimensions = Dimensions
@@ -127,7 +127,7 @@ public partial class BaseSlider
             //
             //for (int i = 0; i <= Themes.Current.BorderLength; i++)
             //{
-            //    BasicRectangle outlineRectangle = new()
+            //    RectangleDC outlineRectangle = new()
             //    {
             //        Position = rectangle.Position - new Vector2(i, i),
             //        Dimensions = new(rectangle.Dimensions.X + i + 1, rectangle.Dimensions.Y + i + 1)
@@ -159,7 +159,7 @@ public partial class BaseSlider
         //
         //private void DrawShapeInside(Vector2 position)
         //{
-        //    BasicRectangle rectangle = new()
+        //    RectangleDC rectangle = new()
         //    {
         //        position = position - Offset,
         //        Dimensions = Dimensions
@@ -181,7 +181,7 @@ public partial class BaseSlider
         //
         //    for (int i = 0; i <= BackgroundTheme.Current.BorderLength; i++)
         //    {
-        //        BasicRectangle rectangle = new()
+        //        RectangleDC rectangle = new()
         //        {
         //            position = position - Offset - new Vector2(i, i),
         //            Dimensions = new(Dimensions.X + i + 1, Dimensions.Y + i + 1)

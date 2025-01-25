@@ -103,6 +103,13 @@ public class Node
         {
             Children[i].Process();
         }
+
+        ProcessEnd();
+    }
+
+    public virtual void ProcessEnd()
+    {
+
     }
 
     /// <summary>Prints the node and all its children in a tree structure.</summary>
@@ -125,7 +132,7 @@ public class Node
 
     //public void PrintChildren()
     //{
-    //    Console.OutputEncoding = System.Text.Encoding.UTF8;
+    //    Console.OutputEncoding = System.TextDC.Encoding.UTF8;
     //
     //    Tree root = new($"🍎[green]{Name}[/]");
     //    AddChildrenToTree(this, root);
@@ -204,6 +211,7 @@ public class Node
     /// <typeparam name="T">The expected type of the node to be returned.</typeparam>
     /// <param name="path">
     /// The path to the target node, which can be either absolute (starting with "/root") or relative.
+    /// Supports ".." for traversing back one level.
     /// </param>
     public T GetNode<T>(string path) where T : Node
     {
@@ -229,7 +237,15 @@ public class Node
                 string[] nodeNames = path.Split('/');
                 foreach (var name in nodeNames)
                 {
-                    currentNode = currentNode!.GetChild(name);
+                    if (name == "..")
+                    {
+                        // Traverse back to parent
+                        currentNode = currentNode?.Parent;
+                    }
+                    else
+                    {
+                        currentNode = currentNode?.GetChild(name);
+                    }
 
                     if (currentNode == null)
                     {
@@ -244,12 +260,16 @@ public class Node
             string[] nodeNames = path.Split('/');
             foreach (var name in nodeNames)
             {
-                if (name == "")
+                if (name == "..")
                 {
-                    return currentNode as T ?? throw new InvalidOperationException("Current node is not of the expected type.");
+                    // Traverse back to parent
+                    currentNode = currentNode?.Parent;
+                }
+                else if (name != "")
+                {
+                    currentNode = currentNode?.GetChild(name);
                 }
 
-                currentNode = currentNode.GetChild(name);
                 if (currentNode == null)
                 {
                     throw new InvalidOperationException($"Node '{name}' not found in the scene tree.");
@@ -263,10 +283,12 @@ public class Node
     /// <summary>
     /// Retrieves a node of type <typeparamref name="T"/> from the scene tree based on a specified path.
     /// Returns null if the node is not found.
+    /// Supports ".." for traversing back one level.
     /// </summary>
     /// <typeparam name="T">The expected type of the node to be returned.</typeparam>
     /// <param name="path">
     /// The path to the target node, which can be either absolute (starting with "/root") or relative.
+    /// Supports ".." for traversing back one level.
     /// </param>
     public T? GetNodeOrNull<T>(string path) where T : Node
     {
@@ -275,7 +297,7 @@ public class Node
             return null;
         }
 
-        Node currentNode;
+        Node? currentNode;
 
         if (path.StartsWith("/root"))
         {
@@ -292,7 +314,15 @@ public class Node
                 string[] nodeNames = path.Split('/');
                 foreach (var name in nodeNames)
                 {
-                    currentNode = currentNode.GetChild(name);
+                    if (name == "..")
+                    {
+                        // Traverse back to parent
+                        currentNode = currentNode?.Parent;
+                    }
+                    else
+                    {
+                        currentNode = currentNode?.GetChild(name);
+                    }
 
                     if (currentNode == null)
                     {
@@ -307,12 +337,16 @@ public class Node
             string[] nodeNames = path.Split('/');
             foreach (var name in nodeNames)
             {
-                if (name == "")
+                if (name == "..")
                 {
-                    return currentNode as T;
+                    // Traverse back to parent
+                    currentNode = currentNode?.Parent;
+                }
+                else if (name != "")
+                {
+                    currentNode = currentNode?.GetChild(name);
                 }
 
-                currentNode = currentNode.GetChild(name);
                 if (currentNode == null)
                 {
                     return null;

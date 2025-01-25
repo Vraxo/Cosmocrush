@@ -42,7 +42,7 @@ public partial class LineEdit : Button
         //    get => _x;
         //    set
         //    {
-        //        _x = Math.Clamp(value, 0, Math.Min(parent.Text.Length, parent.GetDisplayableCharactersCount()));
+        //        _x = Math.Clamp(value, 0, Math.Min(parent.TextDC.Length, parent.GetDisplayableCharactersCount()));
         //        alpha = maxAlpha;
         //    }
         //}

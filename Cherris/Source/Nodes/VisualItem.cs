@@ -47,7 +47,7 @@ public abstract class VisualItem : Node
 
     protected void DrawCircle(Vector2 position, float radius, Color color)
     {
-        Circle circle = new()
+        CircleDC circle = new()
         {
             Position = position,
             Radius = radius,
@@ -60,7 +60,7 @@ public abstract class VisualItem : Node
 
     protected void DrawCircleOutline(Vector2 position, float radius, Color color)
     {
-        Circle circleOutline = new()
+        CircleDC circleOutline = new()
         {
             Position = position,
             Radius = radius,
@@ -75,7 +75,7 @@ public abstract class VisualItem : Node
 
     protected void DrawPixel(Vector2 position, Color color)
     {
-        Pixel pixel = new()
+        PixelDC pixel = new()
         {
             Position = position,
             Color = color,
@@ -89,7 +89,7 @@ public abstract class VisualItem : Node
 
     protected void DrawRectangle(Vector2 position, Vector2 size, Color color)
     {
-        DrawCommands.BasicRectangle rectangle = new()
+        RectangleDC rectangle = new()
         {
             Position = position,
             Size = size,
@@ -102,7 +102,7 @@ public abstract class VisualItem : Node
 
     protected void DrawRectangleOutline(Vector2 position, Vector2 size, Color color)
     {
-        RectangleOutline rectangleOutline = new()
+        RectangleOutlineDC rectangleOutline = new()
         {
             Position = position,
             Size = size,
@@ -115,7 +115,7 @@ public abstract class VisualItem : Node
 
     protected void DrawRectangleRounded(Vector2 position, Vector2 size, float roundness, int segments, Color color)
     {
-        RectangleRounded roundedRectangle = new()
+        RectangleRoundedDC roundedRectangle = new()
         {
             Position = position,
             Size = size,
@@ -168,7 +168,7 @@ public abstract class VisualItem : Node
 
     protected void DrawRectangleOutlineRounded(Vector2 position, Vector2 size, float roundness, int segments, float thickness, Color color)
     {
-        RectangleOutlineRounded roundedRectangle = new()
+        RectangleOutlineRoundedDC roundedRectangle = new()
         {
             Position = position,
             Size = size,
@@ -281,7 +281,7 @@ public abstract class VisualItem : Node
 
     protected void DrawTexture(Texture texture, Vector2 position, float rotation, Vector2 scale, Color tint)
     {
-        DrawCommands.BasicTexture textureDrawCommand = new()
+        TextureDC textureDrawCommand = new()
         {
             Texture = texture,
             Position = position,
@@ -296,7 +296,7 @@ public abstract class VisualItem : Node
 
     protected void DrawTextureScaled(Texture texture, Vector2 position, Vector2 origin, float rotation, Vector2 scale, bool flipH = false, bool flipV = false)
     {
-        TextureScaled textureDrawCommand = new()
+        TextureScaledDC textureDrawCommand = new()
         {
             Texture = texture,
             Position = position,
@@ -313,7 +313,7 @@ public abstract class VisualItem : Node
 
     protected void DrawTexturedRectangle(Texture texture, Rectangle source, Rectangle target, Vector2 origin, float rotation)
     {
-        TexturedRectangle texturedRectangle = new()
+        TexturedRectangleDC texturedRectangle = new()
         {
             Texture = texture,
             Source = source,
@@ -327,11 +327,11 @@ public abstract class VisualItem : Node
 
     // Text
 
-    protected void DrawText(string content, Vector2 position, Font font, float fontSize, float spacing, Color color)
+    protected void DrawText(string text, Vector2 position, Font font, float fontSize, float spacing, Color color)
     {
-        Text text = new()
+        TextDC textDC = new()
         {
-            Content = content,
+            Text = text,
             Position = position,
             Font = font,
             FontSize = fontSize,
@@ -340,22 +340,41 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(text);
+        RenderManager.Instance.Submit(textDC);
+    }
+
+    protected void DrawTextOutlined(string text, Vector2 position, Font font, float fontSize, float spacing, Color color, float outlineThickness, Color outlineColor)
+    {
+        TextDC textDC = new()
+        {
+            Text = text,
+            Position = position,
+            Font = font,
+            FontSize = fontSize,
+            Spacing = spacing,
+            Color = color,
+            OutlineThickness = outlineThickness,
+            OutlineColor = outlineColor,
+            Layer = Layer
+        };
+
+        RenderManager.Instance.Submit(textDC);
     }
 
     // Line
 
-    protected void DrawLine(Vector2 start, Vector2 end, Color color)
+    protected void DrawLine(Vector2 start, Vector2 end, float thickness, Color color)
     {
-        Line line = new()
+        LineDC lineDC = new()
         {
             Start = start,
             End = end,
             Color = color,
+            Thickness = thickness,
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(line);
+        RenderManager.Instance.Submit(lineDC);
     }
 
 
@@ -363,12 +382,12 @@ public abstract class VisualItem : Node
     {
         for (float x = 0; x < size.X; x += cellSize)
         {
-            DrawLine(new(x, 0), new(x, size.Y), color);
+            DrawLine(new(x, 0), new(x, size.Y), 1, color);
         }
 
         for (float y = 0; y < size.Y; y += cellSize)
         {
-            DrawLine(new(0, y), new(size.X, y), color);
+            DrawLine(new(0, y), new(size.X, y), 1, color);
         }
     }
 }

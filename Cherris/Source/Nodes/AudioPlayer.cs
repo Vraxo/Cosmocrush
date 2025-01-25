@@ -1,4 +1,6 @@
-﻿namespace Cherris;
+﻿using Raylib_cs;
+
+namespace Cherris;
 
 public class AudioPlayer : Node
 {
@@ -16,12 +18,10 @@ public class AudioPlayer : Node
         }
     }
 
-    private static Backends.Backend Backend => App.Instance.Backend;
-
     public bool AutoPlay { get; set; } = false;
     public bool Loop { get; set; } = false;
     public bool Playing = false;
-    public float TimePlayed => Backend.Audio.GetAudioTimePlayed(Audio!);
+    public float TimePlayed => Audio is not null ? Raylib.GetMusicTimePlayed(Audio!) : 0;
 
     private float _volume = 1;
     public float Volume
@@ -37,7 +37,7 @@ public class AudioPlayer : Node
                 return;
             }
 
-            Backend.Audio.SetAudioVolume(Audio, _volume);
+            Raylib.SetMusicVolume(Audio, _volume);
         }
     }
 
@@ -55,7 +55,7 @@ public class AudioPlayer : Node
                 return;
             }
 
-            Backend.Audio.SetAudioPitch(Audio, _pitch);
+            Raylib.SetMusicPitch(Audio, _pitch);
         }
     }
 
@@ -72,7 +72,7 @@ public class AudioPlayer : Node
             }
 
             _pan = value;
-            Backend.Audio.SetAudioPan(Audio, _pan);
+            Raylib.SetMusicPan(Audio, _pan);
         }
     }
 
@@ -101,7 +101,7 @@ public class AudioPlayer : Node
             return;
         }
 
-        Backend.Audio.UpdateAudio(Audio);
+        Raylib.UpdateMusicStream(Audio);
 
         if (TimePlayed >= Audio.Length - 0.1 && Playing)
         {
@@ -134,8 +134,8 @@ public class AudioPlayer : Node
         }
         else
         {
-            Backend.Audio.SeekAudio(Audio, timestamp);
-            Backend.Audio.PlayAudio(Audio);
+            Raylib.SeekMusicStream(Audio, timestamp);
+            Raylib.PlayMusicStream(Audio);
         }
     }
 
@@ -146,7 +146,7 @@ public class AudioPlayer : Node
             return;
         }
 
-        Backend.Audio.ResumeAudio(Audio);
+        Raylib.ResumeMusicStream(Audio);
         Resumed?.Invoke(this);
     }
 
@@ -157,7 +157,7 @@ public class AudioPlayer : Node
             return;
         }
 
-        Backend.Audio.PauseAudio(Audio);
+        Raylib.PauseMusicStream(Audio);
         Paused?.Invoke(this);
     }
 
@@ -170,7 +170,7 @@ public class AudioPlayer : Node
 
         Playing = false;
 
-        Backend.Audio.StopAudio(Audio);
+        Raylib.StopMusicStream(Audio);
         Finished?.Invoke(this);
     }
 
@@ -183,6 +183,6 @@ public class AudioPlayer : Node
 
         timestamp = Math.Clamp(timestamp, 0.1f, Audio.Length);
 
-        Backend.Audio.SeekAudio(Audio, timestamp);
+        Raylib.SeekMusicStream(Audio, timestamp);
     }
 }

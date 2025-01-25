@@ -13,7 +13,7 @@ public enum MouseCursorCode
     Arrow = 1,
 
     /// <summary>
-    /// Text writing cursor shape
+    /// TextDC writing cursor shape
     /// </summary>
     IBeam = 2,
 

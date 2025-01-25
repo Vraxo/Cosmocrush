@@ -249,17 +249,17 @@ public class Button : Control
             Themes.Current.FontColor);
     }
 
-    // Text
+    // TextDC
 
     //private Vector2 GetTextPosition()
     //{
     //    Vector2 textSize = Raylib_cs.Raylib.MeasureTextEx(
     //        Themes.Current.Font,
-    //        Text,
+    //        TextDC,
     //        Themes.Current.FontSize,
     //        1);
     //
-    //    //Vector2 textSize = Themes.Current.Font.Dimensions * new Vector2(Text.Length, 1);
+    //    //Vector2 textSize = Themes.Current.Font.Dimensions * new Vector2(TextDC.Length, 1);
     //
     //    float x = TextAlignment.Horizontal switch
     //    {
@@ -324,7 +324,7 @@ public class Button : Control
 
         //int textWidth = (int)Raylib.MeasureTextEx(
         //    Themes.Current.Font,
-        //    Text,
+        //    TextDC,
         //    Themes.Current.FontSize,
         //    1).X;
 

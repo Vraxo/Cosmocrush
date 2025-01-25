@@ -1,5 +1,4 @@
 ﻿using Cherris;
-using Raylib_cs;
 
 public class Label : Node2D
 {
@@ -108,16 +107,18 @@ public class Label : Node2D
 
     private void DrawDisplayedText()
     {
-        DrawText(
+        DrawTextOutlined(
             displayedText,
             GlobalPosition - Origin - new Vector2(0, Theme.FontSize / 2),
             Theme.Font,
             Theme.FontSize,
             Theme.FontSpacing,
-            Theme.FontColor);
+            Theme.FontColor,
+            Theme.OutlineThickness,
+            Theme.OutlineColor);
     }
 
-    // Text modification
+    // TextDC modification
 
     private void ClipDisplayedText()
     {

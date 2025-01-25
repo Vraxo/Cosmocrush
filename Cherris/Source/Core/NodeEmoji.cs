@@ -6,6 +6,8 @@ public static class NodeEmoji
     {
         return node switch
         {
+            Label => "💬",
+            Camera => "🎥",
             RayCast => "⚡",
             Timer => "⏰",
             NavigationRegion =>"🗺",

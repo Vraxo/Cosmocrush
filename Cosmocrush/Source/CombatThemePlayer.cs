@@ -10,7 +10,7 @@ public partial class CombatThemePlayer : AudioPlayer
 
     public override void Ready()
     {
-        PlayRandomTheme();
+        //PlayRandomTheme();
         Finished += OnThemeFinished;
     }
 

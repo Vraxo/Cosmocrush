@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using YamlDotNet.Serialization;
-using Cherris.Backends;
+using Raylib_cs;
 
 namespace Cherris;
 
@@ -9,7 +9,6 @@ public sealed class App
     private static App? _instance;
     public static App Instance => _instance ??= new();
 
-    public readonly Backend Backend;
     public Node? RootNode;
 
     private readonly Configuration config;
@@ -18,21 +17,6 @@ public sealed class App
     {
         string configFilePath = "Res/Cherris/Config.yaml";
         config = LoadConfig(configFilePath);
-
-        if (config?.Backend == "Raylib")
-        {
-            Backend = new RaylibBackend();
-            Log.Info("[APP] Using Raylib as backend.");
-        }
-        else if (config?.Backend == "SDL2")
-        {
-            Backend = new SDL2Backend();
-            Log.Info("[APP] Using SDL2 as backend.");
-        }
-        else
-        {
-            throw new InvalidOperationException("Invalid backend specified in the configuration.");
-        }
     }
 
     public void Run()
@@ -62,26 +46,35 @@ public sealed class App
 
         WindowManager.OriginalSize = new(config.Width, config.Height);
 
-        Backend.Window.SetWindowFlags(config.ResizableWindow, config.AntiAliasing);
+        ConfigFlags flags = ConfigFlags.VSyncHint | ConfigFlags.HighDpiWindow | ConfigFlags.AlwaysRunWindow;
 
-        Backend.Window.InitializeWindow(
-            config.Width,
-            config.Height,
-            config.MinWidth,
-            config.MinHeight,
-            config.MaxWidth,
-            config.MaxHeight,
-            config.Title,
-            "Res/Icon/Icon.png");
+        if (config.ResizableWindow)
+        {
+            flags |= ConfigFlags.ResizableWindow;
+        }
 
-        Backend.Window.SetWindowMinSize(config.MinWidth, config.MinHeight);
+        if (config.AntiAliasing)
+        {
+            flags |= ConfigFlags.Msaa4xHint;
+        }
+
+        Raylib.SetConfigFlags(flags);
+        Raylib.SetTraceLogLevel(TraceLogLevel.None);
+        Raylib.SetConfigFlags(ConfigFlags.VSyncHint | ConfigFlags.HighDpiWindow | ConfigFlags.AlwaysRunWindow);
+        Raylib.InitWindow(config.Width, config.Height, config.Title);
+        Raylib.SetWindowMinSize(config.MinWidth, config.MinHeight);
+        Raylib.SetWindowMaxSize(config.MaxWidth, config.MaxHeight);
+        Raylib.SetWindowIcon(Raylib.LoadImage("Res/Icon/Icon.png"));
+        Raylib.InitAudioDevice();
+
+        Raylib.SetWindowMinSize(config.MinWidth, config.MinHeight);
 
         SetRootNodeFromConfig(config.MainScenePath);
     }
 
     private void SetRootNodeFromConfig(string scenePath)
     {
-        PackedSceneYamlNested packedScene = new(scenePath);
+        PackedSceneIni packedScene = new(scenePath);
         RootNode = packedScene.Instantiate<Node>(true);
 
         Console.WriteLine(RootNode is null);
@@ -89,13 +82,13 @@ public sealed class App
 
     private void Update()
     {
-        while (!Backend.Window.WindowShouldClose())
+        while (!Raylib.WindowShouldClose())
         {
-            Backend.Drawing.BeginDrawing();
-            Backend.Drawing.ClearBackground(DefaultTheme.Background);
+            //Backend.Drawing.BeginDrawing();
+            //Backend.Drawing.ClearBackground(DefaultTheme.Background);
+            //RootNode?.Process();
             ProcessManagers();
-            RootNode?.Process();
-            Backend.Drawing.EndDrawing();
+            //Backend.Drawing.EndDrawing();
 
             PrintTree();
         }
@@ -103,7 +96,7 @@ public sealed class App
 
     private static void ProcessManagers()
     {
-        Time.Process();
+        TimeManager.Instance.Process();
         ClickManager.Instance.Process();
         CollisionManager.Instance.Process();
         RenderManager.Instance.Process();
@@ -111,7 +104,7 @@ public sealed class App
 
     private void PrintTree()
     {
-        if (Backend.Input.IsKeyPressed(KeyCode.Enter))
+        if (Input.IsKeyPressed(KeyCode.Enter))
         {
             Console.Clear();
             RootNode?.PrintChildren();
@@ -134,6 +127,6 @@ public sealed class App
     private static Configuration LoadConfig(string filePath)
     {
         var deserializer = new DeserializerBuilder().Build();
-        return deserializer.Deserialize<Configuration>(System.IO.File.ReadAllText(filePath));
+        return deserializer.Deserialize<Configuration>(File.ReadAllText(filePath));
     }
 }

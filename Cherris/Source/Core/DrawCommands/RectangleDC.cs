@@ -1,6 +1,8 @@
-﻿namespace Cherris.DrawCommands;
+﻿using Raylib_cs;
 
-public class BasicRectangle : DrawCommand
+namespace Cherris.DrawCommands;
+
+public class RectangleDC : DrawCommand
 {
     public Vector2 Position { get; set; } = Vector2.Zero;
     public Vector2 Size { get; set; } = Vector2.Zero;
@@ -8,6 +10,9 @@ public class BasicRectangle : DrawCommand
 
     public override void Draw()
     {
-        App.Instance.Backend.Drawing.DrawRectangle(Position, Size, Color);
+        Raylib.DrawRectangleV(
+            Position,
+            Size,
+            Color);
     }
 }

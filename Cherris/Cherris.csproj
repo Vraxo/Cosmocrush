@@ -53,7 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Source\Core\DrawCommands\Text.cs" />
+    <None Include="Source\Core\DrawCommands\TextDC.cs" />
   </ItemGroup>
 
 </Project>

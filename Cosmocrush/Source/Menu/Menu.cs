@@ -22,7 +22,7 @@ public class Menu : Node
         quitButton = GetNode<Button>("QuitButton");
         quitButton.LeftClicked += OnQuitButtonLeftClicked;
 
-        background = GetNode<TextureRectangle>("TrueBackground");
+        background = GetNode<TextureRectangle>("Background");
         title = GetNode<Label>("Title");
     }
 
@@ -30,15 +30,15 @@ public class Menu : Node
     {
         base.Update();
 
-        particleSpawnTimer += Time.Delta;
+        particleSpawnTimer += TimeManager.Delta;
+
         if (particleSpawnTimer >= ParticleSpawnInterval)
         {
-            GenerateParticle();
+            //GenerateParticle();
             particleSpawnTimer = 0f;
         }
 
         UpdateTitle();
-        UpdateBackground();
         UpdateStartButton();
         UpdateQuitButton();
     }
@@ -63,12 +63,6 @@ public class Menu : Node
     private void UpdateQuitButton()
     {
         quitButton.Position = WindowManager.Size / 2 + new Vector2(0, 50);
-    }
-
-    private void UpdateBackground()
-    {
-        background.Position = WindowManager.Size / 2;
-        background.Size = WindowManager.Size;
     }
 
     private void UpdateTitle()

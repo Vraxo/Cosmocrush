@@ -32,7 +32,7 @@
 //
 //    protected override void Draw()
 //    {
-//        BasicRectangle rectangle = new()
+//        RectangleDC rectangle = new()
 //        {
 //            Position = GlobalPosition - Offset,
 //            Dimensions = Dimensions
@@ -43,7 +43,7 @@
 //        DrawCheck();
 //    }
 //
-//    private void DrawInside(BasicRectangle rectangle)
+//    private void DrawInside(RectangleDC rectangle)
 //    {
 //        //Raylib.DrawRectangleRounded(
 //        //    rectangle,
@@ -52,7 +52,7 @@
 //        //    BackgroundStyle.Current.FillColor);
 //    }
 //
-//    private void DrawOutline(BasicRectangle rectangle)
+//    private void DrawOutline(RectangleDC rectangle)
 //    {
 //        //if (BackgroundStyle.Current.BorderLength > 0)
 //        //{
@@ -72,7 +72,7 @@
 //            return;
 //        }
 //
-//        BasicRectangle rectangle = new()
+//        RectangleDC rectangle = new()
 //        {
 //            Position = GlobalPosition - Offset / 2,
 //            Dimensions = CheckSize

@@ -12,13 +12,13 @@ public static class PropertyLoader
         foreach (string line in fileLines)
         {
             string trimmedLine = line.Trim();
-            
+
             if (string.IsNullOrEmpty(trimmedLine) || !trimmedLine.Contains('='))
             {
                 continue;
             }
 
-            int equalsIndex = trimmedLine.IndexOf("=");
+            int equalsIndex = trimmedLine.IndexOf('=');
             string propertyPath = trimmedLine.Substring(0, equalsIndex).Trim();
             string value = trimmedLine.Substring(equalsIndex + 1).Trim();
 
@@ -56,18 +56,28 @@ public static class PropertyLoader
         }
     }
 
-    private static object ConvertValue(Type propertyType, string value) => propertyType switch
+    private static object ConvertValue(Type propertyType, string value)
     {
-        { } when propertyType == typeof(uint) => Convert.ToUInt32(value),
-        { } when propertyType == typeof(Color) => ParseColor(value),
-        { } when propertyType == typeof(Font) => ResourceLoader.Load<Font>(value),
-        { } when propertyType == typeof(float) => float.Parse(value),
-        { } when propertyType == typeof(int) => int.Parse(value),
-        { } when propertyType == typeof(bool) => bool.Parse(value),
-        { } when propertyType == typeof(Vector2) => ParseVector2(value),
-        { } when propertyType.IsEnum => Enum.Parse(propertyType, value),
-        _ => value
-    };
+        // Remove outer quotes if present
+        if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
+            (value.StartsWith("'") && value.EndsWith("'")))
+        {
+            value = value.Substring(1, value.Length - 2);
+        }
+
+        return propertyType switch
+        {
+            { } when propertyType == typeof(uint) => Convert.ToUInt32(value),
+            { } when propertyType == typeof(Color) => ParseColor(value),
+            { } when propertyType == typeof(Font) => ResourceLoader.Load<Font>(value),
+            { } when propertyType == typeof(float) => float.Parse(value),
+            { } when propertyType == typeof(int) => int.Parse(value),
+            { } when propertyType == typeof(bool) => bool.Parse(value),
+            { } when propertyType == typeof(Vector2) => ParseVector2(value),
+            { } when propertyType.IsEnum => Enum.Parse(propertyType, value),
+            _ => value
+        };
+    }
 
     private static Vector2 ParseVector2(string value)
     {

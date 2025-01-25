@@ -72,7 +72,14 @@ public static class PackedSceneUtils
 
     public static object ConvertValue(Type targetType, object value)
     {
-        var stringValue = (string)value;
+        var stringValue = value.ToString() ?? throw new Exception("Value cannot be null");
+
+        // Remove outer quotes if present
+        if ((stringValue.StartsWith("\"") && stringValue.EndsWith("\"")) ||
+            (stringValue.StartsWith("'") && stringValue.EndsWith("'")))
+        {
+            stringValue = stringValue.Substring(1, stringValue.Length - 2);
+        }
 
         return targetType switch
         {

@@ -26,7 +26,7 @@ public class MenuParticle : ColorRectangle
     {
         base.Update();
 
-        float x = GlobalPosition.X + Speed * Time.Delta;
+        float x = GlobalPosition.X + Speed * TimeManager.Delta;
         float y = GlobalPosition.Y;
 
         GlobalPosition = new(x, y);

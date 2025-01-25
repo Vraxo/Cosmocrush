@@ -82,21 +82,21 @@ public partial class OptionButton : Button
 
             if (i != Options.Count - 1)
             {
-                option.DownControlPath = $"{AbsolutePath}/Option{i + 1}";
+                option.FocusNeighborBottom = $"{AbsolutePath}/Option{i + 1}";
             }
 
             if (i != 0)
             {
-                option.UpControlPath = $"{AbsolutePath}/Option{i - 1}";
+                option.FocusNeighborTop = $"{AbsolutePath}/Option{i - 1}";
             }
             else
             {
-                option.UpControlPath = AbsolutePath;
+                option.FocusNeighborTop = AbsolutePath;
             }
         }
 
-        originalDownControlPath = DownControlPath;
-        DownControlPath = $"{AbsolutePath}/Option0";
+        originalDownControlPath = FocusNeighborBottom;
+        FocusNeighborBottom = $"{AbsolutePath}/Option0";
 
         Open = true;
     }
@@ -116,7 +116,7 @@ public partial class OptionButton : Button
         optionChildren.Clear();
         Open = false;
 
-        DownControlPath = originalDownControlPath;
+        FocusNeighborBottom = originalDownControlPath;
     }
 
     private void Select(int index)

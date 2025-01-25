@@ -7,5 +7,5 @@ MaxHeight: -1
 Title: Cosmocrush
 ResizableWindow: true
 AntiAliasing: true
-MainScenePath: Res/Scenes/Menu/Menu.yaml
+MainScenePath: Res/Scenes/Menu/Menu.ini
 Backend: Raylib

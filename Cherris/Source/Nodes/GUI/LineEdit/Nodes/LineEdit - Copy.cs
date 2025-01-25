@@ -8,7 +8,7 @@ public partial class LineEdit : Button
 
     public static readonly Vector2 DefaultSize = new(300, 26);
 
-    public new string Text { get; set; } = "";
+    public new string TextDC { get; set; } = "";
     public string DefaultText { get; set; } = "";
     public string PlaceholderText { get; set; } = "";
     public Vector2 TextOrigin { get; set; } = new(8, 0);
@@ -125,7 +125,7 @@ public partial class LineEdit : Button
 
         int textWidth = (int)Raylib.MeasureTextEx(
             Themes.Current.Font,
-            Text,
+            TextDC,
             Themes.Current.FontSize,
             Themes.Current.FontSpacing).X;
 
@@ -173,7 +173,7 @@ public partial class LineEdit : Button
     private void InsertCharacter(int key)
     {
         bool isKeyInRange = key >= minAscii && key <= maxAscii;
-        bool isSpaceLeft = Text.Length < MaxCharacters;
+        bool isSpaceLeft = TextDC.Length < MaxCharacters;
 
         if (isKeyInRange && isSpaceLeft)
         {
@@ -182,17 +182,17 @@ public partial class LineEdit : Button
                 return;
             }
 
-            if (TemporaryDefaultText && Text == DefaultText)
+            if (TemporaryDefaultText && TextDC == DefaultText)
             {
-                Text = "";
+                TextDC = "";
             }
 
-            if (caret.X < 0 || caret.X > Text.Length)
+            if (caret.X < 0 || caret.X > TextDC.Length)
             {
-                caret.X = Text.Length;
+                caret.X = TextDC.Length;
             }
 
-            Text = Text.Insert(caret.X + TextStartIndex, ((char)key).ToString());
+            TextDC = TextDC.Insert(caret.X + TextStartIndex, ((char)key).ToString());
 
             // Check if caret is out of view, and adjust TextStartIndex
             if (caret.X >= GetDisplayableCharactersCount())
@@ -204,9 +204,9 @@ public partial class LineEdit : Button
                 caret.X++;
             }
 
-            TextChanged?.Invoke(this, Text);
+            TextChanged?.Invoke(this, TextDC);
 
-            if (Text.Length == 1)
+            if (TextDC.Length == 1)
             {
                 FirstCharacterEntered?.Invoke(this, EventArgs.Empty);
             }
@@ -215,21 +215,21 @@ public partial class LineEdit : Button
 
     private void InsertTextAtCaret(string text)
     {
-        bool isSpaceLeft = Text.Length + text.Length <= MaxCharacters;
+        bool isSpaceLeft = TextDC.Length + text.Length <= MaxCharacters;
 
         if (isSpaceLeft)
         {
-            if (TemporaryDefaultText && Text == DefaultText)
+            if (TemporaryDefaultText && TextDC == DefaultText)
             {
-                Text = "";
+                TextDC = "";
             }
 
-            if (caret.X < 0 || caret.X > Text.Length)
+            if (caret.X < 0 || caret.X > TextDC.Length)
             {
-                caret.X = Text.Length;
+                caret.X = TextDC.Length;
             }
 
-            Text = Text.Insert(caret.X + TextStartIndex, text);
+            TextDC = TextDC.Insert(caret.X + TextStartIndex, text);
             caret.X += text.Length;
 
             // Shift text if caret moves out of view
@@ -238,9 +238,9 @@ public partial class LineEdit : Button
                 TextStartIndex = caret.X - GetDisplayableCharactersCount();
             }
 
-            TextChanged?.Invoke(this, Text);
+            TextChanged?.Invoke(this, TextDC);
 
-            if (Text.Length == text.Length)
+            if (TextDC.Length == text.Length)
             {
                 FirstCharacterEntered?.Invoke(this, EventArgs.Empty);
             }
@@ -294,7 +294,7 @@ public partial class LineEdit : Button
 
     private void DeletePreviousWord()
     {
-        if (Text.Length == 0 || (caret.X == 0 && TextStartIndex == 0)) return;
+        if (TextDC.Length == 0 || (caret.X == 0 && TextStartIndex == 0)) return;
 
         // Calculate the actual index within the full text based on caret position and TextStartIndex
         int removeIndex = caret.X + TextStartIndex - 1;
@@ -309,14 +309,14 @@ public partial class LineEdit : Button
 
         // Find the start of the previous word by moving back from removeIndex
         int wordStartIndex = removeIndex;
-        while (wordStartIndex > 0 && Text[wordStartIndex - 1] != ' ')
+        while (wordStartIndex > 0 && TextDC[wordStartIndex - 1] != ' ')
         {
             wordStartIndex--;
         }
 
         // Calculate the number of characters to delete
         int lengthToDelete = removeIndex - wordStartIndex + 1;
-        Text = Text.Remove(wordStartIndex, lengthToDelete);
+        TextDC = TextDC.Remove(wordStartIndex, lengthToDelete);
 
         // Adjust TextStartIndex if characters were deleted from the hidden portion
         if (wordStartIndex < TextStartIndex)
@@ -329,10 +329,10 @@ public partial class LineEdit : Button
         caret.X = Math.Clamp(wordStartIndex - TextStartIndex, 0, GetDisplayableCharactersCount());
 
         RevertTextToDefaultIfEmpty();
-        TextChanged?.Invoke(this, Text);
+        TextChanged?.Invoke(this, TextDC);
 
         // Trigger Cleared event if the text is now empty
-        if (Text.Length == 0)
+        if (TextDC.Length == 0)
         {
             Cleared?.Invoke(this, EventArgs.Empty);
         }
@@ -340,30 +340,30 @@ public partial class LineEdit : Button
 
     private void DeleteLastCharacter()
     {
-        int textLengthBeforeDeletion = Text.Length;
+        int textLengthBeforeDeletion = TextDC.Length;
 
-        if (Text.Length > 0)
+        if (TextDC.Length > 0)
         {
             if (caret.X == 0 && TextStartIndex > 0)
             {
                 TextStartIndex--;
-                Text = Text.Remove(TextStartIndex, 1);
+                TextDC = TextDC.Remove(TextStartIndex, 1);
             }
             else if (caret.X > 0)
             {
                 int removeIndex = caret.X - 1 + TextStartIndex;
-                if (removeIndex >= TextStartIndex && removeIndex < Text.Length)
+                if (removeIndex >= TextStartIndex && removeIndex < TextDC.Length)
                 {
-                    Text = Text.Remove(removeIndex, 1);
-                    caret.X = Math.Clamp(caret.X - 1, 0, Math.Min(Text.Length, GetDisplayableCharactersCount()));
+                    TextDC = TextDC.Remove(removeIndex, 1);
+                    caret.X = Math.Clamp(caret.X - 1, 0, Math.Min(TextDC.Length, GetDisplayableCharactersCount()));
                 }
             }
         }
 
         RevertTextToDefaultIfEmpty();
-        TextChanged?.Invoke(this, Text);
+        TextChanged?.Invoke(this, TextDC);
 
-        if (Text.Length == 0 && textLengthBeforeDeletion != 0)
+        if (TextDC.Length == 0 && textLengthBeforeDeletion != 0)
         {
             Cleared?.Invoke(this, EventArgs.Empty);
         }
@@ -396,15 +396,15 @@ public partial class LineEdit : Button
         {
             Selected = false;
             Themes.Current = Themes.Normal;
-            Confirmed?.Invoke(this, Text);
+            Confirmed?.Invoke(this, TextDC);
         }
     }
 
     private void RevertTextToDefaultIfEmpty()
     {
-        if (Text.Length == 0)
+        if (TextDC.Length == 0)
         {
-            Text = DefaultText;
+            TextDC = DefaultText;
         }
     }
 

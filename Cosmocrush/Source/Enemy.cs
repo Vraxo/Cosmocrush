@@ -12,7 +12,7 @@ public class Enemy : ColliderRectangle
     private Player player = new();
     private NavigationAgent navigationAgent = new();
 
-    private readonly float speed = 100f;
+    private readonly float speed = 100f; // 100
     private readonly float proximityThreshold = 10f;
     private readonly float knockbackRecoverySpeed = 0.1f;
     private readonly float damageRadius = 100;
@@ -34,6 +34,7 @@ public class Enemy : ColliderRectangle
 
         SufferKnockback();
         ChasePlayer();
+        LookAtPlayer();
         AttemptToDamagePlayer();
     }
 
@@ -59,6 +60,11 @@ public class Enemy : ColliderRectangle
         }
     }
 
+    private void LookAtPlayer()
+    {
+        sprite.FlipH = player.GlobalPosition.X < GlobalPosition.X;
+    }
+
     private void SufferKnockback()
     {
         knockback = Vector2.Lerp(knockback, Vector2.Zero, knockbackRecoverySpeed);
@@ -76,10 +82,9 @@ public class Enemy : ColliderRectangle
         Vector2 targetPosition = navigationAgent.Path[0];
         Vector2 direction = (targetPosition - GlobalPosition).Normalized();
 
-        Vector2 movement = direction * speed * Time.Delta + knockback;
+        Vector2 movement = direction * speed * TimeManager.Delta + knockback;
         GlobalPosition += movement;
 
-        sprite.FlipH = player.GlobalPosition.X > GlobalPosition.X;
 
         if (GlobalPosition.DistanceTo(targetPosition) < proximityThreshold)
         {
@@ -90,12 +95,12 @@ public class Enemy : ColliderRectangle
     private void AttemptToDamagePlayer()
     {
         bool isPlayerInRange = GlobalPosition.DistanceTo(player.GlobalPosition) <= damageRadius;
-        bool canShoot = Time.Elapsed - lastDamageTime >= damageCooldown;
+        bool canShoot = TimeManager.Elapsed - lastDamageTime >= damageCooldown;
 
         if (isPlayerInRange && canShoot)
         {
             player?.TakeDamage(1);
-            lastDamageTime = Time.Elapsed;
+            lastDamageTime = TimeManager.Elapsed;
         }
     }
 

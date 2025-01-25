@@ -7,18 +7,17 @@ public class Gun : Sprite
     private RayCast rayCast = new();
     private readonly string gunshotAudioPath = "Res/Audio/SFX/Gunshot.mp3";
 
-    private readonly float cooldown = 0.182f;
     private float lastFiredTime = 0f;
+    private const float cooldown = 0.182f;
     private const float knockbackForce = 3f;
 
     public override void Ready()
     {
         base.Ready();
 
-        RootNode.PrintChildren();
-
         HorizontalAlignment = HorizontalAlignment.Left;
         Offset = new(8, 0);
+        Offset = new(0, 0);
 
         rayCast = GetNode<RayCast>("RayCast");
         rayCast.Deactivate();
@@ -28,14 +27,26 @@ public class Gun : Sprite
     {
         base.Update();
 
-        FlipV = Input.MousePosition.X < GlobalPosition.X;
+        HandleFiring();
+        LookAtMouse();
+    }
 
-        if (Input.IsActionDown("Fire") && Time.Elapsed - lastFiredTime >= cooldown)
+    private void HandleFiring()
+    {
+        bool isCooledDown = TimeManager.Elapsed - lastFiredTime >= cooldown;
+
+        if (Input.IsActionDown("Fire") && isCooledDown)
         {
             Fire();
         }
+    }
 
-        LookAt(Input.MousePosition);
+    private void LookAtMouse()
+    {
+        //Console.WriteLine(FlipH);
+
+        FlipV = Input.WorldMousePosition.X < GlobalPosition.X;
+        LookAt(Input.WorldMousePosition);
     }
 
     private void PlayGunshotSound()
@@ -57,14 +68,14 @@ public class Gun : Sprite
 
     private void Fire()
     {
-        lastFiredTime = Time.Elapsed;
+        lastFiredTime = TimeManager.Elapsed;
         PlayGunshotSound();
         FireRaycast();
     }
 
     private void FireRaycast()
     {
-        Vector2 mousePosition = Input.MousePosition;
+        Vector2 mousePosition = Input.WorldMousePosition;
         Vector2 angleVector = mousePosition - GlobalPosition;
         float angle = MathF.Atan2(angleVector.Y, angleVector.X);
 

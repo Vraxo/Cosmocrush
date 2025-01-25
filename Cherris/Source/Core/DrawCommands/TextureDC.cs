@@ -2,25 +2,21 @@
 
 namespace Cherris.DrawCommands;
 
-public class TexturedRectangle : DrawCommand
+public class TextureDC : DrawCommand
 {
     public Texture Texture { get; set; } = new();
     public Vector2 Position { get; set; } = Vector2.Zero;
-    public Vector2 Origin { get; set; } = Vector2.Zero;
     public float Rotation { get; set; } = 0f;
     public Vector2 Scale { get; set; } = Vector2.One;
-    public Rectangle Source { get; set; } = new();
-    public Rectangle Target { get; set; } = new();
+    public Color Tint { get; set; } = Color.White;
 
     public override void Draw()
     {
-        Raylib.DrawTexturePro(
+        Raylib.DrawTextureEx(
             Texture,
-            Source,
-            Target,
-            Origin,
+            Position,
             Rotation,
-            Color.White
-        );
+            Scale.Length(),
+            Tint);
     }
 }
