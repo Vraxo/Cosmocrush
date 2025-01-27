@@ -3,8 +3,8 @@ type: "Menu"
 children:
   - name: "Background"
     type: "MenuBackground"
-    Position: (0,0)
-    Size: (1920,1080)
+    Position: [0, 0]
+    Size: [0, 0]
     Texture: "Res/Textures/Background.png"
 
   - name: "Particles"

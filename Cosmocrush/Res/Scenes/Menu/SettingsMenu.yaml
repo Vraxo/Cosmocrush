@@ -1,39 +1,42 @@
-name: "Settings"
-type: "SettingsMenu"
+name: Settings
+type: SettingsMenu
 children:
-  - name: "MasterLabel"
-    type: "Label"
-    Position: (100,100)
-    HorizontalAlignment: "Right"
-    Text: "Master"
+  - name: MasterLabel
+    type: Label
+    Position: [100, 100]
+    HorizontalAlignment: Right
+    Text: Master
     Theme:
-        Font: "Res/Fonts/RaceSport.ttf:16"
+        Font: Res/Fonts/RaceSport.ttf:16
     children:
-      - name: "Slider"
-        type: "HSlider"
-        HorizontalAlignment: "Left"
-        Position: (32,-8)
+      - name: Slider
+        type: HSlider
+        HorizontalAlignment: Left
+        Position: [32,-8]
 
-  - name: "MusicLabel"
-    type: "Label"
-    Position: (100,150)
-    HorizontalAlignment: "Right"
-    Text: "Music"
-    Theme/Font: "Res/Fonts/RaceSport.ttf:16"
+  - name: MusicLabel
+    type: Label
+    Position: [100,150]
+    HorizontalAlignment: Right
+    Text: Music
+    Theme:
+        Font: Res/Fonts/RaceSport.ttf:16
     children:
-      - name: "Slider"
-        type: "HSlider"
-        HorizontalAlignment: "Left"
-        Position: (32,-8)
+      - name: Slider
+        type: HSlider
+        HorizontalAlignment: Left
+        Position: [32,-8]
 
-  - name: "SfxLabel"
-    type: "Label"
-    Position: (100,200)
-    HorizontalAlignment: "Right"
-    Text: "SFX"
-    Theme/Font: "Res/Fonts/RaceSport.ttf:16"
+  - name: SfxLabel
+    type: Label
+    Position: [100,200]
+    HorizontalAlignment: Right
+    Text: SFX
+    Theme:
+        Font: Res/Fonts/RaceSport.ttf:16
+        FontColor: [255, 0, 0, 255]
     children:
-      - name: "Slider"
-        type: "HSlider"
-        Position: (32,-8)
-        HorizontalAlignment: "Left"
+      - name: Slider
+        type: HSlider
+        Position: [32,-8]
+        HorizontalAlignment: Left
