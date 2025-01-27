@@ -25,7 +25,7 @@ public static class PackedSceneUtils
         }
     }
 
-    private static void SetNestedProperty(object target, string propertyPath, object value)
+    public static void SetNestedProperty(object target, string propertyPath, object value)
     {
         string[] pathParts = propertyPath.Split('/');
         object currentObject = target;

@@ -151,7 +151,7 @@
     <None Update="Res\Sprites\Rock.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Themes\Button.theme.ini">
+    <None Update="Res\Themes\Button.theme.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Themes\ButtonStyle.ini">

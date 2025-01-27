@@ -1,18 +1,15 @@
-﻿name: "MainMenu"
-type: "Menu"
+﻿name: MainMenu
+type: Menu
 children:
-  - name: "Background"
-    type: "MenuBackground"
+  - name: Background
+    type: MenuBackground
     Position: [0, 0]
     Size: [0, 0]
-    Texture: "Res/Textures/Background.png"
+    Texture: Res/Textures/Background.png
 
-  - name: "Particles"
+  - name: Particles
     type: ParticleGenerator
 
-  - name: "MainMenu"
+  - name: MainMenu
     type: MainMenu
-    path: "Res/Scenes/Menu/MainMenu.yaml"
-    children:
-      - name: "Particles"
-        type: ParticleGenerator
+    path: Res/Scenes/Menu/MainMenu.yaml

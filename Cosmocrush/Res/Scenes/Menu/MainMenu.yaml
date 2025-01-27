@@ -17,7 +17,7 @@ children:
     FocusNeighborTop: "../QuitButton"
     FocusNeighborBottom: "../SettingsButton"
     Text: "Start"
-    ThemeFile: "Res/Themes/Button.theme.ini"
+    ThemeFile: Res/Themes/Button.theme.yaml
 
   - name: "SettingsButton"
     type: "Button"
@@ -27,7 +27,7 @@ children:
     FocusNeighborTop: "../PlayButton"
     FocusNeighborBottom: "../QuitButton"
     Text: "Settings"
-    ThemeFile: "Res/Themes/Button.theme.ini"
+    ThemeFile: Res/Themes/Button.theme.yaml
 
   - name: "QuitButton"
     type: "Button"
@@ -37,4 +37,4 @@ children:
     FocusNeighborTop: "../SettingsButton"
     FocusNeighborBottom: "../PlayButton"
     Text: "Quit"
-    ThemeFile: "Res/Themes/Button.theme.ini"
+    ThemeFile: Res/Themes/Button.theme.yaml

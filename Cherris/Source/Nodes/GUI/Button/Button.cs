@@ -65,7 +65,7 @@ public class Button : Control
     {
         set
         {
-            Themes = PropertyLoader.Load<ButtonThemePack>(value);
+            Themes = FileLoader.Load<ButtonThemePack>(value);
         }
     }
 
