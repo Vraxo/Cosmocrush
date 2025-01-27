@@ -44,7 +44,7 @@ public class MainMenu : Node
 
     private void OnSettingsButtonLeftClicked(Button sender)
     {
-        PackedSceneIni packedSettingsMenu = new("Res/Scenes/Menu/SettingsMenu.ini");
+        PackedSceneYamlNested packedSettingsMenu = new("Res/Scenes/Menu/SettingsMenu.yaml");
         var settingsMenu = packedSettingsMenu.Instantiate<Node2D>();
         GetParent<Menu>().AddChild(settingsMenu);
 

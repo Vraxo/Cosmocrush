@@ -3,7 +3,6 @@ type: "MainMenu"
 children:
   - name: "Title"
     type: "Label"
-    parent: "MainMenu"
     Position: (500,250)
     Layer: 2
     Text: "COSMOCRUSH"
@@ -12,7 +11,6 @@ children:
 
   - name: "PlayButton"
     type: "Button"
-    parent: "MainMenu"
     Position: (100,100)
     Size: (640,31)
     Layer: 2
@@ -23,7 +21,6 @@ children:
 
   - name: "SettingsButton"
     type: "Button"
-    parent: "MainMenu"
     Position: (100,100)
     Size: (640,31)
     Layer: 2
@@ -34,7 +31,6 @@ children:
 
   - name: "QuitButton"
     type: "Button"
-    parent: "MainMenu"
     Position: (100,200)
     Size: (640,31)
     Layer: 2

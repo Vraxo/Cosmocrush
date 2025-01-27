@@ -1,10 +1,13 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Cherris;
 
 public static class PackedSceneUtils
 {
-    private static readonly string[] SpecialProperties = ["type", "name", "parent", "path"];
+    private static readonly string[] SpecialProperties = { "type", "name", "path" };
 
     public static void SetProperties(Node node, Dictionary<string, object> element)
     {
@@ -29,18 +32,21 @@ public static class PackedSceneUtils
         for (int i = 0; i < pathParts.Length; i++)
         {
             string part = pathParts[i];
-            PropertyInfo? propertyInfo = currentObject!.GetType().GetProperty(part, BindingFlags.Public | BindingFlags.Instance);
+            PropertyInfo? propertyInfo = currentObject.GetType().GetProperty(part, BindingFlags.Public | BindingFlags.Instance);
             if (propertyInfo == null)
             {
                 throw new Exception($"Property '{part}' not found on type '{currentObject.GetType().Name}'.");
             }
+
             if (i == pathParts.Length - 1)
             {
+                // Final part of the path, set the value
                 object propertyValue = ConvertValue(propertyInfo.PropertyType, value);
                 propertyInfo.SetValue(currentObject, propertyValue);
             }
             else
             {
+                // Intermediate part of the path, navigate or create nested object
                 object? nextObject = propertyInfo.GetValue(currentObject);
                 if (nextObject == null)
                 {
@@ -72,6 +78,11 @@ public static class PackedSceneUtils
 
     public static object ConvertValue(Type targetType, object value)
     {
+        if (value is Dictionary<object, object> dict)
+        {
+            return ConvertNestedObject(targetType, dict);
+        }
+
         var stringValue = value.ToString() ?? throw new Exception("Value cannot be null");
 
         // Remove outer quotes if present
@@ -99,6 +110,28 @@ public static class PackedSceneUtils
         };
     }
 
+    private static object ConvertNestedObject(Type targetType, Dictionary<object, object> dict)
+    {
+        var targetObject = Activator.CreateInstance(targetType) ?? throw new Exception($"Failed to create instance of type {targetType.Name}");
+
+        foreach (var kvp in dict)
+        {
+            string key = kvp.Key.ToString()!;
+            object value = kvp.Value;
+
+            var propertyInfo = targetType.GetProperty(key, BindingFlags.Public | BindingFlags.Instance);
+            if (propertyInfo == null)
+            {
+                throw new Exception($"Property '{key}' not found on type '{targetType.Name}'.");
+            }
+
+            object convertedValue = ConvertValue(propertyInfo.PropertyType, value);
+            propertyInfo.SetValue(targetObject, convertedValue);
+        }
+
+        return targetObject;
+    }
+
     private static Vector2 ParseVector2(string value)
     {
         string[] parts = value.Trim('(', ')').Split(',');
@@ -116,7 +149,7 @@ public static class PackedSceneUtils
         byte r = byte.Parse(parts[0]);
         byte g = byte.Parse(parts[1]);
         byte b = byte.Parse(parts[2]);
-        byte a = byte.Parse(parts[3]);
+        byte a = parts.Length > 3 ? byte.Parse(parts[3]) : (byte)255;
 
         return new(r, g, b, a);
     }

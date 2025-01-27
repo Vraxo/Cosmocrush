@@ -67,10 +67,10 @@
     <None Update="Res\Scenes\HealthBar.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Menu\MainMenu.ini">
+    <None Update="Res\Scenes\Menu\MainMenu.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Menu\SettingsMenu.ini">
+    <None Update="Res\Scenes\Menu\SettingsMenu.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Scenes\Menu\Test.ini">

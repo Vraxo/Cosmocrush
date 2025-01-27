@@ -12,7 +12,7 @@ children:
 
   - name: "MainMenu"
     type: MainMenu
-    path: "Res/Scenes/Menu/MainMenu.ini"
+    path: "Res/Scenes/Menu/MainMenu.yaml"
     children:
       - name: "Particles"
         type: ParticleGenerator
