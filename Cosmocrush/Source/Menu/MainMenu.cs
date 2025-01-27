@@ -44,7 +44,11 @@ public class MainMenu : Node
 
     private void OnSettingsButtonLeftClicked(Button sender)
     {
-        throw new NotImplementedException();
+        PackedSceneIni packedSettingsMenu = new("Res/Scenes/Menu/SettingsMenu.ini");
+        var settingsMenu = packedSettingsMenu.Instantiate<Node2D>();
+        GetParent<Menu>().AddChild(settingsMenu);
+
+        Destroy();
     }
 
     private void OnQuitButtonLeftClicked(Button sender)

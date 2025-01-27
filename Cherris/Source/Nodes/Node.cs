@@ -194,9 +194,9 @@ public class Node
     /// <summary>
     /// Returns the parent node cast to type <typeparamref name="T"/> if available, otherwise returns the current node.
     /// </summary>
-    public T? GetParent<T>() where T : Node
+    public T GetParent<T>() where T : Node
     {
-        if (Parent != null)
+        if (Parent is not null)
         {
             return (T)Parent;
         }

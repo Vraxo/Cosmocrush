@@ -70,6 +70,9 @@
     <None Update="Res\Scenes\Menu\MainMenu.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Res\Scenes\Menu\SettingsMenu.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Res\Scenes\Menu\Test.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

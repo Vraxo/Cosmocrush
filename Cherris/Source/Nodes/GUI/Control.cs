@@ -1,11 +1,9 @@
-﻿using Raylib_cs;
-
-namespace Cherris;
+﻿namespace Cherris;
 
 public class Control : ClickableRectangle
 {
-    public bool FocusOnClick { get; set; } = false;
-    public bool ArrowNavigation { get; set; } = true;
+    public bool Focusable { get; set; } = true;
+    public bool UseArrowNavigation { get; set; } = true;
     public string? FocusNeighborTop { get; set; }
     public string? FocusNeighborBottom { get; set; }
     public string? FocusNeighborLeft { get; set; }
@@ -14,8 +12,9 @@ public class Control : ClickableRectangle
     public event EventHandler<bool>? FocusChanged;
     public event EventHandler? ClickedOutside;
 
+    private bool wasFocusedLastFrame = false;
+
     private bool _focused = false;
-    private bool _wasFocusedLastFrame = false; // Track focus state in previous frame
     public bool Focused
     {
         get => _focused;
@@ -31,47 +30,40 @@ public class Control : ClickableRectangle
 
     public override void Update()
     {
-        if (ArrowNavigation && Focused)
+        base.Update();
+
+        if (UseArrowNavigation && Focused && wasFocusedLastFrame)
         {
-            if (_wasFocusedLastFrame) // Only allow navigation if focused in previous frame
-            {
-                HandleArrowNavigation();
-            }
+            HandleArrowNavigation();
         }
 
-        UpdateFocusOnMouseOut();
-        _wasFocusedLastFrame = Focused; // Process focus tracking for next frame
-        base.Update();
+        UpdateFocusOnOutsideClicked();
+        wasFocusedLastFrame = Focused;
     }
 
     private void HandleArrowNavigation()
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.Up) && !string.IsNullOrEmpty(FocusNeighborTop))
+        NavigateToControlIfPressed("UiLeft", FocusNeighborLeft);
+        NavigateToControlIfPressed("UiUp", FocusNeighborTop);
+        NavigateToControlIfPressed("UiRight", FocusNeighborRight);
+        NavigateToControlIfPressed("UiDown", FocusNeighborBottom);
+    }
+
+    private void NavigateToControlIfPressed(string action, string? path)
+    {
+        if (Input.IsActionPressed(action) && !string.IsNullOrEmpty(path))
         {
-            NavigateToControl(FocusNeighborTop);
-        }
-        else if (Raylib.IsKeyPressed(KeyboardKey.Down) && !string.IsNullOrEmpty(FocusNeighborBottom))
-        {
-            NavigateToControl(FocusNeighborBottom);
-        }
-        else if (Raylib.IsKeyPressed(KeyboardKey.Left) && !string.IsNullOrEmpty(FocusNeighborLeft))
-        {
-            NavigateToControl(FocusNeighborLeft);
-        }
-        else if (Raylib.IsKeyPressed(KeyboardKey.Right) && !string.IsNullOrEmpty(FocusNeighborRight))
-        {
-            NavigateToControl(FocusNeighborRight);
+            NavigateToControl(path);
         }
     }
 
     private void NavigateToControl(string controlPath)
     {
-        var targetControl = GetNode<Control>(controlPath);
         Focused = false;
-        targetControl.Focused = true;
+        GetNode<Control>(controlPath).Focused = true;
     }
 
-    private void UpdateFocusOnMouseOut()
+    private void UpdateFocusOnOutsideClicked()
     {
         if (!IsMouseOver() && Input.IsMouseButtonPressed(MouseButtonCode.Left))
         {
@@ -82,7 +74,7 @@ public class Control : ClickableRectangle
 
     protected virtual void HandleClickFocus()
     {
-        if (FocusOnClick && IsMouseOver())
+        if (Focusable && IsMouseOver())
         {
             Focused = true;
         }

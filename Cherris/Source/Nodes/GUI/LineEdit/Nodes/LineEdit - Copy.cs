@@ -48,7 +48,7 @@ public partial class LineEdit : Button
     public LineEdit()
     {
         Size = DefaultSize;
-        FocusOnClick = true;
+        Focusable = true;
         Themes.Focused.BorderLength = 0;
         Themes.Focused.BorderLengthBottom = 1;
 
