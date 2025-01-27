@@ -1,27 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using YamlDotNet.Serialization;
+﻿using Cherris;
 using YamlDotNet.Serialization.NamingConventions;
-
-namespace Cherris;
+using YamlDotNet.Serialization;
 
 public static class FileLoader
 {
     private static readonly IDeserializer _deserializer = new DeserializerBuilder()
-        .WithNamingConvention(PascalCaseNamingConvention.Instance) // Matches PascalCase YAML keys to properties
+        .WithNamingConvention(PascalCaseNamingConvention.Instance)
         .Build();
 
     public static T Load<T>(string filePath) where T : new()
     {
         var yamlContent = File.ReadAllText(filePath);
-        var data = _deserializer.Deserialize<Dictionary<string, object>>(yamlContent);
+        var data = _deserializer.Deserialize<object>(yamlContent);
 
         T instance = new T();
-        foreach (var kvp in data)
-        {
-            PackedSceneUtils.SetNestedProperty(instance, kvp.Key, kvp.Value);
-        }
-
+        ProcessYamlData(instance, data, "");
         return instance;
+    }
+
+    private static void ProcessYamlData(object target, object yamlData, string currentPath)
+    {
+        switch (yamlData)
+        {
+            case Dictionary<object, object> dict:
+                foreach (var entry in dict)
+                {
+                    string key = entry.Key.ToString()!;
+                    string newPath = string.IsNullOrEmpty(currentPath) ? key : $"{currentPath}/{key}";
+                    ProcessYamlData(target, entry.Value, newPath);
+                }
+                break;
+            case List<object> list:
+                // Treat lists as values (e.g., for Color, Vector2)
+                PackedSceneUtils.SetNestedProperty(target, currentPath, list);
+                break;
+            default:
+                PackedSceneUtils.SetNestedProperty(target, currentPath, yamlData);
+                break;
+        }
     }
 }

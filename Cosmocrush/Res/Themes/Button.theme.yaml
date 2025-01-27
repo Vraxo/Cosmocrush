@@ -1,4 +1,7 @@
-﻿Normal:
+﻿Font: "Res/Fonts/RaceSport.ttf:16"
+Roundness: 0
+BorderLength: 1
+Normal:
   FillColor: [13, 27, 42, 128]
   FontColor: [255, 255, 255, 255]
   BorderColor: [0, 168, 232, 255]
@@ -17,6 +20,3 @@ Disabled:
   FillColor: [74, 74, 74, 255]
   BorderColor: [44, 44, 44, 255]
   FontColor: [176, 176, 176, 176]
-Font: "Res/Fonts/RaceSport.ttf:16"
-Roundness: 0
-BorderLength: 1
