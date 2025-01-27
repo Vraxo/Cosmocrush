@@ -4,16 +4,16 @@ using Raylib_cs;
 
 namespace Cherris;
 
-public sealed class App
+public sealed class AppManager
 {
-    private static App? _instance;
-    public static App Instance => _instance ??= new();
+    private static AppManager? _instance;
+    public static AppManager Instance => _instance ??= new();
 
     public Node? RootNode;
 
     private readonly Configuration config;
 
-    private App()
+    private AppManager()
     {
         string configFilePath = "Res/Cherris/Config.yaml";
         config = LoadConfig(configFilePath);
@@ -74,7 +74,7 @@ public sealed class App
 
     private void SetRootNodeFromConfig(string scenePath)
     {
-        PackedSceneIni packedScene = new(scenePath);
+        PackedSceneYamlNested packedScene = new(scenePath);
         RootNode = packedScene.Instantiate<Node>(true);
 
         Console.WriteLine(RootNode is null);

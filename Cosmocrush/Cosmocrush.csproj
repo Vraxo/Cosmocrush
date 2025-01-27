@@ -76,7 +76,7 @@
     <None Update="Res\Scenes\Menu\Test.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Menu\Menu.ini">
+    <None Update="Res\Scenes\Menu\Menu.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Scenes\Menu\Menu.scene">

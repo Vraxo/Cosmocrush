@@ -1,0 +1,18 @@
+﻿name: "MainMenu"
+type: "Menu"
+children:
+  - name: "Background"
+    type: "MenuBackground"
+    Position: (0,0)
+    Size: (1920,1080)
+    Texture: "Res/Textures/Background.png"
+
+  - name: "Particles"
+    type: ParticleGenerator
+
+  - name: "MainMenu"
+    type: MainMenu
+    path: "Res/Scenes/Menu/MainMenu.ini"
+    children:
+      - name: "Particles"
+        type: ParticleGenerator

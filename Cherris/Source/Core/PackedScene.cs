@@ -26,7 +26,7 @@ public class PackedScene
 
         if (isRootNode)
         {
-            App.Instance.RootNode = instance as Node;
+            AppManager.Instance.RootNode = instance as Node;
         }
 
         foreach (string line in fileLines)
@@ -125,7 +125,7 @@ public class PackedScene
 
         if (isRootNode)
         {
-            App.Instance.SetRootNode(instance as Node, true);
+            AppManager.Instance.SetRootNode(instance as Node, true);
             (instance as Node).Start();
         }
 

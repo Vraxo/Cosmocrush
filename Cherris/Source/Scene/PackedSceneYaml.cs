@@ -6,7 +6,7 @@ namespace Cherris;
 public sealed class PackedSceneYaml(string path)
 {
     private readonly string path = path;
-    private readonly Dictionary<string, Node> namedNodes = [];
+    private readonly Dictionary<string, Node> namedNodes = new();
     private static readonly IDeserializer deserializer = new DeserializerBuilder()
         .WithNamingConvention(CamelCaseNamingConvention.Instance)
         .Build();
@@ -14,31 +14,31 @@ public sealed class PackedSceneYaml(string path)
     public T Instantiate<T>(bool isRootNode = false) where T : Node
     {
         string yamlString = File.ReadAllText(path);
-        var nodes = deserializer.Deserialize<List<Dictionary<string, object>>>(yamlString);
-        Node rootNode = ParseNodeList(nodes, null);
+        var nodes = deserializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(yamlString);
 
-        if (rootNode != null && nodes.Count > 0)
-        {
-            rootNode.Name = (string)nodes[0]["name"];
-        }
+        // Retrieve the root node (the first element in the dictionary)
+        Node rootNode = ParseNodeList(nodes, null);
 
         return (T)rootNode!;
     }
 
-    private Node ParseNodeList(List<Dictionary<string, object>> nodes, Node? parent)
+    private Node ParseNodeList(Dictionary<string, Dictionary<string, object>> nodes, Node? parent)
     {
         Node? lastNode = null;
 
         foreach (var element in nodes)
         {
-            string type = (string)element["type"];
-            string name = (string)element["name"];
-            string? parentName = element.ContainsKey("parent") ? (string?)element["parent"] : null;
+            string type = (string)element.Value["type"];
+            string name = element.Key;  // Using the key (e.g., "Particles", "MainMenu", "Background")
+
+            // Infer parentName directly from nesting (we no longer use the "parent" key)
+            string? parentName = parent?.Name; // Parent name inferred from the parent node
 
             Type nodeType = PackedSceneUtils.ResolveType(type);
             Node node = (Node)Activator.CreateInstance(nodeType)!;
 
-            if (element.TryGetValue("path", out object? value))
+            // Handling 'path' for nested scenes
+            if (element.Value.TryGetValue("path", out object? value))
             {
                 string scenePath = (string)value;
                 PackedSceneYaml nestedScene = new(scenePath);
@@ -46,19 +46,31 @@ public sealed class PackedSceneYaml(string path)
                 node = nestedRootNode;
             }
 
-            PackedSceneUtils.SetProperties(node, element);
+            // Set properties for the node from the YAML element
+            PackedSceneUtils.SetProperties(node, element.Value);
 
-            if (parent == null && parentName == null)
+            // Add child nodes (including handling parent-child relationships)
+            if (parent == null)
             {
+                // For the root node (no parent)
                 lastNode = node;
             }
-            else if (parent != null)
+            else
             {
+                // Add this node as a child to the parent
                 parent.AddChild(node, name);
             }
-            else if (parentName != null && namedNodes.TryGetValue(parentName, out Node? _value))
+
+            // Process children (recursive nesting)
+            if (element.Value.ContainsKey("children"))
             {
-                _value.AddChild(node, name);
+                var children = (List<object>)element.Value["children"];
+                foreach (var childElement in children)
+                {
+                    var childDict = (Dictionary<string, object>)childElement;
+                    // Recursively parse the child elements
+                    ParseNodeList(new Dictionary<string, Dictionary<string, object>> { { childDict["name"].ToString(), (Dictionary<string, object>)childDict } }, node);
+                }
             }
 
             namedNodes[name] = node;

@@ -14,7 +14,7 @@ public class InspectorExcludeAttribute : Attribute
 public class Node
 {
     /// <summary>Gets the root node of the application scene tree.</summary>
-    public static Node RootNode => App.Instance.RootNode!;
+    public static Node RootNode => AppManager.Instance.RootNode!;
 
     public string Name { get; set; } = "";
     public Node? Parent { get; set; } = null;
@@ -225,7 +225,7 @@ public class Node
         if (path.StartsWith("/root"))
         {
             path = path["/root".Length..];
-            currentNode = App.Instance.RootNode;
+            currentNode = AppManager.Instance.RootNode;
 
             if (path.StartsWith('/'))
             {
@@ -302,7 +302,7 @@ public class Node
         if (path.StartsWith("/root"))
         {
             path = path.Substring("/root".Length);
-            currentNode = App.Instance.RootNode;
+            currentNode = AppManager.Instance.RootNode;
 
             if (path.StartsWith("/"))
             {
@@ -405,7 +405,7 @@ public class Node
             }
         }
 
-        App.Instance.RootNode.PrintChildren();
+        AppManager.Instance.RootNode.PrintChildren();
 
         throw new InvalidOperationException($"Child node with name '{name}' not found.");
     }
@@ -474,8 +474,8 @@ public class Node
     /// </summary>
     public static void ChangeScene(Node node)
     {
-        App.Instance.RootNode.Destroy();
-        App.Instance.RootNode = node;
+        AppManager.Instance.RootNode.Destroy();
+        AppManager.Instance.RootNode = node;
 
         node.Name = node.GetType().Name;
     }
