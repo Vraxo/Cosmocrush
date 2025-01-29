@@ -2,7 +2,7 @@
 
 public class SettingsData
 {
-    public double MasterVolume { get; set; }
-    public double MusicVolume { get; set; }
-    public double SfxVolume { get; set; }
+    public float MasterVolume { get; set; }
+    public float MusicVolume { get; set; }
+    public float SfxVolume { get; set; }
 }

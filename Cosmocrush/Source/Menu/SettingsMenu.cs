@@ -1,6 +1,4 @@
-﻿//using YamlDotNet.Serialization;
-
-using Cherris;
+﻿using Cherris;
 
 namespace Cosmocrush;
 
@@ -19,6 +17,10 @@ public class SettingsMenu : Node2D
     {
         applyButton!.LeftClicked += OnApplyButtonLeftClicked;
         returnButton!.LeftClicked += OnReturnButtonPressed;
+
+        masterSlider!.Value = Settings.Instance.SettingsData.MasterVolume;
+        musicSlider!.Value = Settings.Instance.SettingsData.MusicVolume;
+        sfxSlider!.Value = Settings.Instance.SettingsData.SfxVolume;
     }
 
     public override void Update()
@@ -29,10 +31,10 @@ public class SettingsMenu : Node2D
 
     private void OnApplyButtonLeftClicked(Button sender)
     {
-        //Settings.Instance.SettingsData.MasterVolume = masterSlider.Value;
-        //Settings.Instance.SettingsData.MusicVolume = musicSlider.Value;
-        //Settings.Instance.SettingsData.SfxVolume = sfxSlider.Value;
-        //Settings.Instance.Save();
+        Settings.Instance.SettingsData.MasterVolume = masterSlider!.Value;
+        Settings.Instance.SettingsData.MusicVolume = musicSlider!.Value;
+        Settings.Instance.SettingsData.SfxVolume = sfxSlider!.Value;
+        Settings.Instance.Save();
     }
 
     private void OnReturnButtonPressed(Button sender)
