@@ -6,26 +6,19 @@ namespace Cosmocrush;
 
 public class SettingsMenu : Node2D
 {
-    public Label? masterLabel { get; set; }
-    private Label? musicLabel;
-    private Label? sfxLabel;
-    private HSlider? masterSlider;
-    private HSlider? musicSlider;
-    private HSlider? sfxSlider;
-    private Button? applyButton;
-    private Button? returnButton;
+    private readonly Label? masterLabel;
+    private readonly Label? musicLabel;
+    private readonly Label? sfxLabel;
+    private readonly HSlider? masterSlider;
+    private readonly HSlider? musicSlider;
+    private readonly HSlider? sfxSlider;
+    private readonly Button? applyButton;
+    private readonly Button? returnButton;
 
     public override void Ready()
     {
-        masterSlider = GetNode<HSlider>("MasterLabel/Slider");
-        musicSlider = GetNode<HSlider>("MusicLabel/Slider");
-        sfxSlider = GetNode<HSlider>("SfxLabel/Slider");
-
-        applyButton = GetNode<Button>("ApplyButton");
-        returnButton = GetNode<Button>("ReturnButton");
-
-        applyButton.LeftClicked += OnApplyButtonLeftClicked;
-        returnButton.LeftClicked += OnReturnButtonPressed;
+        applyButton!.LeftClicked += OnApplyButtonLeftClicked;
+        returnButton!.LeftClicked += OnReturnButtonPressed;
     }
 
     public override void Update()

@@ -129,53 +129,99 @@ public sealed class PackedSceneYamlNested(string path)
 
     private void AssignDeferredNodes()
     {
-        foreach (var assignment in _deferredNodeAssignments)
+        foreach (var (targetNode, memberPath, nodePath) in _deferredNodeAssignments)
         {
-            Node targetNode = assignment.Item1;
-            string propertyPath = assignment.Item2;
-            object nodePath = assignment.Item3;
+            AssignDeferredNode(targetNode, memberPath, nodePath);
+        }
+    }
 
-            string[] pathParts = propertyPath.Split('/');
-            object currentObject = targetNode;
+    private void AssignDeferredNode(Node targetNode, string memberPath, object nodePath)
+    {
+        string[] pathParts = memberPath.Split('/');
+        object currentObject = targetNode;
 
-            for (int i = 0; i < pathParts.Length; i++)
+        for (int i = 0; i < pathParts.Length; i++)
+        {
+            string part = pathParts[i];
+            Type currentType = currentObject.GetType();
+
+            (MemberInfo? memberInfo, object? nextObject) = GetMemberAndNextObject(currentType, part, currentObject);
+
+            if (i == pathParts.Length - 1)
             {
-                string part = pathParts[i];
-                PropertyInfo? propertyInfo = currentObject.GetType().GetProperty(part, BindingFlags.Public | BindingFlags.Instance);
-                if (propertyInfo == null)
-                {
-                    throw new Exception($"Property '{part}' not found on type '{currentObject.GetType().Name}'.");
-                }
-
-                if (i == pathParts.Length - 1)
-                {
-                    // Final part of the path, assign the Node
-                    if (propertyInfo.PropertyType.IsSubclassOf(typeof(Node)))
-                    {
-                        // Use GetNode to find the referenced Node
-                        MethodInfo getnodeMethod = targetNode.GetType().GetMethod("GetNode")!.MakeGenericMethod(propertyInfo.PropertyType);
-                        object? referencedNode = getnodeMethod.Invoke(targetNode, new object[] { nodePath });
-
-                        if (referencedNode == null)
-                        {
-                            throw new Exception($"Node at path '{nodePath}' not found or is not of type '{propertyInfo.PropertyType.Name}'.");
-                        }
-
-                        propertyInfo.SetValue(currentObject, referencedNode);
-                    }
-                }
-                else
-                {
-                    // Intermediate part of the path, navigate or create nested object
-                    object? nextObject = propertyInfo.GetValue(currentObject);
-                    if (nextObject == null)
-                    {
-                        nextObject = Activator.CreateInstance(propertyInfo.PropertyType);
-                        propertyInfo.SetValue(currentObject, nextObject);
-                    }
-                    currentObject = nextObject!;
-                }
+                // Final part, assign the Node
+                AssignNodeToMember(memberInfo, currentObject, nodePath, targetNode);
             }
+            else
+            {
+                // Intermediate, navigate deeper
+                currentObject = nextObject!;
+            }
+        }
+    }
+
+    private (MemberInfo?, object?) GetMemberAndNextObject(Type type, string memberName, object currentObject)
+    {
+        // Look for a property first (now including NonPublic)
+        PropertyInfo? propertyInfo = type.GetProperty(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        if (propertyInfo != null)
+        {
+            object? nextObject = propertyInfo.GetValue(currentObject);
+            if (nextObject == null)
+            {
+                nextObject = Activator.CreateInstance(propertyInfo.PropertyType);
+                propertyInfo.SetValue(currentObject, nextObject);
+            }
+            return (propertyInfo, nextObject);
+        }
+
+        // Look for a field if no property is found (now including NonPublic)
+        FieldInfo? fieldInfo = type.GetField(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        if (fieldInfo != null)
+        {
+            object? nextObject = fieldInfo.GetValue(currentObject);
+            if (nextObject == null)
+            {
+                nextObject = Activator.CreateInstance(fieldInfo.FieldType);
+                fieldInfo.SetValue(currentObject, nextObject);
+            }
+            return (fieldInfo, nextObject);
+        }
+
+        throw new Exception($"Member '{memberName}' not found on type '{type.Name}'.");
+    }
+
+    private void AssignNodeToMember(MemberInfo? memberInfo, object targetObject, object nodePath, Node targetNode)
+    {
+        if (memberInfo is PropertyInfo propertyInfo && propertyInfo.PropertyType.IsSubclassOf(typeof(Node)))
+        {
+            // Use GetNode to find the referenced Node
+            MethodInfo getnodeMethod = targetNode.GetType().GetMethod("GetNode")!.MakeGenericMethod(propertyInfo.PropertyType);
+            object? referencedNode = getnodeMethod.Invoke(targetNode, new object[] { nodePath });
+
+            if (referencedNode == null)
+            {
+                throw new Exception($"Node at path '{nodePath}' not found or is not of type '{propertyInfo.PropertyType.Name}'.");
+            }
+
+            propertyInfo.SetValue(targetObject, referencedNode);
+        }
+        else if (memberInfo is FieldInfo fieldInfo && fieldInfo.FieldType.IsSubclassOf(typeof(Node)))
+        {
+            // Use GetNode to find the referenced Node
+            MethodInfo getnodeMethod = targetNode.GetType().GetMethod("GetNode")!.MakeGenericMethod(fieldInfo.FieldType);
+            object? referencedNode = getnodeMethod.Invoke(targetNode, new object[] { nodePath });
+
+            if (referencedNode == null)
+            {
+                throw new Exception($"Node at path '{nodePath}' not found or is not of type '{fieldInfo.FieldType.Name}'.");
+            }
+
+            fieldInfo.SetValue(targetObject, referencedNode);
+        }
+        else
+        {
+            throw new Exception($"Member '{memberInfo?.Name}' is not a Node-derived type.");
         }
     }
 }

@@ -12,58 +12,101 @@ public static class PackedSceneUtils
 
     public static void SetProperties(Node node, Dictionary<string, object> element, List<(Node, string, object)>? deferredNodeAssignments = null)
     {
-        foreach (KeyValuePair<string, object> property in element)
+        foreach (KeyValuePair<string, object> member in element)
         {
-            string propertyName = property.Key;
-            if (SpecialProperties.Contains(propertyName))
+            string memberName = member.Key;
+            if (SpecialProperties.Contains(memberName))
             {
                 continue;
             }
 
-            object value = property.Value;
-            SetNestedProperty(node, propertyName, value, deferredNodeAssignments);
+            object value = member.Value;
+            SetNestedMember(node, memberName, value, deferredNodeAssignments);
         }
     }
 
-    public static void SetNestedProperty(object target, string propertyPath, object value, List<(Node, string, object)>? deferredNodeAssignments = null)
+    public static void SetNestedMember(object target, string memberPath, object value, List<(Node, string, object)>? deferredNodeAssignments = null)
     {
-        string[] pathParts = propertyPath.Split('/');
+        string[] pathParts = memberPath.Split('/');
         object currentObject = target;
 
         for (int i = 0; i < pathParts.Length; i++)
         {
             string part = pathParts[i];
-            PropertyInfo? propertyInfo = currentObject.GetType().GetProperty(part, BindingFlags.Public | BindingFlags.Instance);
-            if (propertyInfo == null)
-            {
-                throw new Exception($"Property '{part}' not found on type '{currentObject.GetType().Name}'.");
-            }
 
-            if (i == pathParts.Length - 1)
+            // Get the Type of the current object
+            Type currentType = currentObject.GetType();
+
+            // Look for a property first (now including NonPublic)
+            PropertyInfo? propertyInfo = currentType.GetProperty(part, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (propertyInfo != null)
             {
-                // Final part of the path, handle value assignment or defer if Node type
-                if (propertyInfo.PropertyType.IsSubclassOf(typeof(Node)) && value is string nodePath)
+                if (i == pathParts.Length - 1)
                 {
-                    // Defer assignment of Node types
-                    deferredNodeAssignments.Add(((Node)target, propertyPath, value));
+                    // Final part of the path, handle value assignment or defer if Node type
+                    if (propertyInfo.PropertyType.IsSubclassOf(typeof(Node)) && value is string nodePath)
+                    {
+                        // Defer assignment of Node types
+                        deferredNodeAssignments?.Add(((Node)target, memberPath, value));
+                    }
+                    else
+                    {
+                        // Set the value for non-Node types or non-string values
+                        object propertyValue = ConvertValue(propertyInfo.PropertyType, value);
+                        propertyInfo.SetValue(currentObject, propertyValue);
+                    }
                 }
                 else
                 {
-                    // Set the value for non-Node types or non-string values
-                    object propertyValue = ConvertValue(propertyInfo.PropertyType, value);
-                    propertyInfo.SetValue(currentObject, propertyValue);
+                    // Intermediate part of the path, navigate or create nested object
+                    object? nextObject = propertyInfo.GetValue(currentObject);
+                    if (nextObject == null)
+                    {
+                        nextObject = Activator.CreateInstance(propertyInfo.PropertyType);
+                        propertyInfo.SetValue(currentObject, nextObject);
+                    }
+                    currentObject = nextObject!;
                 }
             }
             else
             {
-                // Intermediate part of the path, navigate or create nested object
-                object? nextObject = propertyInfo.GetValue(currentObject);
-                if (nextObject == null)
+                // Look for a field if no property is found (now including NonPublic)
+                FieldInfo? fieldInfo = currentType.GetField(part, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if (fieldInfo != null)
                 {
-                    nextObject = Activator.CreateInstance(propertyInfo.PropertyType);
-                    propertyInfo.SetValue(currentObject, nextObject);
+                    if (i == pathParts.Length - 1)
+                    {
+                        // Final part of the path, handle value assignment or defer if Node type
+                        if (fieldInfo.FieldType.IsSubclassOf(typeof(Node)) && value is string nodePath)
+                        {
+                            // Defer assignment of Node types
+                            deferredNodeAssignments?.Add(((Node)target, memberPath, value));
+                        }
+                        else
+                        {
+                            // Set the value for non-Node types or non-string values
+                            object fieldValue = ConvertValue(fieldInfo.FieldType, value);
+                            fieldInfo.SetValue(currentObject, fieldValue);
+                        }
+                    }
+                    else
+                    {
+                        // Intermediate part of the path, navigate or create nested object
+                        object? nextObject = fieldInfo.GetValue(currentObject);
+                        if (nextObject == null)
+                        {
+                            nextObject = Activator.CreateInstance(fieldInfo.FieldType);
+                            fieldInfo.SetValue(currentObject, nextObject);
+                        }
+                        currentObject = nextObject!;
+                    }
                 }
-                currentObject = nextObject!;
+                else
+                {
+                    throw new Exception($"Member '{part}' not found on type '{currentType.Name}'.");
+                }
             }
         }
     }
@@ -147,14 +190,27 @@ public static class PackedSceneUtils
             string key = kvp.Key.ToString()!;
             object value = kvp.Value;
 
-            var propertyInfo = targetType.GetProperty(key, BindingFlags.Public | BindingFlags.Instance);
-            if (propertyInfo == null)
+            // Look for a property first (now including NonPublic)
+            var propertyInfo = targetType.GetProperty(key, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (propertyInfo != null)
             {
-                throw new Exception($"Property '{key}' not found on type '{targetType.Name}'.");
+                object convertedValue = ConvertValue(propertyInfo.PropertyType, value);
+                propertyInfo.SetValue(targetObject, convertedValue);
             }
-
-            object convertedValue = ConvertValue(propertyInfo.PropertyType, value);
-            propertyInfo.SetValue(targetObject, convertedValue);
+            else
+            {
+                // Look for a field if no property is found (now including NonPublic)
+                var fieldInfo = targetType.GetField(key, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (fieldInfo != null)
+                {
+                    object convertedValue = ConvertValue(fieldInfo.FieldType, value);
+                    fieldInfo.SetValue(targetObject, convertedValue);
+                }
+                else
+                {
+                    throw new Exception($"Member '{key}' not found on type '{targetType.Name}'.");
+                }
+            }
         }
 
         return targetObject;

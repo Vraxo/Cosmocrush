@@ -32,10 +32,10 @@ public static class FileLoader
                 break;
             case List<object> list:
                 // Treat lists as values (e.g., for Color, Vector2)
-                PackedSceneUtils.SetNestedProperty(target, currentPath, list);
+                PackedSceneUtils.SetNestedMember(target, currentPath, list);
                 break;
             default:
-                PackedSceneUtils.SetNestedProperty(target, currentPath, yamlData);
+                PackedSceneUtils.SetNestedMember(target, currentPath, yamlData);
                 break;
         }
     }
