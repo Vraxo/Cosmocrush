@@ -1,4 +1,5 @@
-﻿using YamlDotNet.Serialization;
+﻿using System.Reflection;
+using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace Cherris;
@@ -11,11 +12,17 @@ public sealed class PackedSceneYamlNested(string path)
         .WithNamingConvention(CamelCaseNamingConvention.Instance)
         .Build();
 
+    private List<(Node, string, object)> _deferredNodeAssignments = new();
+
     public T Instantiate<T>(bool isRootNode = false) where T : Node
     {
         var yamlContent = File.ReadAllText(_path);
         var rootElement = _deserializer.Deserialize<Dictionary<string, object>>(yamlContent);
-        return (T)ParseNode(rootElement, null);
+        var rootNode = (T)ParseNode(rootElement, null);
+
+        AssignDeferredNodes();
+
+        return rootNode;
     }
 
     private Node ParseNode(Dictionary<string, object> element, Node? parent)
@@ -62,7 +69,7 @@ public sealed class PackedSceneYamlNested(string path)
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         Console.WriteLine($"Setting properties for {node.Name}: {string.Join(", ", properties.Keys)}");
-        PackedSceneUtils.SetProperties(node, properties);
+        PackedSceneUtils.SetProperties(node, properties, _deferredNodeAssignments);
     }
 
     private bool IsReservedKey(string key) =>
@@ -118,5 +125,57 @@ public sealed class PackedSceneYamlNested(string path)
             kvp => kvp.Key.ToString()!,
             kvp => kvp.Value
         );
+    }
+
+    private void AssignDeferredNodes()
+    {
+        foreach (var assignment in _deferredNodeAssignments)
+        {
+            Node targetNode = assignment.Item1;
+            string propertyPath = assignment.Item2;
+            object nodePath = assignment.Item3;
+
+            string[] pathParts = propertyPath.Split('/');
+            object currentObject = targetNode;
+
+            for (int i = 0; i < pathParts.Length; i++)
+            {
+                string part = pathParts[i];
+                PropertyInfo? propertyInfo = currentObject.GetType().GetProperty(part, BindingFlags.Public | BindingFlags.Instance);
+                if (propertyInfo == null)
+                {
+                    throw new Exception($"Property '{part}' not found on type '{currentObject.GetType().Name}'.");
+                }
+
+                if (i == pathParts.Length - 1)
+                {
+                    // Final part of the path, assign the Node
+                    if (propertyInfo.PropertyType.IsSubclassOf(typeof(Node)))
+                    {
+                        // Use GetNode to find the referenced Node
+                        MethodInfo getnodeMethod = targetNode.GetType().GetMethod("GetNode")!.MakeGenericMethod(propertyInfo.PropertyType);
+                        object? referencedNode = getnodeMethod.Invoke(targetNode, new object[] { nodePath });
+
+                        if (referencedNode == null)
+                        {
+                            throw new Exception($"Node at path '{nodePath}' not found or is not of type '{propertyInfo.PropertyType.Name}'.");
+                        }
+
+                        propertyInfo.SetValue(currentObject, referencedNode);
+                    }
+                }
+                else
+                {
+                    // Intermediate part of the path, navigate or create nested object
+                    object? nextObject = propertyInfo.GetValue(currentObject);
+                    if (nextObject == null)
+                    {
+                        nextObject = Activator.CreateInstance(propertyInfo.PropertyType);
+                        propertyInfo.SetValue(currentObject, nextObject);
+                    }
+                    currentObject = nextObject!;
+                }
+            }
+        }
     }
 }

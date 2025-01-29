@@ -1,5 +1,8 @@
 name: Settings
 type: SettingsMenu
+masterLabel: MasterLabel
+musicLabel: MusicLabel
+sfxLabel: SfxLabel
 children:
   - name: MasterLabel
     type: Label

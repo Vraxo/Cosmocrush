@@ -10,7 +10,7 @@ public static class PackedSceneUtils
 {
     private static readonly string[] SpecialProperties = { "type", "name", "path" };
 
-    public static void SetProperties(Node node, Dictionary<string, object> element)
+    public static void SetProperties(Node node, Dictionary<string, object> element, List<(Node, string, object)>? deferredNodeAssignments = null)
     {
         foreach (KeyValuePair<string, object> property in element)
         {
@@ -21,11 +21,11 @@ public static class PackedSceneUtils
             }
 
             object value = property.Value;
-            SetNestedProperty(node, propertyName, value);
+            SetNestedProperty(node, propertyName, value, deferredNodeAssignments);
         }
     }
 
-    public static void SetNestedProperty(object target, string propertyPath, object value)
+    public static void SetNestedProperty(object target, string propertyPath, object value, List<(Node, string, object)>? deferredNodeAssignments = null)
     {
         string[] pathParts = propertyPath.Split('/');
         object currentObject = target;
@@ -41,9 +41,18 @@ public static class PackedSceneUtils
 
             if (i == pathParts.Length - 1)
             {
-                // Final part of the path, set the value
-                object propertyValue = ConvertValue(propertyInfo.PropertyType, value);
-                propertyInfo.SetValue(currentObject, propertyValue);
+                // Final part of the path, handle value assignment or defer if Node type
+                if (propertyInfo.PropertyType.IsSubclassOf(typeof(Node)) && value is string nodePath)
+                {
+                    // Defer assignment of Node types
+                    deferredNodeAssignments.Add(((Node)target, propertyPath, value));
+                }
+                else
+                {
+                    // Set the value for non-Node types or non-string values
+                    object propertyValue = ConvertValue(propertyInfo.PropertyType, value);
+                    propertyInfo.SetValue(currentObject, propertyValue);
+                }
             }
             else
             {
