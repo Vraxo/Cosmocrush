@@ -6,11 +6,13 @@ public static class NodeEmoji
     {
         return node switch
         {
+            ParticleGenerator => "✨",
+            Slider => "🎚️",
             Label => "💬",
             Camera => "🎥",
             RayCast => "⚡",
             Timer => "⏰",
-            NavigationRegion =>"🗺",
+            NavigationRegion => "🗺",
             NavigationAgent => "🧭",
             AudioPlayer => "🔉",
             Collider => "📦",

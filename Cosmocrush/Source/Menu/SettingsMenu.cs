@@ -6,8 +6,6 @@ namespace Cosmocrush;
 
 public class SettingsMenu : Node2D
 {
-    //private PackedScene mainMenuScene = ResourceLoader.Load<PackedScene>("Res/Scenes/Menu/MainMenu.ini");
-
     private HSlider? masterSlider;
     private HSlider? musicSlider;
     private HSlider? sfxSlider;
@@ -27,27 +25,11 @@ public class SettingsMenu : Node2D
         musicSlider = GetNode<HSlider>("MusicLabel/Slider");
         sfxSlider = GetNode<HSlider>("SfxLabel/Slider");
 
-        //masterSlider.Value = Settings.Instance.SettingsData.MasterVolume;
-        //musicSlider.Value = Settings.Instance.SettingsData.MusicVolume;
-        //sfxSlider.Value = Settings.Instance.SettingsData.SfxVolume;
-        //
-        //applyButton.Pressed += OnApplyButtonPressed;
-        //returnButton.Pressed += OnReturnButtonPressed;
-    }
+        applyButton = GetNode<Button>("ApplyButton");
+        returnButton = GetNode<Button>("ReturnButton");
 
-    private void OnApplyButtonPressed()
-    {
-        //Settings.Instance.SettingsData.MasterVolume = masterSlider.Value;
-        //Settings.Instance.SettingsData.MusicVolume = musicSlider.Value;
-        //Settings.Instance.SettingsData.SfxVolume = sfxSlider.Value;
-        //Settings.Instance.Save();
-    }
-
-    private void OnReturnButtonPressed()
-    {
-        //var mainMenu = mainMenuScene.Instantiate<Node2D>();
-        //GetParent().AddChild(mainMenu);
-        //QueueFree();
+        applyButton.LeftClicked += OnApplyButtonLeftClicked;
+        returnButton.LeftClicked += OnReturnButtonPressed;
     }
 
     public override void Update()
@@ -56,40 +38,56 @@ public class SettingsMenu : Node2D
         UpdateButtons();
     }
 
+    private void OnApplyButtonLeftClicked(Button sender)
+    {
+        //Settings.Instance.SettingsData.MasterVolume = masterSlider.Value;
+        //Settings.Instance.SettingsData.MusicVolume = musicSlider.Value;
+        //Settings.Instance.SettingsData.SfxVolume = sfxSlider.Value;
+        //Settings.Instance.Save();
+    }
+
+    private void OnReturnButtonPressed(Button sender)
+    {
+        PackedSceneYamlNested mainMenuScene = new("Res/Scenes/Menu/MainMenu.yaml");
+        var mainMenu = mainMenuScene.Instantiate<MainMenu>();
+        Parent!.AddChild(mainMenu);
+        Destroy();
+    }
+
     private void UpdateLabels()
     {
         Vector2 windowSize = WindowManager.Size;
 
         masterLabel!.Position = new(
-            windowSize.X / 2 - masterSlider!.Size.X / 2,
+            windowSize.X / 2 - masterSlider!.Size.X / 2 - masterLabel.Size.X,
             windowSize.Y / 2 - 50
         );
 
         musicLabel!.Position = new(
-            windowSize.X / 2 - musicSlider!.Size.X / 2,
+            windowSize.X / 2 - musicSlider!.Size.X / 2 - masterLabel.Size.X,
             windowSize.Y / 2
         );
 
         sfxLabel!.Position = new(
-            windowSize.X / 2 - sfxSlider!.Size.X / 2,
+            windowSize.X / 2 - sfxSlider!.Size.X / 2 - masterLabel.Size.X,
             windowSize.Y / 2 + 50
         );
     }
 
     private void UpdateButtons()
     {
-        //Vector2I windowSize = DisplayServer.WindowGetSize();
-        //
-        //float buttonSpacing = 20f;
-        //
-        //applyButton.Position = new(
-        //    (windowSize.X / 2) - applyButton.Size.X - buttonSpacing,
-        //    windowSize.Y / 2 + 100
-        //);
-        //
-        //returnButton.Position = new(
-        //    (windowSize.X / 2) + buttonSpacing,
-        //    windowSize.Y / 2 + 100
-        //);
+        Vector2 windowSize = WindowManager.Size;
+
+        float buttonSpacing = 20f;
+        
+        applyButton!.Position = new(
+            (windowSize.X / 2) - applyButton.Size.X - buttonSpacing,
+            windowSize.Y / 2 + 100
+        );
+        
+        returnButton!.Position = new(
+            (windowSize.X / 2) + buttonSpacing,
+            windowSize.Y / 2 + 100
+        );
     }
 }

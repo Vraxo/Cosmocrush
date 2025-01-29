@@ -5,7 +5,7 @@ public abstract class Slider : Control
     public float Value { get; set; } = 0.5f;
     public float MinValue { get; set; } = 0;
     public float MaxValue { get; set; } = 1f;
-    private float step = 0.1f;
+    private float step = 0.01f;
     public float Step
     {
         get { return step; }

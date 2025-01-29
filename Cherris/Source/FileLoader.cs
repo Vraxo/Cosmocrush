@@ -1,6 +1,6 @@
 ﻿using Cherris;
-using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 public static class FileLoader
 {
@@ -13,7 +13,7 @@ public static class FileLoader
         var yamlContent = File.ReadAllText(filePath);
         var data = _deserializer.Deserialize<object>(yamlContent);
 
-        T instance = new T();
+        T instance = new();
         ProcessYamlData(instance, data, "");
         return instance;
     }

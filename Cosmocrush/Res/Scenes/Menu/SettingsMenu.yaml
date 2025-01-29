@@ -34,9 +34,22 @@ children:
     Text: SFX
     Theme:
         Font: Res/Fonts/RaceSport.ttf:16
-        FontColor: [255, 0, 0, 255]
     children:
       - name: Slider
         type: HSlider
         Position: [32,-8]
         HorizontalAlignment: Left
+
+  - name: ApplyButton
+    type: Button
+    Text: Apply
+    FocusNeighborLeft: ../ReturnButton
+    FocusNeighborRight: ../ReturnButton
+    ThemeFile: Res/Themes/Button.theme.yaml
+
+  - name: ReturnButton
+    type: Button
+    Text: Return
+    FocusNeighborLeft: ../ApplyButton
+    FocusNeighborRight: ../ApplyButton
+    ThemeFile: Res/Themes/Button.theme.yaml
