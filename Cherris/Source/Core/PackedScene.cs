@@ -237,14 +237,14 @@ public class PackedScene
     {
         string stringValue = value.Trim();
 
-        if (stringValue.StartsWith("Audio(") && stringValue.EndsWith(")"))
+        if (stringValue.StartsWith("MoveAudio(") && stringValue.EndsWith(")"))
         {
             string audioPath = ExtractQuotedString(stringValue[6..^1]);
             return new(audioPath);
         }
         else
         {
-            throw new Exception($"Invalid Audio format, expected format: Audio(path)");
+            throw new Exception($"Invalid MoveAudio format, expected format: MoveAudio(path)");
         }
     }
 

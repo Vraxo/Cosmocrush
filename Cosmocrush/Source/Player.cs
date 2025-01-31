@@ -8,7 +8,7 @@ public class Player : ColliderRectangle
 
     private Sprite sprite = new();
     private readonly float speed = 200f;
-    private readonly string damageAudioPath = "Res/Audio/SFX/Damage.mp3";
+    private readonly string damageAudioPath = "Res/MoveAudio/SFX/Damage.mp3";
 
     public override void Ready()
     {

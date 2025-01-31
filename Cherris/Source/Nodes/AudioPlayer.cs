@@ -4,6 +4,8 @@ namespace Cherris;
 
 public class AudioPlayer : Node
 {
+    public string Bus { get; set; } = "Master";
+
     private Audio? _audio;
     public Audio? Audio
     {
@@ -13,6 +15,7 @@ public class AudioPlayer : Node
         {
             _audio = value;
             Volume = _volume;
+            Volume = AudioManagerCore.Instance.GetBusVolume(Bus);
             Pitch = _pitch;
             Pan = _pan;
         }
@@ -80,6 +83,11 @@ public class AudioPlayer : Node
     public event AudioPlayerEventHandler? Paused;
     public event AudioPlayerEventHandler? Resumed;
     public event AudioPlayerEventHandler? Finished;
+
+    public AudioPlayer()
+    {
+        AudioManagerCore.Instance.VolumeChanged += OnAudioManagerBusVolumeChanged;
+    }
 
     public override void Ready()
     {
@@ -184,5 +192,14 @@ public class AudioPlayer : Node
         timestamp = Math.Clamp(timestamp, 0.1f, Audio.Length);
 
         Raylib.SeekMusicStream(Audio, timestamp);
+    }
+
+    private void OnAudioManagerBusVolumeChanged(string bus, float volume)
+    {
+        if (Bus == bus)
+        {
+            Volume = volume;
+            Console.WriteLine("Set volume to " + volume);
+        }
     }
 }

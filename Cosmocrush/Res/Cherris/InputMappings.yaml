@@ -1,0 +1,41 @@
+UiLeft:
+  - Type: Keyboard
+    KeyOrButton: Left
+
+UiUp:
+  - Type: Keyboard
+    KeyOrButton: Up
+
+UiRight:
+  - Type: Keyboard
+    KeyOrButton: Right
+
+UiDown:
+  - Type: Keyboard
+    KeyOrButton: Down
+
+UiAccept:
+  - Type: Keyboard
+    KeyOrButton: Enter
+
+Fire:
+  - Type: Keyboard
+    KeyOrButton: Space
+  - Type: MouseButton
+    KeyOrButton: Left
+
+MoveLeft:
+  - Type: Keyboard
+    KeyOrButton: A
+
+MoveRight:
+  - Type: Keyboard
+    KeyOrButton: D
+
+MoveUp:
+  - Type: Keyboard
+    KeyOrButton: W
+
+MoveDown:
+  - Type: Keyboard
+    KeyOrButton: S

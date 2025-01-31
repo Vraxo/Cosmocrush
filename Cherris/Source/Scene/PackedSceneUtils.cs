@@ -1,252 +1,219 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using System.Reflection;
 
 namespace Cherris;
 
 public static class PackedSceneUtils
 {
+    private const BindingFlags MemberBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
     private static readonly string[] SpecialProperties = { "type", "name", "path" };
 
-    public static void SetProperties(Node node, Dictionary<string, object> element, List<(Node, string, object)>? deferredNodeAssignments = null)
+    public static void SetProperties(Node node, Dictionary<string, object> element,
+        List<(Node, string, object)>? deferredNodeAssignments = null)
     {
-        foreach (KeyValuePair<string, object> member in element)
+        foreach (var (key, value) in element)
         {
-            string memberName = member.Key;
-            if (SpecialProperties.Contains(memberName))
-            {
-                continue;
-            }
-
-            object value = member.Value;
-            SetNestedMember(node, memberName, value, deferredNodeAssignments);
+            if (SpecialProperties.Contains(key)) continue;
+            SetNestedMember(node, key, value, deferredNodeAssignments);
         }
     }
 
-    public static void SetNestedMember(object target, string memberPath, object value, List<(Node, string, object)>? deferredNodeAssignments = null)
+    public static void SetNestedMember(object target, string memberPath, object value,
+        List<(Node, string, object)>? deferredNodeAssignments = null)
     {
-        string[] pathParts = memberPath.Split('/');
+        var pathParts = memberPath.Split('/');
         object currentObject = target;
 
-        for (int i = 0; i < pathParts.Length; i++)
+        for (var i = 0; i < pathParts.Length; i++)
         {
-            string part = pathParts[i];
+            var memberInfo = GetMemberInfo(currentObject.GetType(), pathParts[i]);
+            var isFinalSegment = i == pathParts.Length - 1;
 
-            // Get the Type of the current object
-            Type currentType = currentObject.GetType();
-
-            // Look for a property first (now including NonPublic)
-            PropertyInfo? propertyInfo = currentType.GetProperty(part, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-            if (propertyInfo != null)
+            if (isFinalSegment)
             {
-                if (i == pathParts.Length - 1)
-                {
-                    // Final part of the path, handle value assignment or defer if Node type
-                    if (propertyInfo.PropertyType.IsSubclassOf(typeof(Node)) && value is string nodePath)
-                    {
-                        // Defer assignment of Node types
-                        deferredNodeAssignments?.Add(((Node)target, memberPath, value));
-                    }
-                    else
-                    {
-                        // Set the value for non-Node types or non-string values
-                        object propertyValue = ConvertValue(propertyInfo.PropertyType, value);
-                        propertyInfo.SetValue(currentObject, propertyValue);
-                    }
-                }
-                else
-                {
-                    // Intermediate part of the path, navigate or create nested object
-                    object? nextObject = propertyInfo.GetValue(currentObject);
-                    if (nextObject == null)
-                    {
-                        nextObject = Activator.CreateInstance(propertyInfo.PropertyType);
-                        propertyInfo.SetValue(currentObject, nextObject);
-                    }
-                    currentObject = nextObject!;
-                }
+                HandleFinalSegment(target, memberPath, currentObject, memberInfo, value, deferredNodeAssignments);
             }
             else
             {
-                // Look for a field if no property is found (now including NonPublic)
-                FieldInfo? fieldInfo = currentType.GetField(part, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-                if (fieldInfo != null)
-                {
-                    if (i == pathParts.Length - 1)
-                    {
-                        // Final part of the path, handle value assignment or defer if Node type
-                        if (fieldInfo.FieldType.IsSubclassOf(typeof(Node)) && value is string nodePath)
-                        {
-                            // Defer assignment of Node types
-                            deferredNodeAssignments?.Add(((Node)target, memberPath, value));
-                        }
-                        else
-                        {
-                            // Set the value for non-Node types or non-string values
-                            object fieldValue = ConvertValue(fieldInfo.FieldType, value);
-                            fieldInfo.SetValue(currentObject, fieldValue);
-                        }
-                    }
-                    else
-                    {
-                        // Intermediate part of the path, navigate or create nested object
-                        object? nextObject = fieldInfo.GetValue(currentObject);
-                        if (nextObject == null)
-                        {
-                            nextObject = Activator.CreateInstance(fieldInfo.FieldType);
-                            fieldInfo.SetValue(currentObject, nextObject);
-                        }
-                        currentObject = nextObject!;
-                    }
-                }
-                else
-                {
-                    throw new Exception($"Member '{part}' not found on type '{currentType.Name}'.");
-                }
+                currentObject = GetOrCreateIntermediateObject(currentObject, memberInfo);
             }
+        }
+    }
+
+    private static MemberInfo GetMemberInfo(Type type, string memberName)
+    {
+        var property = type.GetProperty(memberName, MemberBindingFlags);
+        if (property != null) return property;
+
+        var field = type.GetField(memberName, MemberBindingFlags);
+        if (field != null) return field;
+
+        throw new InvalidOperationException($"Member '{memberName}' not found on type '{type.Name}'");
+    }
+
+    private static void HandleFinalSegment(object rootTarget, string memberPath, object currentObject,
+        MemberInfo memberInfo, object value, List<(Node, string, object)>? deferredAssignments)
+    {
+        var memberType = memberInfo switch
+        {
+            PropertyInfo p => p.PropertyType,
+            FieldInfo f => f.FieldType,
+            _ => throw new InvalidOperationException("Unsupported member type")
+        };
+
+        if (ShouldDeferAssignment(memberType, value))
+        {
+            deferredAssignments?.Add(((Node)rootTarget, memberPath, value));
+        }
+        else
+        {
+            var convertedValue = ConvertValue(memberType, value);
+            SetMemberValue(currentObject, memberInfo, convertedValue);
+        }
+    }
+
+    private static bool ShouldDeferAssignment(Type memberType, object value)
+        => memberType.IsSubclassOf(typeof(Node)) && value is string;
+
+    private static object GetOrCreateIntermediateObject(object currentObject, MemberInfo memberInfo)
+    {
+        var existingValue = GetMemberValue(currentObject, memberInfo);
+        if (existingValue != null) return existingValue;
+
+        var newInstance = CreateMemberInstance(memberInfo);
+        SetMemberValue(currentObject, memberInfo, newInstance);
+        return newInstance;
+    }
+
+    private static object CreateMemberInstance(MemberInfo memberInfo)
+        => Activator.CreateInstance(memberInfo switch
+        {
+            PropertyInfo p => p.PropertyType,
+            FieldInfo f => f.FieldType,
+            _ => throw new InvalidOperationException("Unsupported member type")
+        }) ?? throw new InvalidOperationException("Failed to create instance");
+
+    private static object? GetMemberValue(object target, MemberInfo memberInfo)
+    {
+        return memberInfo switch
+        {
+            PropertyInfo p => p.GetValue(target),
+            FieldInfo f => f.GetValue(target),
+            _ => throw new InvalidOperationException("Unsupported member type")
+        };
+    }
+
+    private static void SetMemberValue(object target, MemberInfo memberInfo, object value)
+    {
+        switch (memberInfo)
+        {
+            case PropertyInfo p:
+                p.SetValue(target, value);
+                break;
+            case FieldInfo f:
+                f.SetValue(target, value);
+                break;
+            default:
+                throw new InvalidOperationException("Unsupported member type");
         }
     }
 
     public static Type ResolveType(string typeName)
     {
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            Type? type = assembly.GetType(typeName, false, true);
-            if (type != null)
-                return type;
-
-            string defaultNamespace = assembly.GetName().Name!;
-            string namespacedTypeName = defaultNamespace + "." + typeName;
-            type = assembly.GetType(namespacedTypeName, false, true);
-            if (type != null)
-                return type;
-        }
-
-        throw new Exception($"Type '{typeName}' not found.");
+        return AppDomain.CurrentDomain.GetAssemblies()
+            .Select(assembly => assembly.GetType(typeName, false) ?? assembly.GetType($"{assembly.GetName().Name}.{typeName}", false))
+            .FirstOrDefault(type => type != null)
+            ?? throw new TypeLoadException($"Type '{typeName}' not found");
     }
 
     public static object ConvertValue(Type targetType, object value)
     {
-        // Handle nested objects (dictionaries)
-        if (value is Dictionary<object, object> dict)
+        return value switch
         {
-            return ConvertNestedObject(targetType, dict);
-        }
-        // Handle lists/arrays for Vector2, Color, etc.
-        else if (value is IList list)
-        {
-            if (targetType == typeof(Vector2))
-            {
-                return ParseVector2(list);
-            }
-            else if (targetType == typeof(Color))
-            {
-                return ParseColor(list);
-            }
-            else
-            {
-                throw new Exception($"Unsupported list conversion to type '{targetType.Name}'");
-            }
-        }
-        // Handle primitive values and other types
-        else
-        {
-            string stringValue = value.ToString() ?? throw new Exception("Value cannot be null");
-
-            // Remove outer quotes if present
-            if ((stringValue.StartsWith("\"") && stringValue.EndsWith("\"")) ||
-                (stringValue.StartsWith("'") && stringValue.EndsWith("'")))
-            {
-                stringValue = stringValue.Substring(1, stringValue.Length - 2);
-            }
-
-            return targetType switch
-            {
-                Type t when t == typeof(Audio) => ParseAudio(stringValue),
-                Type t when t == typeof(Texture) => ParseTexture(stringValue),
-                Type t when t == typeof(Font) => ResourceLoader.Load<Font>(stringValue),
-                Type t when t.IsEnum => Enum.Parse(targetType, stringValue),
-                Type t when t == typeof(int) => int.Parse(stringValue),
-                Type t when t == typeof(uint) => uint.Parse(stringValue),
-                Type t when t == typeof(float) => float.Parse(stringValue),
-                Type t when t == typeof(double) => double.Parse(stringValue),
-                Type t when t == typeof(bool) => bool.Parse(stringValue),
-                Type t when t == typeof(string) => stringValue,
-                _ => throw new Exception($"Unsupported type '{targetType.Name}' for value '{stringValue}'")
-            };
-        }
+            Dictionary<object, object> dict => ConvertNestedObject(targetType, dict),
+            IList list => ConvertList(targetType, list),
+            _ => ConvertPrimitive(targetType, value)
+        };
     }
 
     private static object ConvertNestedObject(Type targetType, Dictionary<object, object> dict)
     {
-        var targetObject = Activator.CreateInstance(targetType) ?? throw new Exception($"Failed to create instance of type {targetType.Name}");
+        var instance = Activator.CreateInstance(targetType)
+            ?? throw new InvalidOperationException($"Failed to create {targetType.Name} instance");
 
-        foreach (var kvp in dict)
+        foreach (var (key, value) in dict)
         {
-            string key = kvp.Key.ToString()!;
-            object value = kvp.Value;
+            var memberName = key.ToString() ?? throw new InvalidDataException("Dictionary key cannot be null");
+            var memberInfo = GetMemberInfo(targetType, memberName);
 
-            // Look for a property first (now including NonPublic)
-            var propertyInfo = targetType.GetProperty(key, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            if (propertyInfo != null)
-            {
-                object convertedValue = ConvertValue(propertyInfo.PropertyType, value);
-                propertyInfo.SetValue(targetObject, convertedValue);
-            }
-            else
-            {
-                // Look for a field if no property is found (now including NonPublic)
-                var fieldInfo = targetType.GetField(key, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                if (fieldInfo != null)
-                {
-                    object convertedValue = ConvertValue(fieldInfo.FieldType, value);
-                    fieldInfo.SetValue(targetObject, convertedValue);
-                }
-                else
-                {
-                    throw new Exception($"Member '{key}' not found on type '{targetType.Name}'.");
-                }
-            }
+            var convertedValue = ConvertValue(GetMemberType(memberInfo), value);
+            SetMemberValue(instance, memberInfo, convertedValue);
         }
 
-        return targetObject;
+        return instance;
+    }
+
+    private static Type GetMemberType(MemberInfo memberInfo)
+        => memberInfo switch
+        {
+            PropertyInfo p => p.PropertyType,
+            FieldInfo f => f.FieldType,
+            _ => throw new InvalidOperationException("Unsupported member type")
+        };
+
+    private static object ConvertList(Type targetType, IList list)
+        => targetType.Name switch
+        {
+            nameof(Vector2) => ParseVector2(list),
+            nameof(Color) => ParseColor(list),
+            _ => throw new NotSupportedException($"Unsupported list conversion to {targetType.Name}")
+        };
+
+    private static object ConvertPrimitive(Type targetType, object value)
+    {
+        var stringValue = value.ToString()?.TrimQuotes()
+            ?? throw new InvalidOperationException("Value cannot be null");
+
+        if (targetType.IsEnum)
+            return Enum.Parse(targetType, stringValue);
+
+        return targetType switch
+        {
+            _ when targetType == typeof(Audio) => new Audio(stringValue),
+            _ when targetType == typeof(Texture) => TextureManager.Instance.Get(stringValue),
+            _ when targetType == typeof(Font) => ResourceLoader.Load<Font>(stringValue),
+            _ when targetType == typeof(int) => int.Parse(stringValue),
+            _ when targetType == typeof(uint) => uint.Parse(stringValue),
+            _ when targetType == typeof(float) => float.Parse(stringValue),
+            _ when targetType == typeof(double) => double.Parse(stringValue),
+            _ when targetType == typeof(bool) => bool.Parse(stringValue),
+            _ when targetType == typeof(string) => stringValue,
+            _ => throw new NotSupportedException($"Unsupported type: {targetType.Name}")
+        };
     }
 
     private static Vector2 ParseVector2(IList list)
     {
-        if (list.Count != 2)
-            throw new ArgumentException("Vector2 requires exactly 2 elements");
-
-        float x = Convert.ToSingle(list[0]);
-        float y = Convert.ToSingle(list[1]);
-
-        return new Vector2(x, y);
+        if (list.Count != 2) throw new ArgumentException("Vector2 requires exactly 2 elements");
+        return new Vector2(
+            Convert.ToSingle(list[0]),
+            Convert.ToSingle(list[1])
+        );
     }
 
     private static Color ParseColor(IList list)
     {
-        if (list.Count < 3 || list.Count > 4)
-            throw new ArgumentException("Color requires 3 or 4 elements");
-
-        byte r = Convert.ToByte(list[0]);
-        byte g = Convert.ToByte(list[1]);
-        byte b = Convert.ToByte(list[2]);
-        byte a = list.Count > 3 ? Convert.ToByte(list[3]) : (byte)255;
-
-        return new Color(r, g, b, a);
+        if (list.Count < 3 || list.Count > 4) throw new ArgumentException("Color requires 3 or 4 elements");
+        return new Color(
+            Convert.ToByte(list[0]),
+            Convert.ToByte(list[1]),
+            Convert.ToByte(list[2]),
+            list.Count > 3 ? Convert.ToByte(list[3]) : (byte)255
+        );
     }
 
-    private static Audio ParseAudio(string path)
-    {
-        return new Audio(path);
-    }
-
-    private static Texture ParseTexture(string path)
-    {
-        return TextureManager.Instance.Get(path);
-    }
+    private static string TrimQuotes(this string input)
+        => input.Length >= 2 && (input[0] == '"' || input[0] == '\'')
+            ? input.Substring(1, input.Length - 2)
+            : input;
 }

@@ -5,16 +5,10 @@ public abstract class Slider : Control
     public float Value { get; set; } = 0.5f;
     public float MinValue { get; set; } = 0;
     public float MaxValue { get; set; } = 1f;
-    private float step = 0.01f;
-    public float Step
-    {
-        get { return step; }
-        set { step = Math.Max(value, 0); }
-    }
-    public BoxTheme BackgroundTheme { get; set; } = new BoxTheme();
-    public BoxTheme ForegroundTheme { get; set; } = new BoxTheme();
-    public ButtonThemePack GrabberTheme { get; set; } = new ButtonThemePack();
-    public Vector2 GrabberSize { get; set; } = new Vector2(20, 20);
+    public Audio? MoveAudio { get; set; }
+    public SliderTheme Theme { get; set; } = new();
+    public ButtonThemePack GrabberTheme { get; set; } = new();
+    public Vector2 GrabberSize { get; set; } = new(20, 20);
 
     protected bool grabberPressed;
     protected bool grabberHovered;
@@ -23,15 +17,26 @@ public abstract class Slider : Control
     protected float trackMin;
     protected float trackMax;
 
+    private float _step = 0.01f;
+    public float Step
+    {
+        get => _step;
+
+        set 
+        {
+            _step = Math.Max(value, 0); 
+        }
+    }
+
     public Slider()
     {
-        Size = new Vector2(512, 16);
+        Size = new(512, 16);
         Focusable = true;
         UseArrowNavigation = true;
-        ForegroundTheme.FillColor = DefaultTheme.Accent;
-        ForegroundTheme.Roundness = 1;
-        BackgroundTheme.Roundness = 1;
-        GrabberTheme.Roundness = 1;
+        Theme.Foreground.FillColor = DefaultTheme.Accent;
+        Theme.Foreground.Roundness = 1;
+        Theme.Foreground.Roundness = 1;
+        Theme.Grabber.Roundness = 1;
     }
 
     public override void Update()
@@ -46,7 +51,7 @@ public abstract class Slider : Control
         if (Focused)
         {
             HandleKeyboardNavigation();
-            HandleFocusExit();
+            OnFocusLost();
         }
 
         CalculateTrackBounds();
@@ -55,17 +60,29 @@ public abstract class Slider : Control
         UpdateGrabberTheme();
     }
 
-    protected virtual void HandleKeyboardNavigation()
-    {
-        // To be implemented in derived classes
-    }
+    protected abstract void HandleKeyboardNavigation();
 
-    protected virtual void HandleFocusExit()
+    protected virtual void OnFocusLost()
     {
         if (Input.IsActionPressed("UiAccept") || (Input.IsMouseButtonPressed(MouseButtonCode.Left) && !IsMouseOver()))
         {
             Focused = false;
         }
+    }
+
+    protected override void OnThemeFileChanged(string themeFile)
+    {
+        Theme = FileLoader.Load<SliderTheme>(themeFile);
+    }
+
+    protected void PlaySound()
+    {
+        if (MoveAudio is null)
+        {
+            return;
+        }
+
+        AudioManager.PlaySound(MoveAudio, AudioBus);
     }
 
     protected abstract void CalculateTrackBounds();
@@ -97,16 +114,20 @@ public abstract class Slider : Control
 
     private void DrawBackground()
     {
-        DrawRectangleThemed(trackPosition, Size, BackgroundTheme);
+        DrawRectangleThemed(
+            trackPosition,
+            Size,
+            Theme.Background);
     }
 
     private void DrawGrabber()
     {
         Vector2 grabberPos = CalculateGrabberPosition();
-        var themeState = Focused ? GrabberTheme.Focused :
-            grabberPressed ? GrabberTheme.Pressed :
-            grabberHovered ? GrabberTheme.Hover :
-            GrabberTheme.Normal;
+
+        BoxTheme themeState = Focused ? Theme.Grabber.Focused :
+            grabberPressed ? Theme.Grabber.Pressed :
+            grabberHovered ? Theme.Grabber.Hover :
+            Theme.Grabber.Hover;
 
         DrawRectangleThemed(grabberPos, GrabberSize, themeState);
     }

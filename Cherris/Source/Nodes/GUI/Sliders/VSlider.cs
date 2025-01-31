@@ -91,14 +91,17 @@ public class VSlider : Slider
         if (Direction == VSliderDirection.BottomToTop)
         {
             DrawRectangleThemed(
-                new Vector2(trackPosition.X, trackPosition.Y + Size.Y - height),
-                new Vector2(Size.X, height),
-                ForegroundTheme
+                new(trackPosition.X, trackPosition.Y + Size.Y - height),
+                new(Size.X, height),
+                Theme.Foreground
             );
         }
         else
         {
-            DrawRectangleThemed(trackPosition, new Vector2(Size.X, height), ForegroundTheme);
+            DrawRectangleThemed(
+                trackPosition,
+                new(Size.X, height),
+                Theme.Foreground);
         }
     }
 
@@ -132,8 +135,6 @@ public class VSlider : Slider
 
     protected override void HandleKeyboardNavigation()
     {
-        base.HandleKeyboardNavigation();
-
         if (Focused)
         {
             if (Input.IsActionPressed("UiUp"))

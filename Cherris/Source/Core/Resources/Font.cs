@@ -1,5 +1,4 @@
-﻿using SDL2;
-using Raylib_cs;
+﻿using Raylib_cs;
 
 namespace Cherris;
 
