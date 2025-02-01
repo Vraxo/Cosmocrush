@@ -1,10 +1,16 @@
-﻿using Raylib_cs;
-
-namespace Cherris;
+﻿namespace Cherris;
 
 public class TextureRectangle : Node2D
 {
     public Texture? Texture { get; set; }
+
+    static TextureRectangle()
+    {
+        PropertyRegistry.Register(typeof(TextureRectangle), new()
+        {
+            { "Texture", (node, value) => ((TextureRectangle)node).Texture = new(value.ToString()!) },
+        });
+    }
 
     public TextureRectangle()
     {

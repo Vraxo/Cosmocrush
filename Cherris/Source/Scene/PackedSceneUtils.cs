@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Cherris;
@@ -8,19 +9,41 @@ public static class PackedSceneUtils
     private const BindingFlags MemberBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
     private static readonly string[] SpecialProperties = { "type", "name", "path" };
 
-    public static void SetProperties(Node node, Dictionary<string, object> element,
-        List<(Node, string, object)>? deferredNodeAssignments = null)
+    public static void SetProperties(Node node, Dictionary<string, object> properties, List<(Node, string, object)> deferredNodeAssignments)
     {
-        foreach (var (key, value) in element)
+        Stopwatch swTotal = Stopwatch.StartNew();
+
+        foreach (var kvp in properties)
         {
-            if (SpecialProperties.Contains(key)) continue;
-            SetNestedMember(node, key, value, deferredNodeAssignments);
+            Stopwatch swProp = Stopwatch.StartNew();
+            var setter = PropertyRegistry.GetSetter(node.GetType(), kvp.Key);
+            if (setter != null)
+            {
+                setter(node, kvp.Value);
+                swProp.Stop();
+                Console.WriteLine($"[Property Set] '{kvp.Key}' on node '{node.Name}' in {swProp.Elapsed.TotalMilliseconds:F3} ms");
+            }
+            else
+            {
+                // Handle deferred node assignments or other cases
+                if (kvp.Value is string pathValue)
+                {
+                    deferredNodeAssignments.Add((node, kvp.Key, pathValue));
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"[Deferred] Property '{kvp.Key}' on node '{node.Name}' deferred for later assignment (path: '{pathValue}').");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
         }
+
+        swTotal.Stop();
+        Console.WriteLine($"[Total Properties] Finished setting properties for node '{node.Name}' in {swTotal.Elapsed.TotalMilliseconds:F3} ms");
     }
 
     public static void SetNestedMember(object target, string memberPath, object value,
         List<(Node, string, object)>? deferredNodeAssignments = null)
     {
+        Stopwatch swNested = Stopwatch.StartNew();
         var pathParts = memberPath.Split('/');
         object currentObject = target;
 
@@ -38,6 +61,9 @@ public static class PackedSceneUtils
                 currentObject = GetOrCreateIntermediateObject(currentObject, memberInfo);
             }
         }
+
+        swNested.Stop();
+        Console.WriteLine($"[Nested Member] Finished processing nested member '{memberPath}' in {swNested.Elapsed.TotalMilliseconds:F3} ms");
     }
 
     private static MemberInfo GetMemberInfo(Type type, string memberName)
@@ -54,6 +80,7 @@ public static class PackedSceneUtils
     private static void HandleFinalSegment(object rootTarget, string memberPath, object currentObject,
         MemberInfo memberInfo, object value, List<(Node, string, object)>? deferredAssignments)
     {
+        Stopwatch swFinal = Stopwatch.StartNew();
         var memberType = memberInfo switch
         {
             PropertyInfo p => p.PropertyType,
@@ -64,12 +91,24 @@ public static class PackedSceneUtils
         if (ShouldDeferAssignment(memberType, value))
         {
             deferredAssignments?.Add(((Node)rootTarget, memberPath, value));
+            Console.WriteLine($"[Deferred Nested] Deferring assignment for nested member '{memberPath}' on node '{((Node)rootTarget).Name}'");
         }
         else
         {
             var convertedValue = ConvertValue(memberType, value);
             SetMemberValue(currentObject, memberInfo, convertedValue);
+
+            if (rootTarget is Node node)
+            {
+                Console.WriteLine($"[Nested Set] Nested member '{memberPath}' set on node '{node.Name}'");
+            }
+            else
+            {
+                Console.WriteLine($"[Nested Set] Nested member '{memberPath}' set on target of type '{rootTarget.GetType().Name}'");
+            }
         }
+        swFinal.Stop();
+        Console.WriteLine($"[HandleFinalSegment] Completed in {swFinal.Elapsed.TotalMilliseconds:F3} ms");
     }
 
     private static bool ShouldDeferAssignment(Type memberType, object value)
@@ -82,6 +121,7 @@ public static class PackedSceneUtils
 
         var newInstance = CreateMemberInstance(memberInfo);
         SetMemberValue(currentObject, memberInfo, newInstance);
+        Console.WriteLine($"[Intermediate] Created new instance for member '{memberInfo.Name}' of type '{newInstance.GetType().Name}'.");
         return newInstance;
     }
 
@@ -162,16 +202,24 @@ public static class PackedSceneUtils
         };
 
     private static object ConvertList(Type targetType, IList list)
-        => targetType.Name switch
+    {
+        // Check if it's a Color type and parse the list into a Color
+        if (targetType == typeof(Color))
+        {
+            return ParseColor(list);
+        }
+
+        // Handle other types
+        return targetType.Name switch
         {
             nameof(Vector2) => ParseVector2(list),
-            nameof(Color) => ParseColor(list),
             _ => throw new NotSupportedException($"Unsupported list conversion to {targetType.Name}")
         };
+    }
 
     private static object ConvertPrimitive(Type targetType, object value)
     {
-        var stringValue = value.ToString()?.TrimQuotes()
+        var stringValue = TrimQuotes(value.ToString()!)
             ?? throw new InvalidOperationException("Value cannot be null");
 
         if (targetType.IsEnum)
@@ -188,6 +236,7 @@ public static class PackedSceneUtils
             _ when targetType == typeof(double) => double.Parse(stringValue),
             _ when targetType == typeof(bool) => bool.Parse(stringValue),
             _ when targetType == typeof(string) => stringValue,
+            _ when targetType == typeof(Color) => ParseColor(stringValue),
             _ => throw new NotSupportedException($"Unsupported type: {targetType.Name}")
         };
     }
@@ -203,13 +252,21 @@ public static class PackedSceneUtils
 
     private static Color ParseColor(IList list)
     {
-        if (list.Count < 3 || list.Count > 4) throw new ArgumentException("Color requires 3 or 4 elements");
+        if (list.Count < 3 || list.Count > 4)
+            throw new ArgumentException("Color requires 3 or 4 elements");
         return new Color(
             Convert.ToByte(list[0]),
             Convert.ToByte(list[1]),
             Convert.ToByte(list[2]),
             list.Count > 3 ? Convert.ToByte(list[3]) : (byte)255
         );
+    }
+
+    private static Color ParseColor(string stringValue)
+    {
+        // For debugging purposes, you can output the string value.
+        Console.WriteLine($"[ParseColor] Converting string '{stringValue}' to Color. (Defaulting to White)");
+        return Color.White;
     }
 
     private static string TrimQuotes(this string input)

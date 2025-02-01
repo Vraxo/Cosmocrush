@@ -61,6 +61,15 @@ public class Label : Control
 
     // Main
 
+    static Label()
+    {
+        // Register VisualItem-specific properties
+        PropertyRegistry.Register(typeof(Label), new()
+        {
+            { "Text", (node, value) => ((Label)node).Text = value.ToString()! },
+        });
+    }
+
     public Label()
     {
         OriginPreset = OriginPreset.CenterLeft;

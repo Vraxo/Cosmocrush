@@ -17,8 +17,8 @@ public sealed class RenderManager
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.DarkGray);
             BeginCameraMode();
-                AppManager.Instance.RootNode?.Process();
-                ProcessDrawCommands();
+            AppManager.Instance.RootNode?.Process();
+            ProcessDrawCommands();
             EndCameraMode();
         Raylib.EndDrawing();
     }

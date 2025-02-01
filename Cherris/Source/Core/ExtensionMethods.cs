@@ -37,4 +37,15 @@ public static class ExtensionMethods
 
         return current + direction.Normalized() * maxDistanceDelta;
     }
+
+    public static string TrimQuotes(this string input)
+    {
+        if (input.Length >= 2 &&
+            ((input[0] == '"' && input[^1] == '"') ||
+             (input[0] == '\'' && input[^1] == '\'')))
+        {
+            return input.Substring(1, input.Length - 2);
+        }
+        return input;
+    }
 }

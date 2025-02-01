@@ -1,35 +1,35 @@
 name: Settings
 type: SettingsMenu
-masterLabel: MasterLabel
-musicLabel: MusicLabel
-sfxLabel: SfxLabel
-masterSlider: MasterLabel/Slider
-musicSlider: MusicLabel/Slider
-sfxSlider: SfxLabel/Slider
-applyButton: ApplyButton
-returnButton: ReturnButton
+#masterLabel: MasterLabel
+#musicLabel: MusicLabel
+#sfxLabel: SfxLabel
+#masterSlider: MasterLabel/Slider
+#musicSlider: MusicLabel/Slider
+#sfxSlider: SfxLabel/Slider
+#applyButton: ApplyButton
+#returnButton: ReturnButton
 children:
 
   - name: MasterLabel
     type: Label
-    HorizontalAlignment: Right
+    #HorizontalAlignment: Right
     Text: Master
-    Theme:
-        Font: Res/Fonts/RaceSport.ttf:16
+    #Theme:
+        #Font: Res/Fonts/RaceSport.ttf:16
     children:
       - name: Slider
         type: HSlider
         path: Res/Scenes/Slider.yaml
-        HorizontalAlignment: Left
+        #HorizontalAlignment: Left
         FocusNeighborTop: ../../ReturnButton
         FocusNeighborBottom: ../../MusicLabel/Slider
 
   - name: MusicLabel
     type: Label
-    HorizontalAlignment: Right
+    #HorizontalAlignment: Right
     Text: Music
-    Theme:
-        Font: Res/Fonts/RaceSport.ttf:16
+    #Theme:
+        #Font: Res/Fonts/RaceSport.ttf:16
     children:
       - name: Slider
         type: HSlider
@@ -39,10 +39,10 @@ children:
 
   - name: SfxLabel
     type: Label
-    HorizontalAlignment: Right
+    #HorizontalAlignment: Right
     Text: SFX
-    Theme:
-        Font: Res/Fonts/RaceSport.ttf:16
+    #Theme:
+        #Font: Res/Fonts/RaceSport.ttf:16
     children:
       - name: Slider
         type: HSlider

@@ -14,6 +14,7 @@ public sealed class ResourceLoader
             var t when t == typeof(Audio) => (T)(object)new Audio(path),
             var t when t == typeof(Texture) => (T)(object)TextureManager.Instance.Get(path),
             var t when t == typeof(Font) => (T)(object)FontManager.Instance.Get(path),
+            var t when t == typeof(SoundEffect) => (T)(object)SoundManager.Instance.Get(path),
             _ => throw new InvalidOperationException($"Unsupported resource type: {typeof(T)}")
         };
     }

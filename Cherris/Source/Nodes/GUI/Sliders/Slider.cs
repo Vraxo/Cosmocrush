@@ -5,7 +5,7 @@ public abstract class Slider : Control
     public float Value { get; set; } = 0.5f;
     public float MinValue { get; set; } = 0;
     public float MaxValue { get; set; } = 1f;
-    public Audio? MoveAudio { get; set; }
+    public SoundEffect? MoveAudio { get; set; }
     public SliderTheme Theme { get; set; } = new();
     public ButtonThemePack GrabberTheme { get; set; } = new();
     public Vector2 GrabberSize { get; set; } = new(20, 20);
@@ -26,6 +26,14 @@ public abstract class Slider : Control
         {
             _step = Math.Max(value, 0); 
         }
+    }
+
+    static Slider()
+    {
+        PropertyRegistry.Register(typeof(Node2D), new()
+        {
+            { "MoveAudio", (node, value) => ((Slider)node).MoveAudio = ResourceLoader.Load<SoundEffect>(value.ToString()!) },
+        });
     }
 
     public Slider()

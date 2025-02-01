@@ -17,8 +17,6 @@ public sealed class AppManager
     {
         string configFilePath = "Res/Cherris/Config.yaml";
         config = LoadConfig(configFilePath);
-
-        SceneConverter.ConvertYamlToBinary("Res/Scenes/Menu/Menu.yaml", "Res/Scenes/Menu/Menu.bin");
     }
 
     public void Run()

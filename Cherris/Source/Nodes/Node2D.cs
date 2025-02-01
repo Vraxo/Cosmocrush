@@ -124,6 +124,24 @@ public class Node2D : VisualItem
         }
     }
 
+    // Main
+
+    static Node2D()
+    {
+        PropertyRegistry.Register(typeof(Node2D), new Dictionary<string, Action<Node, object>>
+        {
+            { "Position", (node, value) => ((Node2D)node).Position = TypeParser.ParseVector(value) },
+            { "Size", (node, value) => ((Node2D)node).Size = TypeParser.ParseVector(value) },
+            { "OriginPreset", (node, value) => ((Node2D)node).OriginPreset = (OriginPreset)value },
+            { "InheritPosition", (node, value) => ((Node2D)node).InheritPosition = (bool)value },
+            { "InheritOrigin", (node, value) => ((Node2D)node).InheritOrigin = (bool)value },
+            { "InheritScale", (node, value) => ((Node2D)node).InheritScale = (bool)value },
+            { "HorizontalAlignment", (node, value) => ((Node2D)node).HorizontalAlignment = (HorizontalAlignment)Enum.Parse(typeof(HorizontalAlignment), value.ToString()!) },
+            { "VerticalAlignment", (node, value) => ((Node2D)node).VerticalAlignment = (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment), value.ToString()!) },
+            { "Rotation", (node, value) => ((Node2D)node).Rotation = (float)value }
+        });
+    }
+
     public void LookAt(Vector2 targetPosition)
     {
         Vector2 direction = targetPosition - GlobalPosition;
