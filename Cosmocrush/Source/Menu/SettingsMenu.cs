@@ -18,21 +18,21 @@ public class SettingsMenu : Node2D
 
     public override void Ready()
     {
-        //applyButton!.LeftClicked += OnApplyButtonLeftClicked;
-        //returnButton!.LeftClicked += OnReturnButtonPressed;
-        //
-        //masterSlider!.Value = GameSettings.Instance.SettingsData.MasterVolume;
-        //musicSlider!.Value = GameSettings.Instance.SettingsData.MusicVolume;
-        //sfxSlider!.Value = GameSettings.Instance.SettingsData.SfxVolume;
+        applyButton!.LeftClicked += OnApplyButtonLeftClicked;
+        returnButton!.LeftClicked += OnReturnButtonPressed;
 
-        //CapturePreviousVolumes();
+        masterSlider!.Value = GameSettings.Instance.SettingsData.MasterVolume;
+        musicSlider!.Value = GameSettings.Instance.SettingsData.MusicVolume;
+        sfxSlider!.Value = GameSettings.Instance.SettingsData.SfxVolume;
+
+        CapturePreviousVolumes();
     }
 
     public override void Update()
     {
-        //UpdateApplyAvailability();
-        //UpdateLabels();
-        //UpdateButtons();
+        UpdateApplyAvailability();
+        UpdateLabels();
+        UpdateButtons();
     }
 
     private void OnApplyButtonLeftClicked(Button sender)

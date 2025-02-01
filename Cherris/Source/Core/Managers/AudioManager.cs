@@ -8,9 +8,9 @@ public static class AudioManager
         remove => AudioManagerCore.Instance.VolumeChanged -= value;
     }
 
-    public static void PlaySound(SoundEffect sound, string bus = "Master")
+    public static void PlaySound(Audio audio, string bus = "Master")
     {
-        AudioManagerCore.Instance.PlaySound(sound, bus);
+        AudioManagerCore.Instance.PlaySound(audio, bus);
     }
 
     public static void SetBusVolume(string bus, float volume)

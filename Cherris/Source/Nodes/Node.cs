@@ -54,16 +54,6 @@ public class Node
     public delegate void NodeChildAddedEventHandler(Node sender, Node child);
     public NodeChildAddedEventHandler? ChildAdded;
 
-    public int Id { get; set; } = 0;
-
-    static Node()
-    {
-        PropertyRegistry.Register(typeof(Node), new()
-        {
-            { "Name", (node, value) => node.Name = (string)value },
-        });
-    }
-
     /// <summary>Add the node's children to it before starting it.</summary>
     public virtual void Make() { }
 

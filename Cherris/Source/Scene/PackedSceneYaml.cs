@@ -1,4 +1,4 @@
-﻿/*using YamlDotNet.Serialization;
+﻿using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace Cherris;
@@ -79,4 +79,3 @@ public sealed class PackedSceneYaml(string path)
         return lastNode!;
     }
 }
-*/

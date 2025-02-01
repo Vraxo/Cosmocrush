@@ -21,7 +21,7 @@ public class Control : ClickableRectangle
     private bool wasFocusedLastFrame = false;
 
     public string AudioBus { get; set; } = "Master";
-    public SoundEffect? FocusGainedAudio { get; set; }
+    public Audio? FocusGainedAudio { get; set; }
 
     private bool _disabled = false;
     public bool Disabled
@@ -74,21 +74,6 @@ public class Control : ClickableRectangle
         {
             OnThemeFileChanged(value);
         }
-    }
-
-    static Control()
-    {
-        // Register VisualItem-specific properties
-        PropertyRegistry.Register(typeof(Control), new()
-        {
-            { "AudioBus", (node, value) => ((Control)node).AudioBus = value.ToString()! },
-            { "FocusGainedAudio", (node, value) => ((Control)node).FocusGainedAudio = ResourceLoader.Load<SoundEffect>(value.ToString()!)},
-            { "ThemeFile", (node, value) => ((Control)node).ThemeFile = value.ToString()! },
-            { "FocusNeighborLeft", (node, value) => ((Control)node).FocusNeighborLeft = value.ToString()! },
-            { "FocusNeighborTop", (node, value) => ((Control)node).FocusNeighborTop = value.ToString()! },
-            { "FocusNeighborRight", (node, value) => ((Control)node).FocusNeighborRight = value.ToString()! },
-            { "FocusNeighborBottom", (node, value) => ((Control)node).FocusNeighborBottom = value.ToString()! },
-        });
     }
 
     public override void Update()

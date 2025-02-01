@@ -22,10 +22,10 @@ public sealed class AudioManagerCore
 
     // Playing
 
-    public void PlaySound(SoundEffect sound, string bus = "Master")
+    public void PlaySound(Audio audio, string bus = "Master")
     {
-        Raylib.PlaySound(sound);
-        Raylib.SetSoundVolume(sound, GetBusVolume(bus));
+        Raylib.PlaySound(audio);
+        Raylib.SetSoundVolume(audio, GetBusVolume(bus));
     }
 
     // Buses

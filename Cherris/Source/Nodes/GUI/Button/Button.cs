@@ -32,7 +32,7 @@ public class Button : Control
     public event ButtonEventHandler? LeftClicked;
     public event ButtonEventHandler? RightClicked;
 
-    public SoundEffect? ClickAudio { get; set; }
+    public Audio? ClickAudio { get; set; }
 
     private string displayedText = "";
 
@@ -54,16 +54,6 @@ public class Button : Control
     }
 
     #endregion
-
-    static Button()
-    {
-        // Register VisualItem-specific properties
-        PropertyRegistry.Register(typeof(Button), new()
-        {
-            { "Text", (node, value) => ((Button)node).Text = value.ToString()! },
-            { "ClickAudio", (node, value) => ((Button)node).ClickAudio = ResourceLoader.Load<SoundEffect>(value.ToString()!) },
-        });
-    }
 
     public Button()
     {
@@ -163,7 +153,7 @@ public class Button : Control
 
                     if (ClickAudio is not null)
                     {
-                        //AudioManager.PlaySound(ClickAudio, AudioBus);
+                        AudioManager.PlaySound(ClickAudio, AudioBus);
                     }
                 }
             }

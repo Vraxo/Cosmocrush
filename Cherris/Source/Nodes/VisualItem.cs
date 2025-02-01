@@ -19,19 +19,20 @@ public abstract class VisualItem : Node
         }
     }
 
-    public delegate void VisualItemEventHandler(VisualItem sender, int layer);
-    public event VisualItemEventHandler? LayerChanged;
+    public static readonly Dictionary<string, (Type Type, Action<VisualItem, object> Setter)> PropertyMap;
 
     static VisualItem()
     {
-        // Register VisualItem-specific properties
-        PropertyRegistry.Register(typeof(VisualItem), new()
+        PropertyMap = new()
         {
-            { "Visible", (node, value) => ((VisualItem)node).Visible = bool.Parse((string)value) },
-            { "ReadyForVisibility", (node, value) => ((VisualItem)node).ReadyForVisibility = (bool)value },
-            { "Layer", (node, value) => ((VisualItem)node).Layer = int.Parse(value.ToString()!) }
-        });
+            { "Visible", (typeof(bool), (obj, val) => obj.Visible = (bool)val) },
+            { "ReadyForVisibility", (typeof(bool), (obj, val) => obj.ReadyForVisibility = (bool)val) },
+            { "Layer", (typeof(int), (obj, val) => obj.Layer = (int)val) }
+        };
     }
+
+    public delegate void VisualItemEventHandler(VisualItem sender, int layer);
+    public event VisualItemEventHandler? LayerChanged;
 
     // Main
 

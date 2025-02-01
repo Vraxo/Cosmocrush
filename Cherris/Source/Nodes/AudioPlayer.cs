@@ -84,21 +84,10 @@ public class AudioPlayer : Node
     public event AudioPlayerEventHandler? Resumed;
     public event AudioPlayerEventHandler? Finished;
 
-    static AudioPlayer()
-    {
-        PropertyRegistry.Register(typeof(AudioPlayer), new()
-        {
-            { "AutoPlay", (node, value) => ((AudioPlayer)node).AutoPlay = bool.Parse(value.ToString()!) },
-            { "Audio", (node, value) => ((AudioPlayer)node).Audio = new(value.ToString()!) },
-        });
-    }
-
     public AudioPlayer()
     {
         AudioManagerCore.Instance.VolumeChanged += OnAudioManagerBusVolumeChanged;
     }
-
-    // Main
 
     public override void Ready()
     {
@@ -135,8 +124,6 @@ public class AudioPlayer : Node
             }
         }
     }
-
-    // API
 
     public void Play(float timestamp = 0.1f)
     {
@@ -206,8 +193,6 @@ public class AudioPlayer : Node
 
         Raylib.SeekMusicStream(Audio, timestamp);
     }
-
-    // Private
 
     private void OnAudioManagerBusVolumeChanged(string bus, float volume)
     {

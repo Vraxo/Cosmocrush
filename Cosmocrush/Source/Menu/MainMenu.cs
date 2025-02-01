@@ -37,7 +37,7 @@ public class MainMenu : Node
 
     private void OnPlayButtonLeftClicked(Button sender)
     {
-        PackedSceneYamlNested packedMainScene = new("Res/Scenes/MainScene.ini");
+        PackedSceneIni packedMainScene = new("Res/Scenes/MainScene.ini");
         var mainScene = packedMainScene.Instantiate<Node>();
         ChangeScene(mainScene);
     }
