@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -16,13 +17,41 @@ public sealed class PackedSceneYamlNested(string path)
 
     public T Instantiate<T>(bool isRootNode = false) where T : Node
     {
+        Stopwatch swIO = new();
+        Stopwatch swYaml = new();
+        Stopwatch swReflection = new();
+
+        // 1. Measure IO time
+        swIO.Start();
         var yamlContent = File.ReadAllText(_path);
+        swIO.Stop();
+
+        // 2. Measure YAML parsing time
+        swYaml.Start();
         var rootElement = _deserializer.Deserialize<Dictionary<string, object>>(yamlContent);
-        var rootNode = (T)ParseNode(rootElement, null);
+        swYaml.Stop();
 
-        AssignDeferredNodes();
+        Node rootNode = null!;
 
-        return rootNode;
+        // 3. Measure reflection and property setting time
+        swReflection.Start();
+        try
+        {
+            rootNode = (T)ParseNode(rootElement, null);
+            AssignDeferredNodes();
+        }
+        finally
+        {
+            swReflection.Stop();
+        }
+
+        Console.WriteLine($"Instantiated {_path}\n" +
+                          $"IO: {swIO.Elapsed.TotalMilliseconds}ms\n" +
+                          $"YAML: {swYaml.Elapsed.TotalMilliseconds}ms\n" +
+                          $"Reflection/Props: {swReflection.Elapsed.TotalMilliseconds}ms\n" +
+                          $"Total: {(swIO.Elapsed + swYaml.Elapsed + swReflection.Elapsed).TotalMilliseconds}ms");
+
+        return (T)rootNode;
     }
 
     private Node ParseNode(Dictionary<string, object> element, Node? parent)
@@ -44,10 +73,16 @@ public sealed class PackedSceneYamlNested(string path)
     {
         var typeName = (string)element["type"];
         var nodeType = PackedSceneUtils.ResolveType(typeName);
+
+        Stopwatch sw = new();
+        sw.Start();
+
         var node = (Node)Activator.CreateInstance(nodeType)!;
 
+        sw.Stop();
+        Console.WriteLine($"[Node Creation] Created node '{element["name"]}' of type '{typeName}' in {sw.ElapsedMilliseconds} ms");
+
         node.Name = (string)element["name"];
-        Console.WriteLine($"Created node: {node.Name}, Type: {node.GetType().Name}");
         return node;
     }
 
@@ -56,12 +91,11 @@ public sealed class PackedSceneYamlNested(string path)
         if (element.TryGetValue("path", out var pathValue))
         {
             var scenePath = (string)pathValue;
-            Console.WriteLine($"Loading nested scene: {scenePath}");
             var nestedScene = new PackedSceneYamlNested(scenePath);
             node = nestedScene.Instantiate<Node>();
-            // Override the nested node's name with the parent's specified name
+            // Apply the name from the current element to override the nested scene's name
             node.Name = (string)element["name"];
-            Console.WriteLine($"Set node name to {node.Name} after loading nested scene.");
+            Console.WriteLine($"[Nested Scene] Processed nested scene '{scenePath}' for node '{node.Name}'.");
         }
     }
 
@@ -71,37 +105,34 @@ public sealed class PackedSceneYamlNested(string path)
             .Where(kvp => !IsReservedKey(kvp.Key))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        Console.WriteLine($"Setting properties for {node.Name}: {string.Join(", ", properties.Keys)}");
         PackedSceneUtils.SetProperties(node, properties, _deferredNodeAssignments);
     }
 
     private bool IsReservedKey(string key) =>
-        key is "children" or "type" or "path";
+        key is "children" or "name" or "type" or "path";
 
     private void AddToParent(Node? parent, Node node)
     {
         if (parent == null)
         {
-            Console.WriteLine($"{node.Name} is a root node");
             return;
         }
 
-        Console.WriteLine($"Adding {node.Name} to parent {parent.Name}");
         parent.AddChild(node, node.Name);
+        Console.WriteLine($"[Hierarchy] Added node '{node.Name}' as a child of '{parent.Name}'.");
     }
 
     private void RegisterNode(Dictionary<string, object> element, Node node)
     {
         var nodeName = (string)element["name"];
         _namedNodes[nodeName] = node;
-        Console.WriteLine($"Registered node: {nodeName}");
+        Console.WriteLine($"[Register] Registered node '{nodeName}'.");
     }
 
     private void ProcessChildNodes(Dictionary<string, object> element, Node parentNode)
     {
         if (!element.TryGetValue("children", out var childrenObj)) return;
 
-        Console.WriteLine($"Processing children for {parentNode.Name}");
         var children = ConvertChildrenToList(childrenObj);
 
         foreach (var child in children)
@@ -118,7 +149,6 @@ public sealed class PackedSceneYamlNested(string path)
     {
         if (childrenObj is List<object> list) return list;
 
-        Console.WriteLine($"Unexpected children format: {childrenObj.GetType().Name}");
         return new List<object>();
     }
 
@@ -132,6 +162,7 @@ public sealed class PackedSceneYamlNested(string path)
 
     private void AssignDeferredNodes()
     {
+        Console.WriteLine($"[Deferred Assignment] Processing {_deferredNodeAssignments.Count} deferred node assignments.");
         foreach (var (targetNode, memberPath, nodePath) in _deferredNodeAssignments)
         {
             AssignDeferredNode(targetNode, memberPath, nodePath);
@@ -161,6 +192,7 @@ public sealed class PackedSceneYamlNested(string path)
                 currentObject = nextObject!;
             }
         }
+        Console.WriteLine($"[Deferred Assignment] Completed deferred assignment for member path '{memberPath}' on node '{targetNode.Name}'.");
     }
 
     private (MemberInfo?, object?) GetMemberAndNextObject(Type type, string memberName, object currentObject)
@@ -172,8 +204,14 @@ public sealed class PackedSceneYamlNested(string path)
             object? nextObject = propertyInfo.GetValue(currentObject);
             if (nextObject == null)
             {
+                Stopwatch sw = new();
+                sw.Start();
+
                 nextObject = Activator.CreateInstance(propertyInfo.PropertyType);
                 propertyInfo.SetValue(currentObject, nextObject);
+
+                sw.Stop();
+                Console.WriteLine($"[Deferred] Created intermediate property '{memberName}' in {sw.ElapsedMilliseconds} ms.");
             }
             return (propertyInfo, nextObject);
         }
@@ -185,8 +223,14 @@ public sealed class PackedSceneYamlNested(string path)
             object? nextObject = fieldInfo.GetValue(currentObject);
             if (nextObject == null)
             {
+                Stopwatch sw = new();
+                sw.Start();
+
                 nextObject = Activator.CreateInstance(fieldInfo.FieldType);
                 fieldInfo.SetValue(currentObject, nextObject);
+
+                sw.Stop();
+                Console.WriteLine($"[Deferred] Created intermediate field '{memberName}' in {sw.ElapsedMilliseconds} ms.");
             }
             return (fieldInfo, nextObject);
         }
@@ -208,6 +252,7 @@ public sealed class PackedSceneYamlNested(string path)
             }
 
             propertyInfo.SetValue(targetObject, referencedNode);
+            Console.WriteLine($"[Deferred] Assigned deferred property '{memberInfo.Name}' via property to node '{targetNode.Name}'.");
         }
         else if (memberInfo is FieldInfo fieldInfo && fieldInfo.FieldType.IsSubclassOf(typeof(Node)))
         {
@@ -221,6 +266,7 @@ public sealed class PackedSceneYamlNested(string path)
             }
 
             fieldInfo.SetValue(targetObject, referencedNode);
+            Console.WriteLine($"[Deferred] Assigned deferred field '{fieldInfo.Name}' on node '{targetNode.Name}'.");
         }
         else
         {
