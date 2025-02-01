@@ -13,6 +13,8 @@ public class HSlider : Slider
 
     protected override void UpdateHoverStates()
     {
+
+
         Vector2 mousePos = Input.MousePosition;
 
         trackHovered = mousePos.X >= trackPosition.X &&
@@ -91,17 +93,14 @@ public class HSlider : Slider
         if (Direction == HSliderDirection.RightToLeft)
         {
             DrawRectangleThemed(
-                new(trackPosition.X + Size.X - width, trackPosition.Y),
-                new(width, Size.Y),
-                Theme.Foreground
+                new Vector2(trackPosition.X + Size.X - width, trackPosition.Y),
+                new Vector2(width, Size.Y),
+                ForegroundTheme
             );
         }
         else
         {
-            DrawRectangleThemed(
-                trackPosition,
-                new Vector2(width, Size.Y),
-                Theme.Foreground);
+            DrawRectangleThemed(trackPosition, new Vector2(width, Size.Y), ForegroundTheme);
         }
     }
 
@@ -135,17 +134,17 @@ public class HSlider : Slider
 
     protected override void HandleKeyboardNavigation()
     {
+        base.HandleKeyboardNavigation();
+
         if (Focused)
         {
             if (Input.IsActionPressed("UiLeft"))
             {
                 Value = ApplyStep(Value - Step);
-                PlaySound();
             }
             else if (Input.IsActionPressed("UiRight"))
             {
                 Value = ApplyStep(Value + Step);
-                PlaySound();
             }
         }
     }

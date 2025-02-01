@@ -9,9 +9,9 @@ sfxSlider: SfxLabel/Slider
 applyButton: ApplyButton
 returnButton: ReturnButton
 children:
-
   - name: MasterLabel
     type: Label
+    Position: [100, 100]
     HorizontalAlignment: Right
     Text: Master
     Theme:
@@ -19,13 +19,12 @@ children:
     children:
       - name: Slider
         type: HSlider
-        path: Res/Scenes/Slider.yaml
         HorizontalAlignment: Left
-        FocusNeighborTop: ../../ReturnButton
-        FocusNeighborBottom: ../../MusicLabel/Slider
+        Position: [32,-8]
 
   - name: MusicLabel
     type: Label
+    Position: [100,150]
     HorizontalAlignment: Right
     Text: Music
     Theme:
@@ -33,12 +32,12 @@ children:
     children:
       - name: Slider
         type: HSlider
-        path: Res/Scenes/Slider.yaml
-        FocusNeighborTop: ../../MasterLabel/Slider
-        FocusNeighborBottom: ../../SfxLabel/Slider
+        HorizontalAlignment: Left
+        Position: [32,-8]
 
   - name: SfxLabel
     type: Label
+    Position: [100,200]
     HorizontalAlignment: Right
     Text: SFX
     Theme:
@@ -46,23 +45,19 @@ children:
     children:
       - name: Slider
         type: HSlider
-        path: Res/Scenes/Slider.yaml
-        FocusNeighborTop: ../../MusicLabel/Slider
-        FocusNeighborBottom: ../../ReturnButton
+        Position: [32,-8]
+        HorizontalAlignment: Left
 
   - name: ApplyButton
     type: Button
-    path: Res/Scenes/Button.yaml
     Text: Apply
     FocusNeighborLeft: ../ReturnButton
-    FocusNeighborTop: ../SfxLabel/Slider
     FocusNeighborRight: ../ReturnButton
+    ThemeFile: Res/Themes/Button.theme.yaml
 
   - name: ReturnButton
     type: Button
-    path: Res/Scenes/Button.yaml
     Text: Return
     FocusNeighborLeft: ../ApplyButton
-    FocusNeighborTop: ../SfxLabel/Slider
-    FocusNeighborBottom: ../MasterLabel/Slider
     FocusNeighborRight: ../ApplyButton
+    ThemeFile: Res/Themes/Button.theme.yaml

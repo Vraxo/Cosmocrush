@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Cherris;
+﻿namespace Cherris;
 
 public sealed class ButtonThemePack
 {
@@ -44,7 +42,6 @@ public sealed class ButtonThemePack
             Pressed.FontSpacing = value;
             Focused.FontSpacing = value;
             Current.FontSpacing = value;
-            Disabled.FontSpacing = value;
         }
     }
 
@@ -57,7 +54,6 @@ public sealed class ButtonThemePack
             Pressed.FontSize = value;
             Focused.FontSize = value;
             Current.FontSize = value;
-            Disabled.FontSize = value;
         }
     }
 
@@ -70,7 +66,6 @@ public sealed class ButtonThemePack
             Pressed.Font = value;
             Focused.Font = value;
             Current.Font = value;
-            Disabled.Font = value;
         }
     }
 

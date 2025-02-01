@@ -1,36 +1,40 @@
-name: MainMenu
-type: MainMenu
+name: "MainMenu"
+type: "MainMenu"
 children:
-  - name: Title
-    type: Label
+  - name: "Title"
+    type: "Label"
     Position: [500,250]
     Layer: 2
-    Text: COSMOCRUSH
-    HorizontalAlignment: Center
-    ThemeFile: Res/Themes/Title.theme.yaml
+    Text: "COSMOCRUSH"
+    HorizontalAlignment: "Center"
+    ThemeFile: "Res/Themes/Title.theme.ini"
 
-  - name: PlayButton
-    type: Button
-    path: Res/Scenes/Button.yaml
+  - name: "PlayButton"
+    type: "Button"
+    Position: [100,100]
     Size: [640,31]
     Layer: 2
-    FocusNeighborTop: ../QuitButton
-    FocusNeighborBottom: ../SettingsButton
-    Text: Start
+    FocusNeighborTop: "../QuitButton"
+    FocusNeighborBottom: "../SettingsButton"
+    Text: "Start"
+    ThemeFile: Res/Themes/Button.theme.yaml
 
-  - name: SettingsButton
-    type: Button
-    path: Res/Scenes/Button.yaml
+  - name: "SettingsButton"
+    type: "Button"
+    Position: [100,100]
     Size: [640,31]
     Layer: 2
-    FocusNeighborTop: ../PlayButton
-    FocusNeighborBottom: ../QuitButton
-    Text: Settings
+    FocusNeighborTop: "../PlayButton"
+    FocusNeighborBottom: "../QuitButton"
+    Text: "Settings"
+    ThemeFile: Res/Themes/Button.theme.yaml
 
-  - name: QuitButton
-    type: Button
-    path: Res/Scenes/Button.yaml
+  - name: "QuitButton"
+    type: "Button"
+    Position: [100,200]
     Size: [640,31]
-    FocusNeighborTop: ../SettingsButton
-    FocusNeighborBottom: ../PlayButton
-    Text: Quit
+    Layer: 2
+    FocusNeighborTop: "../SettingsButton"
+    FocusNeighborBottom: "../PlayButton"
+    Text: "Quit"
+    ThemeFile: Res/Themes/Button.theme.yaml

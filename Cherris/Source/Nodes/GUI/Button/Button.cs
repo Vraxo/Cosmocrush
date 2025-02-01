@@ -32,7 +32,16 @@ public class Button : Control
     public event ButtonEventHandler? LeftClicked;
     public event ButtonEventHandler? RightClicked;
 
-    public Audio? ClickAudio { get; set; }
+    private bool _disabled = false;
+    public bool Disabled
+    {
+        get => _disabled;
+        set
+        {
+            _disabled = value;
+            Themes.Current = Themes.Disabled;
+        }
+    }
 
     private string displayedText = "";
 
@@ -45,11 +54,18 @@ public class Button : Control
         {
             _text = value;
             displayedText = value;
-
             if (AutoWidth)
             {
                 ResizeToFitText();
             }
+        }
+    }
+
+    public string ThemeFile
+    {
+        set
+        {
+            Themes = FileLoader.Load<ButtonThemePack>(value);
         }
     }
 
@@ -60,8 +76,6 @@ public class Button : Control
         Size = new(100, 26);
         Offset = new(0, 0);
         OriginPreset = OriginPreset.None;
-
-        WasDisabled += (button) => Themes.Current = Disabled ? Themes.Disabled : Themes.Normal;
     }
 
     public override void Update()
@@ -132,10 +146,7 @@ public class Button : Control
 
     private void HandleClick(ref bool pressed, ref bool onTop, MouseButtonCode button, ActionMode actionMode, ButtonEventHandler? clickHandler)
     {
-        if (Disabled)
-        {
-            return;
-        }
+        if (Disabled) return;
 
         bool mouseOver = IsMouseOver();
 
@@ -150,11 +161,6 @@ public class Button : Control
                 {
                     clickHandler?.Invoke(this);
                     onTop = false;
-
-                    if (ClickAudio is not null)
-                    {
-                        AudioManager.PlaySound(ClickAudio, AudioBus);
-                    }
                 }
             }
         }
@@ -164,11 +170,6 @@ public class Button : Control
             if (mouseOver && pressed && onTop && actionMode == ActionMode.Release) // (mouseOver || StayPressed)
             {
                 clickHandler?.Invoke(this);
-
-                if (ClickAudio is not null)
-                {
-                    AudioManager.PlaySound(ClickAudio, AudioBus);
-                }
             }
 
             onTop = false;
@@ -203,21 +204,16 @@ public class Button : Control
         }
     }
 
-    protected override void OnThemeFileChanged(string themeFile)
-    {
-        Themes = FileLoader.Load<ButtonThemePack>(themeFile);
-    }
-
     // Draw
 
     protected override void Draw()
     {
-        DrawBackground();
+        DrawBox();
         DrawIcon();
         DrawText();
     }
 
-    private void DrawBackground()
+    private void DrawBox()
     {
         DrawRectangleThemed(
             GlobalPosition - Origin,

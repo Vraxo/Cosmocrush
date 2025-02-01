@@ -1,17 +1,16 @@
-﻿using Cherris;
-using YamlDotNet.Serialization;
+﻿using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace Cosmocrush;
 
-public sealed class GameSettings
+public sealed class Settings
 {
-    private static GameSettings? _instance;
-    public static GameSettings Instance => _instance ??= new();
+    private static Settings? _instance;
+    public static Settings Instance => _instance ??= new();
 
     public SettingsData SettingsData { get; set; } = new();
 
-    private const string path = "Res/GameSettings.yaml";
+    private const string path = "Res/Settings.yaml"; // Make sure this path is correct
 
     private static readonly ISerializer _serializer = new SerializerBuilder()
         .WithNamingConvention(CamelCaseNamingConvention.Instance)
@@ -26,15 +25,15 @@ public sealed class GameSettings
         try
         {
             string yaml = _serializer.Serialize(SettingsData);
+            // Ensure directory exists
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             File.WriteAllText(path, yaml);
+            Console.WriteLine($"Settings saved to: {path}");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error saving settings: {ex.Message}");
         }
-
-        Load();
     }
 
     public void Load()
@@ -45,21 +44,18 @@ public sealed class GameSettings
             {
                 string yaml = File.ReadAllText(path);
                 SettingsData = _deserializer.Deserialize<SettingsData>(yaml);
+                Console.WriteLine($"Settings loaded from: {path}");
+            }
+            else
+            {
+                Console.WriteLine("Settings file not found. Using default settings.");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading settings: {ex.Message}");
-            SettingsData = new();
+            // Optionally reset to default settings if loading fails
+            SettingsData = new SettingsData();
         }
-
-        UpdateAudioBusVolumes();
-    }
-
-    private void UpdateAudioBusVolumes()
-    {
-        AudioManagerCore.Instance.SetBusVolume("Master", SettingsData.MasterVolume);
-        AudioManagerCore.Instance.SetBusVolume("Music", SettingsData.MusicVolume);
-        AudioManagerCore.Instance.SetBusVolume("SFX", SettingsData.SfxVolume);
     }
 }

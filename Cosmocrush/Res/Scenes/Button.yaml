@@ -1,7 +1,0 @@
-name: Button
-type: Button
-Layer: 2
-ThemeFile: Res/Themes/Button.theme.yaml
-AudioBus: SFX
-FocusGainedAudio: Res/Audio/SFX/Ui.mp3
-ClickAudio: Res/Audio/SFX/Ui.mp3

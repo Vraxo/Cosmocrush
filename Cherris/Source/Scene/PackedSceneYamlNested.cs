@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -15,44 +14,15 @@ public sealed class PackedSceneYamlNested(string path)
 
     private List<(Node, string, object)> _deferredNodeAssignments = new();
 
-
     public T Instantiate<T>(bool isRootNode = false) where T : Node
     {
-        Stopwatch swIO = new();
-        Stopwatch swYaml = new();
-        Stopwatch swReflection = new();
-
-        // 1. Measure IO time
-        swIO.Start();
         var yamlContent = File.ReadAllText(_path);
-        swIO.Stop();
-
-        // 2. Measure YAML parsing time
-        swYaml.Start();
         var rootElement = _deserializer.Deserialize<Dictionary<string, object>>(yamlContent);
-        swYaml.Stop();
+        var rootNode = (T)ParseNode(rootElement, null);
 
-        Node rootNode = null!;
+        AssignDeferredNodes();
 
-        // 3. Measure reflection and property setting time
-        swReflection.Start();
-        try
-        {
-            rootNode = (T)ParseNode(rootElement, null);
-            AssignDeferredNodes();
-        }
-        finally
-        {
-            swReflection.Stop();
-        }
-
-        Console.WriteLine($"Instantiated {_path}\n" +
-                          $"IO: {swIO.Elapsed.TotalMilliseconds}ms\n" +
-                          $"YAML: {swYaml.Elapsed.TotalMilliseconds}ms\n" +
-                          $"Reflection/Props: {swReflection.Elapsed.TotalMilliseconds}ms\n" +
-                          $"Total: {(swIO.Elapsed + swYaml.Elapsed + swReflection.Elapsed).TotalMilliseconds}ms");
-
-        return (T)rootNode;
+        return rootNode;
     }
 
     private Node ParseNode(Dictionary<string, object> element, Node? parent)
@@ -77,6 +47,7 @@ public sealed class PackedSceneYamlNested(string path)
         var node = (Node)Activator.CreateInstance(nodeType)!;
 
         node.Name = (string)element["name"];
+        Console.WriteLine($"Created node: {node.Name}, Type: {node.GetType().Name}");
         return node;
     }
 
@@ -85,10 +56,9 @@ public sealed class PackedSceneYamlNested(string path)
         if (element.TryGetValue("path", out var pathValue))
         {
             var scenePath = (string)pathValue;
+            Console.WriteLine($"Loading nested scene: {scenePath}");
             var nestedScene = new PackedSceneYamlNested(scenePath);
             node = nestedScene.Instantiate<Node>();
-            // Apply the name from the current element to override the nested scene's name
-            node.Name = (string)element["name"];
         }
     }
 
@@ -98,6 +68,7 @@ public sealed class PackedSceneYamlNested(string path)
             .Where(kvp => !IsReservedKey(kvp.Key))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
+        Console.WriteLine($"Setting properties for {node.Name}: {string.Join(", ", properties.Keys)}");
         PackedSceneUtils.SetProperties(node, properties, _deferredNodeAssignments);
     }
 
@@ -108,9 +79,11 @@ public sealed class PackedSceneYamlNested(string path)
     {
         if (parent == null)
         {
+            Console.WriteLine($"{node.Name} is a root node");
             return;
         }
 
+        Console.WriteLine($"Adding {node.Name} to parent {parent.Name}");
         parent.AddChild(node, node.Name);
     }
 
@@ -118,12 +91,14 @@ public sealed class PackedSceneYamlNested(string path)
     {
         var nodeName = (string)element["name"];
         _namedNodes[nodeName] = node;
+        Console.WriteLine($"Registered node: {nodeName}");
     }
 
     private void ProcessChildNodes(Dictionary<string, object> element, Node parentNode)
     {
         if (!element.TryGetValue("children", out var childrenObj)) return;
 
+        Console.WriteLine($"Processing children for {parentNode.Name}");
         var children = ConvertChildrenToList(childrenObj);
 
         foreach (var child in children)
@@ -140,6 +115,7 @@ public sealed class PackedSceneYamlNested(string path)
     {
         if (childrenObj is List<object> list) return list;
 
+        Console.WriteLine($"Unexpected children format: {childrenObj.GetType().Name}");
         return new List<object>();
     }
 

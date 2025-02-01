@@ -7,6 +7,7 @@ public class Menu : Node
     public override void Ready()
     {
         base.Ready();
-        GameSettings.Instance.Load();
+
+        Settings.Instance.Load();
     }
 }

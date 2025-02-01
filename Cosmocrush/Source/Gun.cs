@@ -5,7 +5,7 @@ namespace Cosmocrush;
 public class Gun : Sprite
 {
     private RayCast rayCast = new();
-    private readonly string gunshotAudioPath = "Res/MoveAudio/SFX/Gunshot.mp3";
+    private readonly string gunshotAudioPath = "Res/Audio/SFX/Gunshot.mp3";
 
     private float lastFiredTime = 0f;
     private const float cooldown = 0.182f;
