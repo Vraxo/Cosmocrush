@@ -1,6 +1,11 @@
 ﻿name: MainMenu
 type: Menu
 children:
+  - name: ThemePlayer
+    type: AudioPlayer
+    Audio: Res/Audio/Music/Menu.mp3
+    AutoPlay: true
+
   - name: Background
     type: MenuBackground
     Position: [0, 0]

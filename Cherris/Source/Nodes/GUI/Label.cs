@@ -1,6 +1,6 @@
 ﻿using Cherris;
 
-public class Label : Node2D
+public class Label : Control
 {
     public enum TextCase
     {
@@ -59,14 +59,6 @@ public class Label : Node2D
         }
     }
 
-    public string ThemeFile
-    {
-        set
-        {
-            Theme = PropertyLoader.Load<LabelTheme>(value);
-        }
-    }
-
     // Main
 
     public Label()
@@ -79,6 +71,11 @@ public class Label : Node2D
         ClipDisplayedText();
         ApplyCase();
         base.Update();
+    }
+
+    protected override void OnThemeFileChanged(string themeFile)
+    {
+        Theme = FileLoader.Load<LabelTheme>(themeFile);
     }
 
     // Drawing

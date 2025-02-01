@@ -20,11 +20,9 @@ public class Node
     public Node? Parent { get; set; } = null;
     public List<Node> Children { get; set; } = [];
 
-    [InspectorExclude]
     public bool Active { get; private set; } = true;
 
     /// <summary>Gets the absolute path to this node, starting with "/root/".</summary>
-    [InspectorExclude]
     public string AbsolutePath
     {
         get

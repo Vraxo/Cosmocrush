@@ -12,29 +12,37 @@ public class SettingsMenu : Node2D
     private readonly HSlider? sfxSlider;
     private readonly Button? applyButton;
     private readonly Button? returnButton;
+    private float previousMasterVolume = 0;
+    private float previousMusicVolume = 0;
+    private float previousSfxVolume = 0;
 
     public override void Ready()
     {
         applyButton!.LeftClicked += OnApplyButtonLeftClicked;
         returnButton!.LeftClicked += OnReturnButtonPressed;
 
-        masterSlider!.Value = Settings.Instance.SettingsData.MasterVolume;
-        musicSlider!.Value = Settings.Instance.SettingsData.MusicVolume;
-        sfxSlider!.Value = Settings.Instance.SettingsData.SfxVolume;
+        masterSlider!.Value = GameSettings.Instance.SettingsData.MasterVolume;
+        musicSlider!.Value = GameSettings.Instance.SettingsData.MusicVolume;
+        sfxSlider!.Value = GameSettings.Instance.SettingsData.SfxVolume;
+
+        CapturePreviousVolumes();
     }
 
     public override void Update()
     {
+        UpdateApplyAvailability();
         UpdateLabels();
         UpdateButtons();
     }
 
     private void OnApplyButtonLeftClicked(Button sender)
     {
-        Settings.Instance.SettingsData.MasterVolume = masterSlider!.Value;
-        Settings.Instance.SettingsData.MusicVolume = musicSlider!.Value;
-        Settings.Instance.SettingsData.SfxVolume = sfxSlider!.Value;
-        Settings.Instance.Save();
+        GameSettings.Instance.SettingsData.MasterVolume = masterSlider!.Value;
+        GameSettings.Instance.SettingsData.MusicVolume = musicSlider!.Value;
+        GameSettings.Instance.SettingsData.SfxVolume = sfxSlider!.Value;
+        GameSettings.Instance.Save();
+
+        CapturePreviousVolumes();
     }
 
     private void OnReturnButtonPressed(Button sender)
@@ -43,6 +51,13 @@ public class SettingsMenu : Node2D
         var mainMenu = mainMenuScene.Instantiate<MainMenu>();
         Parent!.AddChild(mainMenu);
         Destroy();
+    }
+
+    private void CapturePreviousVolumes()
+    {
+        previousMasterVolume = masterSlider!.Value;
+        previousMusicVolume = musicSlider!.Value;
+        previousSfxVolume = sfxSlider!.Value;
     }
 
     private void UpdateLabels()
@@ -80,5 +95,13 @@ public class SettingsMenu : Node2D
             (windowSize.X / 2) + buttonSpacing,
             windowSize.Y / 2 + 100
         );
+    }
+
+    private void UpdateApplyAvailability()
+    {
+        applyButton!.Disabled = 
+            masterSlider!.Value == previousMasterVolume &&
+            musicSlider!.Value == previousMusicVolume &&
+            sfxSlider!.Value == previousSfxVolume;
     }
 }

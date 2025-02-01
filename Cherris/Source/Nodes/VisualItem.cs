@@ -5,29 +5,36 @@ namespace Cherris;
 public abstract class VisualItem : Node
 {
     public bool Visible { get; set; } = true;
-
-    [InspectorExclude]
     public bool ReadyForVisibility { get; set; } = false;
 
     private int _layer = 0;
     public int Layer
     {
         get => _layer;
-
         set
         {
-            if (_layer == value)
-            {
-                return;
-            }
-
+            if (_layer == value) return;
             _layer = value;
             LayerChanged?.Invoke(this, _layer);
         }
     }
 
+    public static readonly Dictionary<string, (Type Type, Action<VisualItem, object> Setter)> PropertyMap;
+
+    static VisualItem()
+    {
+        PropertyMap = new()
+        {
+            { "Visible", (typeof(bool), (obj, val) => obj.Visible = (bool)val) },
+            { "ReadyForVisibility", (typeof(bool), (obj, val) => obj.ReadyForVisibility = (bool)val) },
+            { "Layer", (typeof(int), (obj, val) => obj.Layer = (int)val) }
+        };
+    }
+
     public delegate void VisualItemEventHandler(VisualItem sender, int layer);
     public event VisualItemEventHandler? LayerChanged;
+
+    // Main
 
     public override void Update()
     {

@@ -14,7 +14,7 @@ public class MainMenu : Node
         base.Ready();
 
         playButton = GetNode<Button>("PlayButton");
-        playButton.LeftClicked += OnStartButtonLeftClicked;
+        playButton.LeftClicked += OnPlayButtonLeftClicked;
 
         settingsButton = GetNode<Button>("SettingsButton");
         settingsButton.LeftClicked += OnSettingsButtonLeftClicked;
@@ -35,7 +35,7 @@ public class MainMenu : Node
         UpdateQuitButton();
     }
 
-    private void OnStartButtonLeftClicked(Button sender)
+    private void OnPlayButtonLeftClicked(Button sender)
     {
         PackedSceneIni packedMainScene = new("Res/Scenes/MainScene.ini");
         var mainScene = packedMainScene.Instantiate<Node>();

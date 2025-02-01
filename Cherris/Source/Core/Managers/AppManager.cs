@@ -17,6 +17,8 @@ public sealed class AppManager
     {
         string configFilePath = "Res/Cherris/Config.yaml";
         config = LoadConfig(configFilePath);
+
+        SceneConverter.ConvertYamlToBinary("Res/Scenes/Menu/Menu.yaml", "Res/Scenes/Menu/Menu.bin");
     }
 
     public void Run()
@@ -75,9 +77,7 @@ public sealed class AppManager
     private void SetRootNodeFromConfig(string scenePath)
     {
         PackedSceneYamlNested packedScene = new(scenePath);
-        RootNode = packedScene.Instantiate<Node>(true);
-
-        Console.WriteLine(RootNode is null);
+        RootNode = packedScene.Instantiate<Node>();
     }
 
     private void Update()
