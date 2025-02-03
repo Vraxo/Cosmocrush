@@ -1,0 +1,50 @@
+﻿name: Root
+type: MainScene
+children:
+  - name: CombatThemePlayer
+    type: CombatThemePlayer
+
+  - name: MainCamera
+    type: MainCamera
+
+  - name: Background
+    type: ColorRectangle
+    Color: [160, 96, 0, 255]
+    Size: [2000, 2000]
+
+  - name: NavReg
+    type: NavigationRegion
+
+  - name: Rock
+    type: NavigationObstacle
+    path: Res/Scenes/Rock.yaml
+    Position: [600, 300]
+
+  - name: UpperWall
+    type: NavigationObstacle
+    path: Res/Scenes/Rock.yaml
+    Position: [640, 0]
+    Scale: [10, 0.1]
+
+  - name: LeftWall
+    type: NavigationObstacle
+    path: Res/Scenes/Rock.yaml
+    Position: [0, 0]
+    Scale: [0.1, 0.5]
+
+  - name: Player
+    type: Player
+    path: Res/Scenes/Player.yaml
+
+  - name: Enemy1
+    type: Enemy
+    path: Res/Scenes/Enemy.yaml
+    Position: [100, 150]
+
+  - name: HudLayer
+    type: IndependantLayer
+    children:
+      - name: HealthBar
+        type: HealthBar
+        path: Res/Scenes/HealthBar.yaml
+        # Position: [300, 100]  # Commented out as in your example

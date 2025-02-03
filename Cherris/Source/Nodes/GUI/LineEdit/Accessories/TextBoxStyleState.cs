@@ -6,7 +6,7 @@ public class TextBoxStyleState
     public float Roundedness = 0F;
     public float Padding = 8;
     public float Spacing = 1;
-    public Raylib_cs.Font Font = FontManager.Instance.Get("RobotoMono 32");
+    public Raylib_cs.Font Font = FontCache.Instance.Get("RobotoMono 32");
     public uint FontSize = 16;
     public Color TextColor = new(255, 255, 255, 255);
     public Color OutlineColor = new(32, 32, 255, 0);

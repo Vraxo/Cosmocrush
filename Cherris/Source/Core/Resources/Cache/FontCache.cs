@@ -1,13 +1,13 @@
 ﻿namespace Cherris;
 
-public sealed class FontManager
+public sealed class FontCache
 {
-    private static FontManager? _instance;
-    public static FontManager Instance => _instance ??= new();
+    private static FontCache? _instance;
+    public static FontCache Instance => _instance ??= new();
 
     private readonly Dictionary<string, Font> fonts = new();
 
-    private FontManager() { }
+    private FontCache() { }
 
     // Get the font by the full string (e.g., "Res/Fonts/FontName.ttf:32")
     public Font Get(string fontKey)

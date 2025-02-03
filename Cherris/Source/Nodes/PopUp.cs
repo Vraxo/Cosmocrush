@@ -88,7 +88,7 @@ public class PopUp : ClickableRectangle
         DrawText(
             Title,
             GetTitlePosition(),
-            FontManager.Instance.Get("Res/Cherris/Fonts/RobotoMono.ttf:32"),
+            FontCache.Instance.Get("Res/Cherris/Fonts/RobotoMono.ttf:32"),
             16,
             0,
             Color.White);

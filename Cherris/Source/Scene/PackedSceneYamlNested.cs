@@ -24,7 +24,7 @@ public sealed class PackedSceneYamlNested(string path)
 
         // 1. Measure IO time
         swIO.Start();
-        var yamlContent = File.ReadAllText(_path);
+        string yamlContent = File.ReadAllText(_path);
         swIO.Stop();
 
         // 2. Measure YAML parsing time

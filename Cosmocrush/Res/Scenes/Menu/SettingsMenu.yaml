@@ -19,7 +19,7 @@ children:
     children:
       - name: Slider
         type: HSlider
-        path: Res/Scenes/Slider.yaml
+        path: Res/Scenes/UI/Slider.yaml
         HorizontalAlignment: Left
         FocusNeighborTop: ../../ReturnButton
         FocusNeighborBottom: ../../MusicLabel/Slider
@@ -33,7 +33,7 @@ children:
     children:
       - name: Slider
         type: HSlider
-        path: Res/Scenes/Slider.yaml
+        path: Res/Scenes/UI/Slider.yaml
         FocusNeighborTop: ../../MasterLabel/Slider
         FocusNeighborBottom: ../../SfxLabel/Slider
 
@@ -46,13 +46,13 @@ children:
     children:
       - name: Slider
         type: HSlider
-        path: Res/Scenes/Slider.yaml
+        path: Res/Scenes/UI/Slider.yaml
         FocusNeighborTop: ../../MusicLabel/Slider
         FocusNeighborBottom: ../../ReturnButton
 
   - name: ApplyButton
     type: Button
-    path: Res/Scenes/Button.yaml
+    path: Res/Scenes/UI/Button.yaml
     Text: Apply
     FocusNeighborLeft: ../ReturnButton
     FocusNeighborTop: ../SfxLabel/Slider
@@ -60,7 +60,7 @@ children:
 
   - name: ReturnButton
     type: Button
-    path: Res/Scenes/Button.yaml
+    path: Res/Scenes/UI/Button.yaml
     Text: Return
     FocusNeighborLeft: ../ApplyButton
     FocusNeighborTop: ../SfxLabel/Slider

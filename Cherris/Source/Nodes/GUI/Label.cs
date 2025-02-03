@@ -97,7 +97,7 @@ public class Label : Control
             displayedText,
             GlobalPosition - Origin + Theme.ShadowOffset - new Vector2(0, Theme.FontSize / 2),
             Theme.Font,
-            Theme.FontSize,
+            Theme.FontSize * Scale.Length(),
             Theme.FontSpacing,
             Theme.ShadowColor);
     }
@@ -108,7 +108,7 @@ public class Label : Control
             displayedText,
             GlobalPosition - Origin - new Vector2(0, Theme.FontSize / 2),
             Theme.Font,
-            Theme.FontSize,
+            Theme.FontSize * Scale.Length(),
             Theme.FontSpacing,
             Theme.FontColor,
             Theme.OutlineThickness,

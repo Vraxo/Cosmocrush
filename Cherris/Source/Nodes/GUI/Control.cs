@@ -21,7 +21,7 @@ public class Control : ClickableRectangle
     private bool wasFocusedLastFrame = false;
 
     public string AudioBus { get; set; } = "Master";
-    public Audio? FocusGainedAudio { get; set; }
+    public Sound? FocusGainedSound { get; set; }
 
     private bool _disabled = false;
     public bool Disabled
@@ -56,9 +56,9 @@ public class Control : ClickableRectangle
             {
                 FocusGained?.Invoke(this);
 
-                if (FocusGainedAudio is not null)
+                if (FocusGainedSound is not null)
                 {
-                    AudioManager.PlaySound(FocusGainedAudio, AudioBus);
+                    FocusGainedSound?.Play(AudioBus);
                 }
             }
             else

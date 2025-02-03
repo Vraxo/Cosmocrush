@@ -5,7 +5,7 @@ public abstract class Slider : Control
     public float Value { get; set; } = 0.5f;
     public float MinValue { get; set; } = 0;
     public float MaxValue { get; set; } = 1f;
-    public Audio? MoveAudio { get; set; }
+    public Sound? MoveSound { get; set; }
     public SliderTheme Theme { get; set; } = new();
     public ButtonThemePack GrabberTheme { get; set; } = new();
     public Vector2 GrabberSize { get; set; } = new(20, 20);
@@ -77,12 +77,7 @@ public abstract class Slider : Control
 
     protected void PlaySound()
     {
-        if (MoveAudio is null)
-        {
-            return;
-        }
-
-        AudioManager.PlaySound(MoveAudio, AudioBus);
+        MoveSound?.Play(AudioBus);
     }
 
     protected abstract void CalculateTrackBounds();

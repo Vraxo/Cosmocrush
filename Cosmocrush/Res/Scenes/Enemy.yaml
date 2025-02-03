@@ -1,0 +1,13 @@
+name: Enemy
+type: Enemy
+Size: [32, 48]
+children:
+  - name: Sprite
+    type: Sprite
+    Position: [0, -24]
+    Texture: Res/Sprites/Enemy.png
+    InheritScale: false
+    Scale: [0.1, 0.1]
+
+  - name: NavigationAgent
+    type: NavigationAgent

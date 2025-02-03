@@ -2,14 +2,14 @@
 
 namespace Cherris;
 
-public sealed class TextureManager
+public sealed class TextureCache
 {
-    private static TextureManager? _instance;
-    public static TextureManager Instance => _instance ??= new();
+    private static TextureCache? _instance;
+    public static TextureCache Instance => _instance ??= new();
 
     private readonly Dictionary<string, Texture> textures = [];
 
-    private TextureManager() { }
+    private TextureCache() { }
 
     public Texture Get(string path)
     {

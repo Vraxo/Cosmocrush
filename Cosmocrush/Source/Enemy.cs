@@ -46,6 +46,11 @@ public class Enemy : ColliderRectangle
         {
             Die();
         }
+
+        AddChild(new DamageIndicator()
+        { 
+            Text = damage.ToString() 
+        });
     }
 
     public void ApplyKnockback(Vector2 force)

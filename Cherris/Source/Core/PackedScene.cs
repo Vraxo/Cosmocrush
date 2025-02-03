@@ -237,14 +237,14 @@ public class PackedScene
     {
         string stringValue = value.Trim();
 
-        if (stringValue.StartsWith("MoveAudio(") && stringValue.EndsWith(")"))
+        if (stringValue.StartsWith("MoveSound(") && stringValue.EndsWith(")"))
         {
             string audioPath = ExtractQuotedString(stringValue[6..^1]);
             return new(audioPath);
         }
         else
         {
-            throw new Exception($"Invalid MoveAudio format, expected format: MoveAudio(path)");
+            throw new Exception($"Invalid MoveSound format, expected format: MoveSound(path)");
         }
     }
 
@@ -317,7 +317,7 @@ public class PackedScene
         if (stringValue.StartsWith("Texture(") && stringValue.EndsWith(")"))
         {
             string texturePath = ExtractQuotedString(stringValue[8..^1]);
-            return TextureManager.Instance.Get(texturePath);
+            return TextureCache.Instance.Get(texturePath);
         }
         else
         {

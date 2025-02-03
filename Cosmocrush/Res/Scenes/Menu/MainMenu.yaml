@@ -11,7 +11,7 @@ children:
 
   - name: PlayButton
     type: Button
-    path: Res/Scenes/Button.yaml
+    path: Res/Scenes/UI/Button.yaml
     Size: [640,31]
     Layer: 2
     FocusNeighborTop: ../QuitButton
@@ -20,7 +20,7 @@ children:
 
   - name: SettingsButton
     type: Button
-    path: Res/Scenes/Button.yaml
+    path: Res/Scenes/UI/Button.yaml
     Size: [640,31]
     Layer: 2
     FocusNeighborTop: ../PlayButton
@@ -29,7 +29,7 @@ children:
 
   - name: QuitButton
     type: Button
-    path: Res/Scenes/Button.yaml
+    path: Res/Scenes/UI/Button.yaml
     Size: [640,31]
     FocusNeighborTop: ../SettingsButton
     FocusNeighborBottom: ../PlayButton

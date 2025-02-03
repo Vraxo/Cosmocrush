@@ -180,7 +180,7 @@ public static class PackedSceneUtils
         return targetType switch
         {
             _ when targetType == typeof(Audio) => new Audio(stringValue),
-            _ when targetType == typeof(Texture) => TextureManager.Instance.Get(stringValue),
+            _ when targetType == typeof(Texture) => TextureCache.Instance.Get(stringValue),
             _ when targetType == typeof(Font) => ResourceLoader.Load<Font>(stringValue),
             _ when targetType == typeof(int) => int.Parse(stringValue),
             _ when targetType == typeof(uint) => uint.Parse(stringValue),
@@ -188,6 +188,7 @@ public static class PackedSceneUtils
             _ when targetType == typeof(double) => double.Parse(stringValue),
             _ when targetType == typeof(bool) => bool.Parse(stringValue),
             _ when targetType == typeof(string) => stringValue,
+            _ when targetType == typeof(Sound) => ResourceLoader.Load<Sound>(stringValue),
             _ => throw new NotSupportedException($"Unsupported type: {targetType.Name}")
         };
     }

@@ -32,7 +32,7 @@ public class Button : Control
     public event ButtonEventHandler? LeftClicked;
     public event ButtonEventHandler? RightClicked;
 
-    public Audio? ClickAudio { get; set; }
+    public Sound? ClickSound { get; set; }
 
     private string displayedText = "";
 
@@ -150,11 +150,7 @@ public class Button : Control
                 {
                     clickHandler?.Invoke(this);
                     onTop = false;
-
-                    if (ClickAudio is not null)
-                    {
-                        AudioManager.PlaySound(ClickAudio, AudioBus);
-                    }
+                    ClickSound?.Play(AudioBus);
                 }
             }
         }
@@ -164,11 +160,7 @@ public class Button : Control
             if (mouseOver && pressed && onTop && actionMode == ActionMode.Release) // (mouseOver || StayPressed)
             {
                 clickHandler?.Invoke(this);
-
-                if (ClickAudio is not null)
-                {
-                    AudioManager.PlaySound(ClickAudio, AudioBus);
-                }
+                ClickSound?.Play(AudioBus);
             }
 
             onTop = false;

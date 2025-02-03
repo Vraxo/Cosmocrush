@@ -85,13 +85,13 @@
     <None Update="Res\Fonts\RaceSport.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Button.yaml">
+    <None Update="Res\Scenes\UI\Button.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Gun.ini">
+    <None Update="Res\Scenes\Gun.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\HealthBar.ini">
+    <None Update="Res\Scenes\HealthBar.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Scenes\Menu\MainMenu.yaml">
@@ -109,13 +109,13 @@
     <None Update="Res\Scenes\Menu\Menu.scene">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Enemy.ini">
+    <None Update="Res\Scenes\Enemy.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Rock.ini">
+    <None Update="Res\Scenes\Rock.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Slider.yaml">
+    <None Update="Res\Scenes\UI\Slider.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Shaders\old_tv_shader.fs">
@@ -172,10 +172,10 @@
     <None Update="Res\Sprites\Player.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\MainScene.ini">
+    <None Update="Res\Scenes\World.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Scenes\Player.ini">
+    <None Update="Res\Scenes\Player.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Sprites\Rock.png">
