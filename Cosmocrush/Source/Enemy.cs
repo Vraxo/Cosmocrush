@@ -4,8 +4,8 @@ namespace Cosmocrush;
 
 public class Enemy : ColliderRectangle
 {
-    private int health = 10;
-    private const int maxHealth = 10;
+    private int health = 20;
+    private const int maxHealth = 20;
     private Vector2 knockback = Vector2.Zero;
     private double lastDamageTime = -0.5f;
 
@@ -13,6 +13,7 @@ public class Enemy : ColliderRectangle
     private Player? player;
     private NavigationAgent? navigationAgent;
 
+    private readonly int damage = 2;
     private readonly float speed = 100f;
     private readonly float proximityThreshold = 10f;
     private readonly float knockbackRecoverySpeed = 0.1f;
@@ -114,7 +115,7 @@ public class Enemy : ColliderRectangle
 
         if (isPlayerInRange && canShoot)
         {
-            player?.TakeDamage(1);
+            player?.TakeDamage(damage);
             lastDamageTime = TimeServer.Elapsed;
         }
     }

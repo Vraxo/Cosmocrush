@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -15,43 +14,12 @@ public sealed class PackedScene(string path)
 
     private List<(Node, string, object)> _deferredNodeAssignments = new();
 
-
     public T Instantiate<T>(bool isRootNode = false) where T : Node
     {
-        Stopwatch swIO = new();
-        Stopwatch swYaml = new();
-        Stopwatch swReflection = new();
-
-        // 1. Measure IO time
-        swIO.Start();
         string yamlContent = File.ReadAllText(_path);
-        swIO.Stop();
-
-        // 2. Measure YAML parsing time
-        swYaml.Start();
         var rootElement = _deserializer.Deserialize<Dictionary<string, object>>(yamlContent);
-        swYaml.Stop();
-
-        Node rootNode = null!;
-
-        // 3. Measure reflection and property setting time
-        swReflection.Start();
-        try
-        {
-            rootNode = (T)ParseNode(rootElement, null);
-            AssignDeferredNodes();
-        }
-        finally
-        {
-            swReflection.Stop();
-        }
-
-        Console.WriteLine($"Instantiated {_path}\n" +
-                          $"IO: {swIO.Elapsed.TotalMilliseconds}ms\n" +
-                          $"YAML: {swYaml.Elapsed.TotalMilliseconds}ms\n" +
-                          $"Reflection/Props: {swReflection.Elapsed.TotalMilliseconds}ms\n" +
-                          $"Total: {(swIO.Elapsed + swYaml.Elapsed + swReflection.Elapsed).TotalMilliseconds}ms");
-
+        Node rootNode = (T)ParseNode(rootElement, null);
+        AssignDeferredNodes();
         return (T)rootNode;
     }
 
@@ -60,13 +28,9 @@ public sealed class PackedScene(string path)
         var node = CreateNodeInstance(element);
         ProcessNestedScene(element, ref node);
         SetNodeProperties(element, node);
-
-        // Parent-child relationships are inferred by recursion
         AddToParent(parent, node);
-
         RegisterNode(element, node);
         ProcessChildNodes(element, node);
-
         return node;
     }
 
@@ -75,7 +39,6 @@ public sealed class PackedScene(string path)
         var typeName = (string)element["type"];
         var nodeType = PackedSceneUtils.ResolveType(typeName);
         var node = (Node)Activator.CreateInstance(nodeType)!;
-
         node.Name = (string)element["name"];
         return node;
     }
@@ -87,7 +50,6 @@ public sealed class PackedScene(string path)
             var scenePath = (string)pathValue;
             var nestedScene = new PackedScene(scenePath);
             node = nestedScene.Instantiate<Node>();
-            // Apply the name from the current element to override the nested scene's name
             node.Name = (string)element["name"];
         }
     }
@@ -106,12 +68,7 @@ public sealed class PackedScene(string path)
 
     private void AddToParent(Node? parent, Node node)
     {
-        if (parent == null)
-        {
-            return;
-        }
-
-        parent.AddChild(node, node.Name);
+        parent?.AddChild(node, node.Name);
     }
 
     private void RegisterNode(Dictionary<string, object> element, Node node)
@@ -123,32 +80,25 @@ public sealed class PackedScene(string path)
     private void ProcessChildNodes(Dictionary<string, object> element, Node parentNode)
     {
         if (!element.TryGetValue("children", out var childrenObj)) return;
-
         var children = ConvertChildrenToList(childrenObj);
-
         foreach (var child in children)
         {
             if (child is Dictionary<object, object> childDict)
             {
                 var convertedChild = ConvertChildDictionary(childDict);
-                ParseNode(convertedChild, parentNode); // Passing the parentNode to maintain the hierarchy
+                ParseNode(convertedChild, parentNode);
             }
         }
     }
 
     private List<object> ConvertChildrenToList(object childrenObj)
     {
-        if (childrenObj is List<object> list) return list;
-
-        return new List<object>();
+        return childrenObj is List<object> list ? list : new List<object>();
     }
 
     private Dictionary<string, object> ConvertChildDictionary(Dictionary<object, object> childDict)
     {
-        return childDict.ToDictionary(
-            kvp => kvp.Key.ToString()!,
-            kvp => kvp.Value
-        );
+        return childDict.ToDictionary(kvp => kvp.Key.ToString()!, kvp => kvp.Value);
     }
 
     private void AssignDeferredNodes()
@@ -168,17 +118,13 @@ public sealed class PackedScene(string path)
         {
             string part = pathParts[i];
             Type currentType = currentObject.GetType();
-
             (MemberInfo? memberInfo, object? nextObject) = GetMemberAndNextObject(currentType, part, currentObject);
-
             if (i == pathParts.Length - 1)
             {
-                // Final part, assign the Node
                 AssignNodeToMember(memberInfo, currentObject, nodePath, targetNode);
             }
             else
             {
-                // Intermediate, navigate deeper
                 currentObject = nextObject!;
             }
         }
@@ -186,29 +132,19 @@ public sealed class PackedScene(string path)
 
     private (MemberInfo?, object?) GetMemberAndNextObject(Type type, string memberName, object currentObject)
     {
-        // Look for a property first (now including NonPublic)
         PropertyInfo? propertyInfo = type.GetProperty(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         if (propertyInfo != null)
         {
-            object? nextObject = propertyInfo.GetValue(currentObject);
-            if (nextObject == null)
-            {
-                nextObject = Activator.CreateInstance(propertyInfo.PropertyType);
-                propertyInfo.SetValue(currentObject, nextObject);
-            }
+            object? nextObject = propertyInfo.GetValue(currentObject) ?? Activator.CreateInstance(propertyInfo.PropertyType);
+            propertyInfo.SetValue(currentObject, nextObject);
             return (propertyInfo, nextObject);
         }
 
-        // Look for a field if no property is found (now including NonPublic)
         FieldInfo? fieldInfo = type.GetField(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         if (fieldInfo != null)
         {
-            object? nextObject = fieldInfo.GetValue(currentObject);
-            if (nextObject == null)
-            {
-                nextObject = Activator.CreateInstance(fieldInfo.FieldType);
-                fieldInfo.SetValue(currentObject, nextObject);
-            }
+            object? nextObject = fieldInfo.GetValue(currentObject) ?? Activator.CreateInstance(fieldInfo.FieldType);
+            fieldInfo.SetValue(currentObject, nextObject);
             return (fieldInfo, nextObject);
         }
 
@@ -219,28 +155,14 @@ public sealed class PackedScene(string path)
     {
         if (memberInfo is PropertyInfo propertyInfo && propertyInfo.PropertyType.IsSubclassOf(typeof(Node)))
         {
-            // Use GetNode to find the referenced Node
-            MethodInfo getnodeMethod = targetNode.GetType().GetMethod("GetNode")!.MakeGenericMethod(propertyInfo.PropertyType);
-            object? referencedNode = getnodeMethod.Invoke(targetNode, new object[] { nodePath });
-
-            if (referencedNode == null)
-            {
-                throw new Exception($"Node at path '{nodePath}' not found or is not of type '{propertyInfo.PropertyType.Name}'.");
-            }
-
+            MethodInfo getNodeMethod = targetNode.GetType().GetMethod("GetNode")!.MakeGenericMethod(propertyInfo.PropertyType);
+            object? referencedNode = getNodeMethod.Invoke(targetNode, new object[] { nodePath });
             propertyInfo.SetValue(targetObject, referencedNode);
         }
         else if (memberInfo is FieldInfo fieldInfo && fieldInfo.FieldType.IsSubclassOf(typeof(Node)))
         {
-            // Use GetNode to find the referenced Node
-            MethodInfo getnodeMethod = targetNode.GetType().GetMethod("GetNode")!.MakeGenericMethod(fieldInfo.FieldType);
-            object? referencedNode = getnodeMethod.Invoke(targetNode, new object[] { nodePath });
-
-            if (referencedNode == null)
-            {
-                throw new Exception($"Node at path '{nodePath}' not found or is not of type '{fieldInfo.FieldType.Name}'.");
-            }
-
+            MethodInfo getNodeMethod = targetNode.GetType().GetMethod("GetNode")!.MakeGenericMethod(fieldInfo.FieldType);
+            object? referencedNode = getNodeMethod.Invoke(targetNode, new object[] { nodePath });
             fieldInfo.SetValue(targetObject, referencedNode);
         }
         else

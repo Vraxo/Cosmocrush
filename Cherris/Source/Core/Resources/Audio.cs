@@ -5,7 +5,6 @@ namespace Cherris;
 public class Audio
 {
     public float Length { get; private set; } = 0.1f;
-
     private Music raylibMusic;
 
     public static implicit operator Music(Audio audio) => audio.raylibMusic;
@@ -13,6 +12,12 @@ public class Audio
     public Audio(string filePath)
     {
         raylibMusic = Raylib.LoadMusicStream(filePath);
+
         Length = Raylib.GetMusicTimeLength(raylibMusic);
+
+        if (Length <= 0)
+        {
+            throw new Exception($"Failed to load audio file: {filePath}");
+        }
     }
 }

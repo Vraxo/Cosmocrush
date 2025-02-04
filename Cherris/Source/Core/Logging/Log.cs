@@ -26,13 +26,24 @@ public class Log
         }
     }
 
-    public static void Error(string message, string condition = "ClickServer/ViableClickable")
+    public static void Error(string message, string condition)
     {
-        if (LogSettings.Instance.GetLogCondition("Error") && LogSettings.Instance.GetLogCondition(condition))
+        if (!LogSettings.Instance.GetLogCondition("Error") || !LogSettings.Instance.GetLogCondition(condition))
         {
-            Console.ForegroundColor = errorColor;
-            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [ERROR] {message}");
-            Console.ResetColor();
+            return;
         }
+
+        Error(message);
+    }
+
+    public static void Error(string message)
+    {
+        string fullMessage = $"[{DateTime.Now:HH:mm:ss}] [ERROR] {message}";
+
+        Console.ForegroundColor = errorColor;
+        Console.WriteLine(fullMessage);
+        Console.ResetColor();
+
+        File.AppendAllText("Res/Log.txt", Environment.NewLine + fullMessage);
     }
 }

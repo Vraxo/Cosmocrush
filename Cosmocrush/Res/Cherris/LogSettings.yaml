@@ -1,5 +1,12 @@
+# Main
+
 Info: false
 Warning: true
 Error: true
+
+# Nodes
+
 ClickManager: true
 RayCast: true
+AudioPlayer: true
+AnimationPlayer: true

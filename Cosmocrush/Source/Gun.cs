@@ -8,8 +8,11 @@ public class Gun : Sprite
     private readonly string gunshotAudioPath = "Res/Audio/SFX/Gunshot.mp3";
 
     private float lastFiredTime = 0f;
+    private const int damage = 5;
     private const float cooldown = 0.182f;
     private const float knockbackForce = 3f;
+
+    // Main
 
     public override void Ready()
     {
@@ -31,6 +34,8 @@ public class Gun : Sprite
         LookAtMouse();
     }
 
+    // Input
+
     private void HandleFiring()
     {
         bool isCooledDown = TimeServer.Elapsed - lastFiredTime >= cooldown;
@@ -47,11 +52,19 @@ public class Gun : Sprite
         LookAt(Input.WorldMousePosition);
     }
 
+    // Gunshot sound
+
+    private void OnGunshotAudioFinished(AudioPlayer sender)
+    {
+        sender.Free();
+    }
+
     private void PlayGunshotSound()
     {
         AudioPlayer newAudioPlayer = new()
         {
-            Audio = ResourceLoader.Load<Audio>(gunshotAudioPath)
+            Audio = ResourceLoader.Load<Audio>(gunshotAudioPath),
+            Bus = "SFX"
         };
 
         AddChild(newAudioPlayer);
@@ -59,10 +72,7 @@ public class Gun : Sprite
         newAudioPlayer.Play();
     }
 
-    private void OnGunshotAudioFinished(AudioPlayer sender)
-    {
-        sender.Free();
-    }
+    // Firing
 
     private void Fire()
     {
@@ -85,13 +95,13 @@ public class Gun : Sprite
 
         if (rayCast.IsColliding)
         {
-            Node2D? collider = rayCast.Collider;
+            Collider? collider = rayCast.Collider;
 
             if (collider is not null)
             {
-                if (collider is Enemy enemy)
+                if (collider.Parent is Enemy enemy)
                 {
-                    enemy.TakeDamage(1);
+                    enemy.TakeDamage(damage);
                     enemy.ApplyKnockback(angleVector.Normalized() * knockbackForce);
                 }
             }

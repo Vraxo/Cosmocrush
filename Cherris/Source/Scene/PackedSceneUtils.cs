@@ -143,8 +143,8 @@ public static class PackedSceneUtils
 
         foreach (var (key, value) in dict)
         {
-            var memberName = key.ToString() ?? throw new InvalidDataException("Dictionary key cannot be null");
-            var memberInfo = GetMemberInfo(targetType, memberName);
+            string memberName = key.ToString() ?? throw new InvalidDataException("Dictionary key cannot be null");
+            MemberInfo memberInfo = GetMemberInfo(targetType, memberName);
 
             var convertedValue = ConvertValue(GetMemberType(memberInfo), value);
             SetMemberValue(instance, memberInfo, convertedValue);
@@ -162,16 +162,21 @@ public static class PackedSceneUtils
         };
 
     private static object ConvertList(Type targetType, IList list)
-        => targetType.Name switch
+    {
+        if (targetType == typeof(List<int>))
+            return list.Cast<object>().Select(Convert.ToInt32).ToList();
+
+        return targetType.Name switch
         {
             nameof(Vector2) => ParseVector2(list),
             nameof(Color) => ParseColor(list),
-            _ => throw new NotSupportedException($"Unsupported list conversion to {targetType.Name}")
+            _ => throw new NotSupportedException($"Unsupported list conversion to {targetType}")
         };
+    }
 
     private static object ConvertPrimitive(Type targetType, object value)
     {
-        var stringValue = value.ToString()?.TrimQuotes()
+        string stringValue = value.ToString()?.TrimQuotes()
             ?? throw new InvalidOperationException("Value cannot be null");
 
         if (targetType.IsEnum)
@@ -179,24 +184,29 @@ public static class PackedSceneUtils
 
         return targetType switch
         {
-            _ when targetType == typeof(Audio) => new Audio(stringValue),
-            _ when targetType == typeof(Texture) => TextureCache.Instance.Get(stringValue),
-            _ when targetType == typeof(Font) => ResourceLoader.Load<Font>(stringValue),
             _ when targetType == typeof(int) => int.Parse(stringValue),
             _ when targetType == typeof(uint) => uint.Parse(stringValue),
             _ when targetType == typeof(float) => float.Parse(stringValue),
             _ when targetType == typeof(double) => double.Parse(stringValue),
             _ when targetType == typeof(bool) => bool.Parse(stringValue),
             _ when targetType == typeof(string) => stringValue,
+            _ when targetType == typeof(Audio) => new Audio(stringValue),
             _ when targetType == typeof(Sound) => ResourceLoader.Load<Sound>(stringValue),
+            _ when targetType == typeof(Animation) => ResourceLoader.Load<Animation>(stringValue),
+            _ when targetType == typeof(Texture) => ResourceLoader.Load<Texture>(stringValue),
+            _ when targetType == typeof(Font) => ResourceLoader.Load<Font>(stringValue),
             _ => throw new NotSupportedException($"Unsupported type: {targetType.Name}")
         };
     }
 
     private static Vector2 ParseVector2(IList list)
     {
-        if (list.Count != 2) throw new ArgumentException("Vector2 requires exactly 2 elements");
-        return new Vector2(
+        if (list.Count != 2) 
+        { 
+            throw new ArgumentException("Vector2 requires exactly 2 elements");
+        }
+
+        return new(
             Convert.ToSingle(list[0]),
             Convert.ToSingle(list[1])
         );
@@ -204,8 +214,12 @@ public static class PackedSceneUtils
 
     private static Color ParseColor(IList list)
     {
-        if (list.Count < 3 || list.Count > 4) throw new ArgumentException("Color requires 3 or 4 elements");
-        return new Color(
+        if (list.Count < 3 || list.Count > 4)
+        {
+            throw new ArgumentException("Color requires 3 or 4 elements");
+        }
+
+        return new(
             Convert.ToByte(list[0]),
             Convert.ToByte(list[1]),
             Convert.ToByte(list[2]),
@@ -215,6 +229,6 @@ public static class PackedSceneUtils
 
     private static string TrimQuotes(this string input)
         => input.Length >= 2 && (input[0] == '"' || input[0] == '\'')
-            ? input.Substring(1, input.Length - 2)
+            ? input[1..^1]
             : input;
 }

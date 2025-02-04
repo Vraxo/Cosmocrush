@@ -58,8 +58,8 @@ public sealed class GameSettings
 
     private void UpdateAudioBusVolumes()
     {
-        AudioManagerCore.Instance.SetBusVolume("Master", SettingsData.MasterVolume);
-        AudioManagerCore.Instance.SetBusVolume("Music", SettingsData.MusicVolume);
-        AudioManagerCore.Instance.SetBusVolume("SFX", SettingsData.SfxVolume);
+        AudioServerCore.Instance.SetBusVolume("Master", SettingsData.MasterVolume);
+        AudioServerCore.Instance.SetBusVolume("Music", SettingsData.MusicVolume);
+        AudioServerCore.Instance.SetBusVolume("SFX", SettingsData.SfxVolume);
     }
 }

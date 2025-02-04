@@ -29,7 +29,7 @@ public class ColliderRectangle : Collider
     {
         base.Draw();
 
-        DrawRectangleOutline(
+        DrawRectangle(
             GlobalPosition - Origin,
             FinalSize,
             Color);

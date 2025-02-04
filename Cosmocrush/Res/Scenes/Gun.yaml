@@ -5,3 +5,5 @@ children:
     type: RayCast
     Length: 5000
     IgnoreFirst: true
+    CollisionLayers:
+      - 1

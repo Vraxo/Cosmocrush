@@ -2,16 +2,23 @@
 
 namespace Cherris;
 
-public class Sound(string filePath)
+public class Sound
 {
-    private Raylib_cs.Sound raylibSound = Raylib.LoadSound(filePath);
+    private Raylib_cs.Sound raylibSound;
 
-    public static implicit operator Raylib_cs.Sound(Sound soundEffect)
+    public static implicit operator Raylib_cs.Sound(Sound soundEffect) => soundEffect.raylibSound;
+
+    public Sound(string filePath)
     {
-        return soundEffect.raylibSound;
+        raylibSound = Raylib.LoadSound(filePath);
+
+        if (raylibSound.FrameCount == 0)
+        {
+            throw new Exception($"Failed to load sound file: {filePath}");
+        }
     }
 
-    public void Play(string bus)
+    public void Play(string bus = "Master")
     {
         AudioServer.PlaySound(this, bus);
     }

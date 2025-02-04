@@ -2,12 +2,6 @@
 
 namespace Cherris;
 
-[AttributeUsage(AttributeTargets.Property)]
-public class InspectorExcludeAttribute : Attribute
-{
-}
-
-
 /// <summary>
 /// Represents a basic node in a scene tree with support for children, activation, and destruction.
 /// </summary>

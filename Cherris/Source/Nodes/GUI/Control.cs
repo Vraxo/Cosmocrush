@@ -1,22 +1,21 @@
-﻿using static Cherris.Button;
-
-namespace Cherris;
+﻿namespace Cherris;
 
 public class Control : ClickableRectangle
 {
     public bool Focusable { get; set; } = true;
-    public bool UseArrowNavigation { get; set; } = true;
+    public bool Navigable { get; set; } = true;
     public string? FocusNeighborTop { get; set; }
     public string? FocusNeighborBottom { get; set; }
     public string? FocusNeighborLeft { get; set; }
     public string? FocusNeighborRight { get; set; }
-
-    public event EventHandler<bool>? FocusChanged;
-    public event EventHandler? ClickedOutside;
+    public string? FocusNeighborNext { get; set; }
+    public string? FocusNeighborPrevious { get; set; }
 
     public delegate void ControlEventHandler(Control control);
+    public event ControlEventHandler? FocusChanged;
     public event ControlEventHandler? FocusGained;
     public event ControlEventHandler? WasDisabled;
+    public event ControlEventHandler? ClickedOutside;
 
     private bool wasFocusedLastFrame = false;
 
@@ -50,7 +49,7 @@ public class Control : ClickableRectangle
                 return;
             }
             _focused = value;
-            FocusChanged?.Invoke(this, _focused);
+            FocusChanged?.Invoke(this);
 
             if (_focused)
             {
@@ -80,7 +79,7 @@ public class Control : ClickableRectangle
     {
         base.Update();
 
-        if (UseArrowNavigation && Focused && wasFocusedLastFrame)
+        if (Navigable && Focused && wasFocusedLastFrame)
         {
             HandleArrowNavigation();
         }
@@ -95,6 +94,8 @@ public class Control : ClickableRectangle
         NavigateToControlIfPressed("UiUp", FocusNeighborTop);
         NavigateToControlIfPressed("UiRight", FocusNeighborRight);
         NavigateToControlIfPressed("UiDown", FocusNeighborBottom);
+        NavigateToControlIfPressed("UiNext", FocusNeighborBottom);
+        NavigateToControlIfPressed("UiPrevious", FocusNeighborBottom);
     }
 
     private void NavigateToControlIfPressed(string action, string? path)
@@ -123,7 +124,7 @@ public class Control : ClickableRectangle
         if (!IsMouseOver() && Input.IsMouseButtonPressed(MouseButtonCode.Left))
         {
             Focused = false;
-            ClickedOutside?.Invoke(this, EventArgs.Empty);
+            ClickedOutside?.Invoke(this);
         }
     }
 

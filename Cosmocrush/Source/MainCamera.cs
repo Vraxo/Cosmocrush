@@ -4,26 +4,27 @@ namespace Cosmocrush;
 
 public class MainCamera : Camera
 {
+    private Player? player;
+
     public override void Ready()
     {
         base.Ready();
 
         Zoom = 1;
-        SetAsActive();
         InheritPosition = false;
+
+        player = GetNode<Player>("/root/Player");
+
+        SetAsActive();
     }
 
     public override void Update()
     {
         base.Update();
 
-        GlobalPosition = GetNode<Player>("/root/Player").GlobalPosition;
-    }
-
-    protected override void Draw()
-    {
-        base.Draw();
-
-        DrawRectangle(GlobalPosition, new(100, 100), Color.Red);
+        if (player is not null)
+        {
+            GlobalPosition = player.GlobalPosition;
+        }
     }
 }

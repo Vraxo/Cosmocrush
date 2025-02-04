@@ -1,13 +1,17 @@
 name: DamageIndicator
 type: DamageIndicator
+InheritScale: false
 Theme:
   OutlineSize: 1
+  Font: Res/Fonts/RaceSport.ttf:64
 destructionTimer: DestructionTimer
-animationPlayer: AnimationPlayer
 children:
   - name: DestructionTimer
     type: Timer
-    WaitTime: 1
+    WaitTime: 0.5
+    AutoStart: true
 
   - name: AnimationPlayer
     type: AnimationPlayer
+    AutoPlay: true
+    DefaultAnimation: Res/Animations/DamageIndicator.anim.yaml

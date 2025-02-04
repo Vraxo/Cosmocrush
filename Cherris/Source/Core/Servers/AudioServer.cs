@@ -2,29 +2,29 @@
 
 public static class AudioServer
 {
-    public static event AudioManagerCore.BusVolumeChangedEventHandler VolumeChanged
+    public static event AudioServerCore.BusVolumeChangedEventHandler VolumeChanged
     {
-        add => AudioManagerCore.Instance.VolumeChanged += value;
-        remove => AudioManagerCore.Instance.VolumeChanged -= value;
+        add => AudioServerCore.Instance.VolumeChanged += value;
+        remove => AudioServerCore.Instance.VolumeChanged -= value;
     }
 
     public static void PlaySound(Sound sound, string bus = "Master")
     {
-        AudioManagerCore.Instance.PlaySound(sound, bus);
+        AudioServerCore.Instance.PlaySound(sound, bus);
     }
 
     public static void SetBusVolume(string bus, float volume)
     {
-        AudioManagerCore.Instance.SetBusVolume(bus, volume);
+        AudioServerCore.Instance.SetBusVolume(bus, volume);
     }
 
     public static float GetBusVolume(string bus)
     {
-        return AudioManagerCore.Instance.GetBusVolume(bus);
+        return AudioServerCore.Instance.GetBusVolume(bus);
     }
 
     public static void AddBus(string name, float volume = 1f)
     {
-        AudioManagerCore.Instance.AddBus(name, volume);
+        AudioServerCore.Instance.AddBus(name, volume);
     }
 }

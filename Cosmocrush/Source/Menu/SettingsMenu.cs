@@ -12,6 +12,7 @@ public class SettingsMenu : Node2D
     private readonly HSlider? sfxSlider;
     private readonly Button? applyButton;
     private readonly Button? returnButton;
+
     private float previousMasterVolume = 0;
     private float previousMusicVolume = 0;
     private float previousSfxVolume = 0;

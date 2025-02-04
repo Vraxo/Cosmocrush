@@ -6,11 +6,11 @@ public partial class CombatThemePlayer : AudioPlayer
 {
     private readonly Random random = new Random();
     private int currentThemeIndex = -1;
-    private readonly string themePathTemplate = "Res/MoveSound/Music/CombatThemes/CombatTheme{0}.mp3";
+    private readonly string themePathTemplate = "Res/Audio/Music/CombatThemes/CombatTheme{0}.mp3";
 
     public override void Ready()
     {
-        //PlayRandomTheme();
+        PlayRandomTheme();
         Finished += OnThemeFinished;
     }
 

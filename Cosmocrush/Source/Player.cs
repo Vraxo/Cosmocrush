@@ -54,7 +54,8 @@ public class Player : ColliderRectangle
     {
         AudioPlayer audioPlayer = new()
         {
-            Audio = ResourceLoader.Load<Audio>(damageAudioPath)
+            Audio = ResourceLoader.Load<Audio>(damageAudioPath),
+            Bus = "SFX"
         };
 
         AddChild(audioPlayer);

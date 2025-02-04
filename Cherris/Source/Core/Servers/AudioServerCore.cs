@@ -4,10 +4,10 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Cherris;
 
-public sealed class AudioManagerCore
+public sealed class AudioServerCore
 {
-    private static AudioManagerCore? _instance;
-    public static AudioManagerCore Instance => _instance ??= new();
+    private static AudioServerCore? _instance;
+    public static AudioServerCore Instance => _instance ??= new();
 
     private readonly Dictionary<string, float> buses = [];
     private const string busesPath = "Res/Cherris/AudioBuses.yaml";
@@ -15,7 +15,7 @@ public sealed class AudioManagerCore
     public delegate void BusVolumeChangedEventHandler(string bus, float volume);
     public event BusVolumeChangedEventHandler? VolumeChanged;
 
-    private AudioManagerCore()
+    private AudioServerCore()
     {
         LoadBuses();
     }

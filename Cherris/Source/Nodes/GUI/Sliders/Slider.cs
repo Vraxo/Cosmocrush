@@ -32,7 +32,7 @@ public abstract class Slider : Control
     {
         Size = new(512, 16);
         Focusable = true;
-        UseArrowNavigation = true;
+        Navigable = true;
         Theme.Foreground.FillColor = DefaultTheme.Accent;
         Theme.Foreground.Roundness = 1;
         Theme.Foreground.Roundness = 1;

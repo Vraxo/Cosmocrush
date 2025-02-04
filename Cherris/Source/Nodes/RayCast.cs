@@ -2,18 +2,16 @@
 
 public class RayCast : Node2D
 {
+    public List<int> CollisionLayers { get; set; } = [0];
     public float Length { get; set; } = 100f;
     public bool IgnoreFirst { get; set; } = false;
 
-    [InspectorExclude]
     public bool IsColliding { get; private set; } = false;
 
     private Collider? _collider;
-    [InspectorExclude]
     public Collider? Collider
     {
         get => _collider;
-
         private set
         {
             if (_collider != value)
@@ -23,14 +21,12 @@ public class RayCast : Node2D
         }
     }
 
-    [InspectorExclude]
     public Vector2 TargetPosition
     {
         get
         {
             float x = MathF.Cos(MathF.PI * Rotation / 180) * Length;
             float y = MathF.Sin(MathF.PI * Rotation / 180) * Length;
-
             return new(x, y);
         }
     }
@@ -49,7 +45,6 @@ public class RayCast : Node2D
     protected override void Draw()
     {
         base.Draw();
-
         Vector2 rayEnd = GlobalPosition + TargetPosition;
         DrawLine(GlobalPosition, rayEnd, 5, Color.Red);
     }
@@ -62,17 +57,16 @@ public class RayCast : Node2D
         Vector2 rayStart = GlobalPosition;
         Vector2 rayEnd = rayStart + TargetPosition;
 
-        float closestDistance = float.MaxValue;
         bool firstHitSkipped = false;
-
-        Collider? closestCollider = null;
-        float closestColliderDistance = float.MaxValue;
-
-        // Store all potential hits
-        List<(Collider collider, float distance)> hits = new List<(Collider, float)>();
+        List<(Collider collider, float distance)> hits = [];
 
         foreach (Collider collider in CollisionServer.Instance.Colliders)
         {
+            // Ensure there's at least one common collision layer
+            if (!CollisionLayers.Any(layer => collider.CollisionLayers.Contains(layer)))
+                continue;
+
+            // Check if the ray intersects
             if (collider.RayIntersects(rayStart, rayEnd))
             {
                 float distance = Vector2.Distance(rayStart, collider.GlobalPosition);
@@ -80,27 +74,23 @@ public class RayCast : Node2D
             }
         }
 
-        // Sort hits by distance
+        // Sort hits by distance (closest first)
         hits.Sort((a, b) => a.distance.CompareTo(b.distance));
 
         // Loop through sorted hits and apply IgnoreFirst logic
         foreach (var (collider, distance) in hits)
         {
-            if (IgnoreFirst && !firstHitSkipped)
-            {
-                firstHitSkipped = true;
-                continue; // Skip the first hit (which is the closest)
-            }
+            //if (IgnoreFirst && !firstHitSkipped)
+            //{
+            //    firstHitSkipped = true;
+            //    continue; // Skip the first valid hit
+            //}
 
-            // Once we find the closest hit, mark it
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                IsColliding = true;
-                Collider = collider;
-
-                Log.Info($"[RayCast] Hit {Collider.Name}.", "RayCast");
-            }
+            // Once we find the closest valid hit, mark it
+            IsColliding = true;
+            Collider = collider;
+            Log.Info($"[RayCast] [{Name}] Hit {Collider.Name}.", "RayCast");
+            break; // Stop after finding the first valid hit
         }
     }
 }

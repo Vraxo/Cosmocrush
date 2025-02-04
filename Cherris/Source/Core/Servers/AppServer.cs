@@ -17,8 +17,6 @@ public sealed class AppServer
     {
         string configFilePath = "Res/Cherris/Config.yaml";
         config = LoadConfig(configFilePath);
-
-        SceneConverter.ConvertYamlToBinary("Res/Scenes/Menu/Menu.yaml", "Res/Scenes/Menu/Menu.bin");
     }
 
     public void Run()
@@ -39,6 +37,11 @@ public sealed class AppServer
 
     private void Start()
     {
+        if (File.Exists("Res/Log.txt"))
+        {
+            File.Delete("Res/Log.txt");
+        }
+
         SetCurrentDirectory();
 
         if (config is null)

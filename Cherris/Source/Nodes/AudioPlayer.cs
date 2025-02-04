@@ -15,7 +15,7 @@ public class AudioPlayer : Node
         {
             _audio = value;
             Volume = _volume;
-            Volume = AudioManagerCore.Instance.GetBusVolume(Bus);
+            Volume = AudioServer.GetBusVolume(Bus);
             Pitch = _pitch;
             Pan = _pan;
         }
@@ -24,7 +24,22 @@ public class AudioPlayer : Node
     public bool AutoPlay { get; set; } = false;
     public bool Loop { get; set; } = false;
     public bool Playing = false;
-    public float TimePlayed => Audio is not null ? Raylib.GetMusicTimePlayed(Audio!) : 0;
+
+    public float TimePlayed
+    {
+        get
+        {
+            if (Audio is not null)
+            {
+                return Raylib.GetMusicTimePlayed(Audio!);
+            }
+            else
+            {
+                Log.Error($"[AudioPlayer] [{Name}] TimePlayed: Audio is null.");
+                return 0;
+            }
+        }
+    }
 
     private float _volume = 1;
     public float Volume
@@ -86,16 +101,11 @@ public class AudioPlayer : Node
 
     public AudioPlayer()
     {
-        AudioManagerCore.Instance.VolumeChanged += OnAudioManagerBusVolumeChanged;
+        AudioServerCore.Instance.VolumeChanged += OnAudioManagerBusVolumeChanged;
     }
 
     public override void Ready()
     {
-        if (Audio is null)
-        {
-            return;
-        }
-
         if (AutoPlay)
         {
             Play();
@@ -108,6 +118,8 @@ public class AudioPlayer : Node
         {
             return;
         }
+
+        Volume = AudioServer.GetBusVolume(Bus);
 
         Raylib.UpdateMusicStream(Audio);
 
@@ -129,6 +141,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
+            Log.Error($"[AudioPlayer] [{Name}] Play: Audio is null.");
             return;
         }
 
@@ -151,6 +164,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
+            Log.Error($"[AudioPlayer] [{Name}] Resume: Audio is null.");
             return;
         }
 
@@ -162,6 +176,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
+            Log.Error($"[AudioPlayer] [{Name}] Pause: Audio is null.");
             return;
         }
 
@@ -173,6 +188,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
+            Log.Error($"[AudioPlayer] [{Name}] Stop: Audio is null.");
             return;
         }
 
@@ -186,6 +202,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
+            Log.Error($"[AudioPlayer] [{Name}] Seek: Audio is null.");
             return;
         }
 
@@ -199,7 +216,6 @@ public class AudioPlayer : Node
         if (Bus == bus)
         {
             Volume = volume;
-            Console.WriteLine("Set volume to " + volume);
         }
     }
 }

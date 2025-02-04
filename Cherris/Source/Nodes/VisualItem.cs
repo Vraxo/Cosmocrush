@@ -4,8 +4,24 @@ namespace Cherris;
 
 public abstract class VisualItem : Node
 {
-    public bool Visible { get; set; } = true;
     public bool ReadyForVisibility { get; set; } = false;
+
+    private bool _visible = true;
+    public bool Visible 
+    {
+        get => _visible; 
+        
+        set
+        {
+            if (_visible == value)
+            {
+                return;
+            }
+
+            _visible = value;
+            VisibleChanged?.Invoke(this, _visible);
+        }
+    }
 
     private int _layer = 0;
     public int Layer
@@ -19,8 +35,11 @@ public abstract class VisualItem : Node
         }
     }
 
-    public delegate void VisualItemEventHandler(VisualItem sender, int layer);
-    public event VisualItemEventHandler? LayerChanged;
+    public delegate void VisualItemVisibleEventHandler(VisualItem sender, bool visible);
+    public delegate void VisualItemLayerEventHandler(VisualItem sender, int layer);
+
+    public event VisualItemVisibleEventHandler? VisibleChanged;
+    public event VisualItemLayerEventHandler? LayerChanged;
 
     // Main
 
@@ -74,7 +93,7 @@ public abstract class VisualItem : Node
         {
             Position = position,
             Color = color,
-            Layer = 0
+            Layer = Layer
         };
 
         RenderServer.Instance.Submit(pixel);
@@ -315,6 +334,7 @@ public abstract class VisualItem : Node
             Target = target,
             Origin = origin,
             Rotation = rotation,
+            Layer = Layer
         };
 
         RenderServer.Instance.Submit(texturedRectangle);

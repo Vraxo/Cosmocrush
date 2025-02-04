@@ -3,13 +3,15 @@ type: MainScene
 children:
   - name: CombatThemePlayer
     type: CombatThemePlayer
+    Bus: Music
 
   - name: MainCamera
     type: MainCamera
 
   - name: Background
     type: ColorRectangle
-    Color: [160, 96, 0, 255]
+    #Color: [160, 96, 0, 255]
+    Color: [64, 64, 64, 255]
     Size: [2000, 2000]
 
   - name: NavReg

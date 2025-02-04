@@ -102,7 +102,7 @@ public partial class LineEdit : Button
         placeholderTextDisplayer.Layer = layer + 1;
     }
 
-    private void OnClickedOutside(object? sender, EventArgs e)
+    private void OnClickedOutside(Control control)
     {
         Selected = false;
     }
@@ -112,9 +112,9 @@ public partial class LineEdit : Button
         Selected = true;
     }
 
-    private void OnFocusChanged(object? sender, bool e)
+    private void OnFocusChanged(Control control)
     {
-        Selected = e;
+        Selected = control.Focused;
     }
 
     private void OnSizeChanged(object? sender, Vector2 e)

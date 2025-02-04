@@ -63,7 +63,7 @@ public class Label : Control
 
     public Label()
     {
-        OriginPreset = OriginPreset.CenterLeft;
+
     }
 
     public override void Update()
@@ -205,24 +205,23 @@ public class Label : Control
     {
         get
         {
-            // Measure the text size based on the font and font size
+            float scaledFontSize = Theme.FontSize * Scale.Length();
             Vector2 textSize = Raylib_cs.Raylib.MeasureTextEx(
                 Theme.Font,
                 displayedText,
-                Theme.FontSize,
+                scaledFontSize,
                 Theme.FontSpacing);
 
             return new Vector2(textSize.X, textSize.Y);
         }
     }
 
-    // Calculate the origin based on the text dimensions
     public new Vector2 Origin
     {
         get
         {
-            // Measure the text size to calculate the alignment
-            var textSize = Raylib_cs.Raylib.MeasureTextEx(Theme.Font, displayedText, Theme.FontSize, Theme.FontSpacing);
+            float scaledFontSize = Theme.FontSize * Scale.Length();
+            Vector2 textSize = Raylib_cs.Raylib.MeasureTextEx(Theme.Font, displayedText, scaledFontSize, Theme.FontSpacing);
 
             float x = HorizontalAlignment switch
             {

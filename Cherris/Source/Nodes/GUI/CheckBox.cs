@@ -78,11 +78,12 @@ public class CheckBox : Control
         Toggled?.Invoke(this, Checked);
     }
 
-    private void OnFocusChanged(object? sender, bool e)
+    private void OnFocusChanged(Control control)
     {
-        BackgroundStyles.Current = e ?
-                                   BackgroundStyles.Focused :
-                                   BackgroundStyles.Normal;
+        BackgroundStyles.Current = 
+            control.Focused ?
+            BackgroundStyles.Focused :
+            BackgroundStyles.Normal;
     }
 
     private void HandleKeyboardInput()
