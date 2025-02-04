@@ -9,45 +9,39 @@ public class TextDC : DrawCommand
     public Font Font { get; set; } = ResourceLoader.Load<Font>("Res/Cherris/Fonts/RobotoMono.ttf:16");
     public float FontSize { get; set; } = 0;
     public float Spacing { get; set; } = 0;
-    public float OutlineThickness { get; set; } = 0;
+    public float OutlineSize { get; set; } = 0;
     public Color OutlineColor { get; set; } = Color.Black;
     public Color Color { get; set; } = Color.White;
 
     public override void Draw()
     {
-        if (OutlineThickness > 0)
+        if (OutlineSize > 0)
         {
-            // Draw the outline by offsetting in eight directions
-            Vector2[] offsets = [
-                new(-OutlineThickness, -OutlineThickness),
-                new(OutlineThickness, -OutlineThickness),
-                new(-OutlineThickness, OutlineThickness),
-                new(OutlineThickness, OutlineThickness),
-                new(-OutlineThickness, 0),
-                new(OutlineThickness, 0),
-                new(0, -OutlineThickness),
-                new(0, OutlineThickness),
-            ];
-
-            foreach (Vector2 offset in offsets)
+            for (int x = (int)-OutlineSize; x <= OutlineSize; x++)
             {
-                Raylib.DrawTextEx(
-                    Font,
-                    Text,
-                    Position + offset,
-                    FontSize,
-                    Spacing,
-                    OutlineColor);
+                for (int y = (int)-OutlineSize; y <= OutlineSize; y++)
+                {
+                    if (x == 0 && y == 0) continue;
+
+                    Raylib.DrawTextEx(
+                        Font,
+                        Text,
+                        Position + new Vector2(x, y),
+                        FontSize,
+                        Spacing,
+                        OutlineColor
+                    );
+                }
             }
         }
 
-        // Draw the main text
         Raylib.DrawTextEx(
             Font,
             Text,
             Position,
             FontSize,
             Spacing,
-            Color);
+            Color
+        );
     }
 }

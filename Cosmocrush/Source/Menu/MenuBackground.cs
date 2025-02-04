@@ -21,14 +21,14 @@ public class MenuBackground : TextureRectangle
     {
         base.Update();
 
-        Size = WindowManager.Size * 1.5f;
+        Size = VisualServer.WindowSize * 1.5f;
 
         // Calculate the center position of the window
-        Vector2 windowCenter = WindowManager.Size / 2;
+        Vector2 windowCenter = VisualServer.WindowSize / 2;
 
         // Calculate oscillating offsets
-        float offsetX = amplitude * MathF.Sin(TimeManager.Elapsed * oscillationSpeed);
-        float offsetY = amplitude * MathF.Cos(TimeManager.Elapsed * oscillationSpeed * 0.8f); // Slightly slower Y movement
+        float offsetX = amplitude * MathF.Sin(TimeServer.Elapsed * oscillationSpeed);
+        float offsetY = amplitude * MathF.Cos(TimeServer.Elapsed * oscillationSpeed * 0.8f); // Slightly slower Y movement
 
         // Update the position to stay centered with oscillation
         Position = windowCenter + new Vector2(offsetX, offsetY);

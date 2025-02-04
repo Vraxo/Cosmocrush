@@ -47,7 +47,7 @@ public partial class LineEdit : Button
 
     public LineEdit()
     {
-        Size = DefaultSize;
+        WindowSize = DefaultSize;
         Focusable = true;
         Themes.Focused.BorderLength = 0;
         Themes.Focused.BorderLengthBottom = 1;
@@ -129,7 +129,7 @@ public partial class LineEdit : Button
             Themes.Current.FontSize,
             Themes.Current.FontSpacing).X;
 
-        Size = new(textWidth + TextOrigin.X * 2, Size.Y);
+        WindowSize = new(textWidth + TextOrigin.X * 2, WindowSize.Y);
     }
 
     public void Insert(string input)
@@ -410,7 +410,7 @@ public partial class LineEdit : Button
 
     private int GetDisplayableCharactersCount()
     {
-        float availableWidth = Size.X - TextOrigin.X * 2;
+        float availableWidth = WindowSize.X - TextOrigin.X * 2;
 
         float oneCharacterWidth = Raylib.MeasureTextEx(
             Themes.Current.Font,

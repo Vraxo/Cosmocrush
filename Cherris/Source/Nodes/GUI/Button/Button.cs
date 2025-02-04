@@ -327,7 +327,7 @@ public class Button : Control
         int textWidth = (int)Themes.Current.Font.Dimensions.X * Text.Length;
 
         //Dimensions = new(textWidth + TextPadding.X * 2 + TextMargin.X, Dimensions.Y + TextMargin.Y);
-        //Size = new(textWidth + TextMargin.X, Size.Y + TextMargin.Y);
+        //WindowSize = new(textWidth + TextMargin.X, WindowSize.Y + TextMargin.Y);
         Size = new(textWidth + TextMargin.X, Size.Y);
     }
 

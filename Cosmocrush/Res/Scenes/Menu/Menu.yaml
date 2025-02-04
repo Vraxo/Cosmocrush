@@ -1,4 +1,4 @@
-﻿name: MainMenu
+﻿name: Menu
 type: Menu
 children:
   - name: ThemePlayer

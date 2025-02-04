@@ -19,18 +19,6 @@ public abstract class VisualItem : Node
         }
     }
 
-    public static readonly Dictionary<string, (Type Type, Action<VisualItem, object> Setter)> PropertyMap;
-
-    static VisualItem()
-    {
-        PropertyMap = new()
-        {
-            { "Visible", (typeof(bool), (obj, val) => obj.Visible = (bool)val) },
-            { "ReadyForVisibility", (typeof(bool), (obj, val) => obj.ReadyForVisibility = (bool)val) },
-            { "Layer", (typeof(int), (obj, val) => obj.Layer = (int)val) }
-        };
-    }
-
     public delegate void VisualItemEventHandler(VisualItem sender, int layer);
     public event VisualItemEventHandler? LayerChanged;
 
@@ -62,7 +50,7 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(circle);
+        RenderServer.Instance.Submit(circle);
     }
 
     protected void DrawCircleOutline(Vector2 position, float radius, Color color)
@@ -75,7 +63,7 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(circleOutline);
+        RenderServer.Instance.Submit(circleOutline);
     }
 
     // Pixel
@@ -89,7 +77,7 @@ public abstract class VisualItem : Node
             Layer = 0
         };
 
-        RenderManager.Instance.Submit(pixel);
+        RenderServer.Instance.Submit(pixel);
     }
 
     // Rectangle
@@ -104,7 +92,7 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(rectangle);
+        RenderServer.Instance.Submit(rectangle);
     }
 
     protected void DrawRectangleOutline(Vector2 position, Vector2 size, Color color)
@@ -117,7 +105,7 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(rectangleOutline);
+        RenderServer.Instance.Submit(rectangleOutline);
     }
 
     protected void DrawRectangleRounded(Vector2 position, Vector2 size, float roundness, int segments, Color color)
@@ -132,7 +120,7 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(roundedRectangle);
+        RenderServer.Instance.Submit(roundedRectangle);
     }
 
     protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
@@ -186,7 +174,7 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(roundedRectangle);
+        RenderServer.Instance.Submit(roundedRectangle);
     }
 
     // Same as V1, except the outline is moved down.
@@ -298,7 +286,7 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(textureDrawCommand);
+        RenderServer.Instance.Submit(textureDrawCommand);
     }
 
     protected void DrawTextureScaled(Texture texture, Vector2 position, Vector2 origin, float rotation, Vector2 scale, bool flipH = false, bool flipV = false)
@@ -315,7 +303,7 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(textureDrawCommand);
+        RenderServer.Instance.Submit(textureDrawCommand);
     }
 
     protected void DrawTexturedRectangle(Texture texture, Rectangle source, Rectangle target, Vector2 origin, float rotation)
@@ -329,7 +317,7 @@ public abstract class VisualItem : Node
             Rotation = rotation,
         };
 
-        RenderManager.Instance.Submit(texturedRectangle);
+        RenderServer.Instance.Submit(texturedRectangle);
     }
 
     // Text
@@ -347,7 +335,7 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(textDC);
+        RenderServer.Instance.Submit(textDC);
     }
 
     protected void DrawTextOutlined(string text, Vector2 position, Font font, float fontSize, float spacing, Color color, float outlineThickness, Color outlineColor)
@@ -360,12 +348,12 @@ public abstract class VisualItem : Node
             FontSize = fontSize,
             Spacing = spacing,
             Color = color,
-            OutlineThickness = outlineThickness,
+            OutlineSize = outlineThickness,
             OutlineColor = outlineColor,
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(textDC);
+        RenderServer.Instance.Submit(textDC);
     }
 
     // Line
@@ -381,9 +369,8 @@ public abstract class VisualItem : Node
             Layer = Layer
         };
 
-        RenderManager.Instance.Submit(lineDC);
+        RenderServer.Instance.Submit(lineDC);
     }
-
 
     protected void DrawGrid(Vector2 size, float cellSize, Color color)
     {

@@ -141,7 +141,7 @@ public class PopUp : ClickableRectangle
             if (isDragging)
             {
                 // Check boundaries: Mouse position should be within the window size
-                if (mousePosition.X >= 0 && mousePosition.X <= WindowManager.Size.X && mousePosition.Y >= 0 && mousePosition.Y <= WindowManager.Size.Y)
+                if (mousePosition.X >= 0 && mousePosition.X <= VisualServer.WindowSize.X && mousePosition.Y >= 0 && mousePosition.Y <= VisualServer.WindowSize.Y)
                 {
                     GlobalPosition = mousePosition - dragOffset;
                 }
@@ -326,7 +326,7 @@ public class PopUp : ClickableRectangle
 
         float previousX = Size.X;
 
-        if (mousePosition.X >= 0 && mousePosition.X <= WindowManager.Size.X)
+        if (mousePosition.X >= 0 && mousePosition.X <= VisualServer.WindowSize.X)
         {
             float width = Math.Clamp(Size.X + difference, MinSize.X, MaxSize.X);
             Size = new(width, Size.Y);
@@ -347,7 +347,7 @@ public class PopUp : ClickableRectangle
 
         float previousX = Size.X;
 
-        if (mousePosition.X >= 0 && mousePosition.X <= WindowManager.Size.X)
+        if (mousePosition.X >= 0 && mousePosition.X <= VisualServer.WindowSize.X)
         {
             float width = Math.Clamp(Size.X + difference, MinSize.X, MaxSize.X);
             Size = new(width, Size.Y);
@@ -366,7 +366,7 @@ public class PopUp : ClickableRectangle
     {
         float newHeight = mousePosition.Y - (GlobalPosition.Y - Origin.Y) - Size.Y;
 
-        if (mousePosition.Y >= 0 && mousePosition.Y <= WindowManager.Size.Y)
+        if (mousePosition.Y >= 0 && mousePosition.Y <= VisualServer.WindowSize.Y)
         {
             Size = new(Size.X, MathF.Max(Size.Y + newHeight, MinSize.Y));
         }
@@ -378,7 +378,7 @@ public class PopUp : ClickableRectangle
 
         float previousY = Size.Y;
 
-        if (mousePosition.Y >= 0 && mousePosition.Y <= WindowManager.Size.Y)
+        if (mousePosition.Y >= 0 && mousePosition.Y <= VisualServer.WindowSize.Y)
         {
             float height = Math.Clamp(Size.Y - difference, MinSize.Y, MaxSize.Y);
             Size = new(Size.X, height);

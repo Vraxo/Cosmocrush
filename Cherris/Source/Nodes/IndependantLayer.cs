@@ -10,7 +10,7 @@ public class IndependantLayer : Node
         {
             if (node is Node2D child)
             {
-                child.Position = RenderManager.Instance.GetScreenToWorld(child.GlobalPosition);
+                child.Position = RenderServer.Instance.GetScreenToWorld(child.GlobalPosition);
             }
         }
     }

@@ -1,15 +1,15 @@
 ﻿namespace Cherris;
 
-public sealed class ClickManager
+public sealed class ClickServer
 {
-    private static ClickManager? _instance;
-    public static ClickManager Instance => _instance ??= new();
+    private static ClickServer? _instance;
+    public static ClickServer Instance => _instance ??= new();
 
     public int MinLayer = -1;
 
     private readonly List<Clickable> clickables = [];
 
-    private ClickManager() { }
+    private ClickServer() { }
 
     public void Register(Clickable clickable)
     {
@@ -62,12 +62,12 @@ public sealed class ClickManager
                 if (mouseButton == MouseButtonCode.Left)
                 {
                     topClickable.OnTopLeft = true;
-                    Log.Info($"[ClickManager] '{topClickable}' has been left clicked.", "ClickManager");
+                    Log.Info($"[ClickServer] '{topClickable}' has been left clicked.", "ClickServer");
                 }
                 else
                 {
                     topClickable.OnTopRight = true;
-                    Log.Info($"[ClickManager] '{topClickable}' has been right clicked.", "ClickManager");
+                    Log.Info($"[ClickServer] '{topClickable}' has been right clicked.", "ClickServer");
                 }
             }
         }
@@ -85,7 +85,7 @@ public sealed class ClickManager
             }
         }
 
-        Log.Info($"[ClickManager] {viableClickables.Count} viable clickables.", "ClickManager");
+        Log.Info($"[ClickServer] {viableClickables.Count} viable clickables.", "ClickServer");
 
         return viableClickables;
     }
@@ -104,7 +104,7 @@ public sealed class ClickManager
             }
         }
 
-        Log.Info($"[ClickManager] The highest layer is {viableClickables.Count}.", "ClickManager");
+        Log.Info($"[ClickServer] The highest layer is {viableClickables.Count}.", "ClickServer");
 
         return topClickable;
     }

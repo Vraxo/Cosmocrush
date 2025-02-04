@@ -1,13 +1,13 @@
 ﻿namespace Cherris;
 
-public sealed class NavigationManager
+public sealed class NavigationServer
 {
-    private static NavigationManager? _instance;
-    public static NavigationManager Instance => _instance ??= new();
+    private static NavigationServer? _instance;
+    public static NavigationServer Instance => _instance ??= new();
 
     public List<NavigationRegion> Regions = [];
 
-    private NavigationManager() { }
+    private NavigationServer() { }
 
     public void RegisterRegion(NavigationRegion region)
     {

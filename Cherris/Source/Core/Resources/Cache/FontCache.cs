@@ -33,7 +33,7 @@ public sealed class FontCache
 
         if (colonIndex == -1)
         {
-            throw new ArgumentException($"Invalid font key format: {fontKey}. Expected format: 'FontPath:Size'.");
+            throw new ArgumentException($"Invalid font key format: {fontKey}. Expected format: 'FontPath:WindowSize'.");
         }
 
         string fontPath = fontKey[..colonIndex];
@@ -41,7 +41,7 @@ public sealed class FontCache
 
         if (!int.TryParse(sizeString, out int fontSize))
         {
-            throw new ArgumentException($"Invalid font size in: {fontKey}. Size must be a valid integer.");
+            throw new ArgumentException($"Invalid font size in: {fontKey}. WindowSize must be a valid integer.");
         }
 
         return (fontPath, fontSize);

@@ -159,7 +159,7 @@ public sealed class Input
 
     private Vector2 GetWorldMousePositionImpl()
     {
-        Camera2D camera = (Raylib_cs.Camera2D)RenderManager.Instance.Camera;
+        Camera2D camera = (Raylib_cs.Camera2D)RenderServer.Instance.Camera;
         return Raylib.GetScreenToWorld2D(GetMousePositionImpl(), camera);
     }
 

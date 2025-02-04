@@ -31,6 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Res\Animations\DamageIndicator.anim.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Res\Audio\Music\CombatThemes\CombatTheme1.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -83,6 +86,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Fonts\RaceSport.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Res\Scenes\DamageIndicator.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Scenes\UI\Button.yaml">
@@ -200,6 +206,7 @@
 
   <ItemGroup>
     <Folder Include="Res\Cherris\Temporary\" />
+    <Folder Include="Res\Animations\" />
   </ItemGroup>
 
 </Project>

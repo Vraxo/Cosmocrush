@@ -106,7 +106,7 @@ public class ItemList : ClickableRectangle
     {
         Items.Remove(item);
         Children.Remove(item);
-        item.Destroy();
+        item.Free();
         OnItemCountChanged(this);
     }
 
@@ -183,7 +183,7 @@ public class ItemList : ClickableRectangle
 
     private void HandleScrolling()
     {
-        bool isOnTop = Layer >= ClickManager.Instance.MinLayer;
+        bool isOnTop = Layer >= ClickServer.Instance.MinLayer;
 
         if (!IsMouseOver() || !isOnTop)
         {

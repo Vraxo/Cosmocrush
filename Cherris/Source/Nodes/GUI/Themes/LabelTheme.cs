@@ -9,6 +9,6 @@ public class LabelTheme
     public bool EnableShadow { get; set; } = false;
     public Color ShadowColor { get; set; } = Color.Black;
     public Vector2 ShadowOffset { get; set; } = new(1, 1);
-    public float OutlineThickness { get; set; } = 0;
+    public float OutlineSize { get; set; } = 0;
     public Color OutlineColor { get; set; } = Color.Black;
 }

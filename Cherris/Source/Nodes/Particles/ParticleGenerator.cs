@@ -51,7 +51,7 @@ public partial class ParticleGenerator : Node2D
 
     private Particle GetParticle()
     {
-        SpawnAreaMax = new(SpawnAreaMax.X, WindowManager.Size.Y);
+        SpawnAreaMax = new(SpawnAreaMax.X, VisualServer.WindowSize.Y);
 
         Vector2 randomPosition = new(
             NextFloat(SpawnAreaMin.X, SpawnAreaMax.X),

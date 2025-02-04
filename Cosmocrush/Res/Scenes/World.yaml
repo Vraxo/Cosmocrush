@@ -39,7 +39,7 @@ children:
   - name: Enemy1
     type: Enemy
     path: Res/Scenes/Enemy.yaml
-    Position: [100, 150]
+    Position: [100, 350]
 
   - name: HudLayer
     type: IndependantLayer

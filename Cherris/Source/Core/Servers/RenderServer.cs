@@ -2,22 +2,22 @@
 
 namespace Cherris;
 
-public sealed class RenderManager
+public sealed class RenderServer
 {
-    private static RenderManager? _instance;
-    public static RenderManager Instance => _instance ??= new();
+    private static RenderServer? _instance;
+    public static RenderServer Instance => _instance ??= new();
 
     public Camera Camera;
     private readonly List<DrawCommand> drawCommands = [];
 
-    private RenderManager() { }
+    private RenderServer() { }
 
     public void Process()
     {
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.DarkGray);
             BeginCameraMode();
-                AppManager.Instance.RootNode?.Process();
+                AppServer.Instance.RootNode?.Process();
                 ProcessDrawCommands();
             EndCameraMode();
         Raylib.EndDrawing();
@@ -55,7 +55,7 @@ public sealed class RenderManager
             Camera2D cam = new()
             {
                 Target = Camera.GlobalPosition,
-                Offset = WindowManager.Size / 2,
+                Offset = VisualServer.WindowSize / 2,
                 Zoom = Camera.Zoom
             };
 

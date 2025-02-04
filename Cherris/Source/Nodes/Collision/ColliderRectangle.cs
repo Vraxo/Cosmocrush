@@ -5,13 +5,13 @@ public class ColliderRectangle : Collider
     public override void Start()
     {
         base.Start();
-        CollisionManager.Instance.RegisterRectangle(this);
+        CollisionServer.Instance.RegisterRectangle(this);
     }
 
-    public override void Destroy()
+    public override void Free()
     {
-        base.Destroy();
-        CollisionManager.Instance.UnregisterRectangle(this);
+        base.Free();
+        CollisionServer.Instance.UnregisterRectangle(this);
     }
 
     public override bool RayIntersects(Vector2 rayStart, Vector2 rayEnd)

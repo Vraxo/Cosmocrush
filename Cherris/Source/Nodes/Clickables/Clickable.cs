@@ -7,13 +7,13 @@ public abstract class Clickable : Node2D
 
     public override void Start()
     {
-        ClickManager.Instance.Register(this);
+        ClickServer.Instance.Register(this);
     }
 
-    public override void Destroy()
+    public override void Free()
     {
-        ClickManager.Instance.Unregister(this);
-        base.Destroy();
+        ClickServer.Instance.Unregister(this);
+        base.Free();
     }
 
     public abstract bool IsMouseOver();

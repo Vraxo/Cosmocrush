@@ -6,16 +6,16 @@ public class NavigationObstacle : Node2D
     {
         base.Ready();
 
-        NavigationManager.Instance.RegisterObstacle(this);
+        NavigationServer.Instance.RegisterObstacle(this);
 
         Visible = true;
     }
 
-    public override void Destroy()
+    public override void Free()
     {
-        base.Destroy();
+        base.Free();
 
-        NavigationManager.Instance.UnregisterObstacle(this);
+        NavigationServer.Instance.UnregisterObstacle(this);
     }
 
     protected override void Draw()

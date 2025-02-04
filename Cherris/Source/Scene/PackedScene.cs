@@ -5,7 +5,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Cherris;
 
-public sealed class PackedSceneYamlNested(string path)
+public sealed class PackedScene(string path)
 {
     private readonly string _path = path;
     private readonly Dictionary<string, Node> _namedNodes = new();
@@ -85,7 +85,7 @@ public sealed class PackedSceneYamlNested(string path)
         if (element.TryGetValue("path", out var pathValue))
         {
             var scenePath = (string)pathValue;
-            var nestedScene = new PackedSceneYamlNested(scenePath);
+            var nestedScene = new PackedScene(scenePath);
             node = nestedScene.Instantiate<Node>();
             // Apply the name from the current element to override the nested scene's name
             node.Name = (string)element["name"];

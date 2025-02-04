@@ -2,10 +2,10 @@
 
 namespace Cherris;
 
-public class TimeManager
+public class TimeServer
 {
-    private static TimeManager? _instance;
-    public static TimeManager Instance => _instance ??= new();
+    private static TimeServer? _instance;
+    public static TimeServer Instance => _instance ??= new();
 
     public static float Delta => Instance._delta;
     public static float Elapsed => Instance._elapsed;

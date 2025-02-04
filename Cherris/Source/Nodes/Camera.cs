@@ -8,7 +8,7 @@ public class Camera : Node2D
 
     public void SetAsActive()
     {
-        RenderManager.Instance.SetCamera(this);
+        RenderServer.Instance.SetCamera(this);
     }
 
     public static implicit operator Camera2D(Camera camera)
@@ -16,7 +16,7 @@ public class Camera : Node2D
         return new()
         {
             Target = camera.GlobalPosition,
-            Offset = WindowManager.Size / 2,
+            Offset = VisualServer.WindowSize / 2,
             Zoom = camera.Zoom
         };
     }

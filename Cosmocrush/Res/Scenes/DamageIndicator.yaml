@@ -1,0 +1,13 @@
+name: DamageIndicator
+type: DamageIndicator
+Theme:
+  OutlineSize: 1
+destructionTimer: DestructionTimer
+animationPlayer: AnimationPlayer
+children:
+  - name: DestructionTimer
+    type: Timer
+    WaitTime: 1
+
+  - name: AnimationPlayer
+    type: AnimationPlayer

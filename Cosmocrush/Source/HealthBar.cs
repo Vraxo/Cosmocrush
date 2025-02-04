@@ -31,9 +31,9 @@ public class HealthBar : ProgressBar
     private void UpdatePosition()
     {
         float x = Size.X / 1.5f;
-        float y = WindowManager.Size.Y - Size.Y * 4;
+        float y = VisualServer.WindowSize.Y - Size.Y * 4;
 
         GlobalPosition = new(x, y);
-        //GlobalPosition = Raylib_cs.Raylib.GetScreenToWorld2D(GlobalPosition, RenderManager.Instance.Camera);
+        //GlobalPosition = Raylib_cs.Raylib.GetScreenToWorld2D(GlobalPosition, RenderServer.Instance.Camera);
     }
 }

@@ -110,7 +110,7 @@ public partial class OptionButton : Button
 
         foreach (var option in optionChildren)
         {
-            option.Destroy();
+            option.Free();
         }
 
         optionChildren.Clear();

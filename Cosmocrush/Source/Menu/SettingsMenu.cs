@@ -47,10 +47,10 @@ public class SettingsMenu : Node2D
 
     private void OnReturnButtonPressed(Button sender)
     {
-        PackedSceneYamlNested mainMenuScene = new("Res/Scenes/Menu/MainMenu.yaml");
+        PackedScene mainMenuScene = new("Res/Scenes/Menu/MainMenu.yaml");
         var mainMenu = mainMenuScene.Instantiate<MainMenu>();
         Parent!.AddChild(mainMenu);
-        Destroy();
+        Free();
     }
 
     private void CapturePreviousVolumes()
@@ -62,7 +62,7 @@ public class SettingsMenu : Node2D
 
     private void UpdateLabels()
     {
-        Vector2 windowSize = WindowManager.Size;
+        Vector2 windowSize = VisualServer.WindowSize;
 
         masterLabel!.Position = new(
             windowSize.X / 2 - masterSlider!.Size.X / 2 - masterLabel.Size.X,
@@ -82,7 +82,7 @@ public class SettingsMenu : Node2D
 
     private void UpdateButtons()
     {
-        Vector2 windowSize = WindowManager.Size;
+        Vector2 windowSize = VisualServer.WindowSize;
 
         float buttonSpacing = 20f;
         

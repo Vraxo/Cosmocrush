@@ -5,7 +5,7 @@ public class SoundCache
     private static SoundCache? _instance;
     public static SoundCache Instance => _instance ??= new SoundCache();
 
-    private readonly Dictionary<string, Sound> soundEffects = new();
+    private readonly Dictionary<string, Sound> soundEffects = [];
 
     private SoundCache() { }
 

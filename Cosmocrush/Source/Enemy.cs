@@ -5,14 +5,15 @@ namespace Cosmocrush;
 public class Enemy : ColliderRectangle
 {
     private int health = 10;
+    private const int maxHealth = 10;
     private Vector2 knockback = Vector2.Zero;
     private double lastDamageTime = -0.5f;
 
-    private Sprite sprite = new();
-    private Player player = new();
-    private NavigationAgent navigationAgent = new();
+    private Sprite? sprite;
+    private Player? player;
+    private NavigationAgent? navigationAgent;
 
-    private readonly float speed = 100f; // 100
+    private readonly float speed = 100f;
     private readonly float proximityThreshold = 10f;
     private readonly float knockbackRecoverySpeed = 0.1f;
     private readonly float damageRadius = 100;
@@ -47,10 +48,7 @@ public class Enemy : ColliderRectangle
             Die();
         }
 
-        AddChild(new DamageIndicator()
-        { 
-            Text = damage.ToString() 
-        });
+        CreateDamageIndicator(damage);
     }
 
     public void ApplyKnockback(Vector2 force)
@@ -65,9 +63,21 @@ public class Enemy : ColliderRectangle
         }
     }
 
+    private void CreateDamageIndicator(int damage)
+    {
+        PackedScene damageIndicatorScene = new("Res/Scenes/DamageIndicator.yaml");
+        var damageIndicator = damageIndicatorScene.Instantiate<DamageIndicator>();
+
+        damageIndicator.Text = damage.ToString();
+        damageIndicator.Health = health;
+        damageIndicator.MaxHealth = maxHealth;
+
+        AddChild(damageIndicator);
+    }
+
     private void LookAtPlayer()
     {
-        sprite.FlipH = player.GlobalPosition.X < GlobalPosition.X;
+        sprite!.FlipH = player!.GlobalPosition.X < GlobalPosition.X;
     }
 
     private void SufferKnockback()
@@ -77,7 +87,7 @@ public class Enemy : ColliderRectangle
 
     private void ChasePlayer()
     {
-        navigationAgent.TargetPosition = player.GlobalPosition;
+        navigationAgent!.TargetPosition = player!.GlobalPosition;
 
         if (player is null || navigationAgent.Path.Count == 0)
         {
@@ -87,7 +97,7 @@ public class Enemy : ColliderRectangle
         Vector2 targetPosition = navigationAgent.Path[0];
         Vector2 direction = (targetPosition - GlobalPosition).Normalized();
 
-        Vector2 movement = direction * speed * TimeManager.Delta + knockback;
+        Vector2 movement = direction * speed * TimeServer.Delta + knockback;
         GlobalPosition += movement;
 
 
@@ -100,17 +110,17 @@ public class Enemy : ColliderRectangle
     private void AttemptToDamagePlayer()
     {
         bool isPlayerInRange = GlobalPosition.DistanceTo(player.GlobalPosition) <= damageRadius;
-        bool canShoot = TimeManager.Elapsed - lastDamageTime >= damageCooldown;
+        bool canShoot = TimeServer.Elapsed - lastDamageTime >= damageCooldown;
 
         if (isPlayerInRange && canShoot)
         {
             player?.TakeDamage(1);
-            lastDamageTime = TimeManager.Elapsed;
+            lastDamageTime = TimeServer.Elapsed;
         }
     }
 
     private void Die()
     {
-        Destroy();
+        Free();
     }
 }

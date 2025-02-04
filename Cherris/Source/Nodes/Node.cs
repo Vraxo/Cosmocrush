@@ -14,7 +14,7 @@ public class InspectorExcludeAttribute : Attribute
 public class Node
 {
     /// <summary>Gets the root node of the application scene tree.</summary>
-    public static Node RootNode => AppManager.Instance.RootNode!;
+    public static Node RootNode => AppServer.Instance.RootNode!;
 
     public string Name { get; set; } = "";
     public Node? Parent { get; set; } = null;
@@ -69,13 +69,13 @@ public class Node
     public virtual void Update(float delta) { }
 
     /// <summary>Recursively destroys this node and its children, removing it from the parent's children.</summary>
-    public virtual void Destroy()
+    public virtual void Free()
     {
         List<Node> childrenToDestroy = new(Children);
 
         foreach (Node child in childrenToDestroy)
         {
-            child.Destroy();
+            child.Free();
         }
 
         Parent?.Children.Remove(this);
@@ -223,7 +223,7 @@ public class Node
         if (path.StartsWith("/root"))
         {
             path = path["/root".Length..];
-            currentNode = AppManager.Instance.RootNode;
+            currentNode = AppServer.Instance.RootNode;
 
             if (path.StartsWith('/'))
             {
@@ -300,7 +300,7 @@ public class Node
         if (path.StartsWith("/root"))
         {
             path = path.Substring("/root".Length);
-            currentNode = AppManager.Instance.RootNode;
+            currentNode = AppServer.Instance.RootNode;
 
             if (path.StartsWith("/"))
             {
@@ -403,7 +403,7 @@ public class Node
             }
         }
 
-        AppManager.Instance.RootNode.PrintChildren();
+        AppServer.Instance.RootNode.PrintChildren();
 
         throw new InvalidOperationException($"Child node with name '{name}' not found.");
     }
@@ -472,8 +472,8 @@ public class Node
     /// </summary>
     public static void ChangeScene(Node node)
     {
-        AppManager.Instance.RootNode.Destroy();
-        AppManager.Instance.RootNode = node;
+        AppServer.Instance.RootNode.Free();
+        AppServer.Instance.RootNode = node;
 
         node.Name = node.GetType().Name;
     }

@@ -37,18 +37,18 @@ public class MainMenu : Node
 
     private void OnPlayButtonLeftClicked(Button sender)
     {
-        PackedSceneYamlNested packedMainScene = new("Res/Scenes/World.yaml");
+        PackedScene packedMainScene = new("Res/Scenes/World.yaml");
         var mainScene = packedMainScene.Instantiate<Node>();
         ChangeScene(mainScene);
     }
 
     private void OnSettingsButtonLeftClicked(Button sender)
     {
-        PackedSceneYamlNested packedSettingsMenu = new("Res/Scenes/Menu/SettingsMenu.yaml");
+        PackedScene packedSettingsMenu = new("Res/Scenes/Menu/SettingsMenu.yaml");
         var settingsMenu = packedSettingsMenu.Instantiate<Node2D>();
         GetParent<Menu>().AddChild(settingsMenu);
 
-        Destroy();
+        Free();
     }
 
     private void OnQuitButtonLeftClicked(Button sender)
@@ -58,23 +58,23 @@ public class MainMenu : Node
 
     private void UpdatePlayButton()
     {
-        playButton.Position = WindowManager.Size / 2 - new Vector2(0, 50);
+        playButton.Position = VisualServer.WindowSize / 2 - new Vector2(0, 50);
     }
 
     private void UpdateSettingsButton()
     {
-        settingsButton.Position = WindowManager.Size / 2;
+        settingsButton.Position = VisualServer.WindowSize / 2;
     }
 
     private void UpdateQuitButton()
     {
-        quitButton.Position = WindowManager.Size / 2 + new Vector2(0, 50);
+        quitButton.Position = VisualServer.WindowSize / 2 + new Vector2(0, 50);
     }
 
     private void UpdateTitle()
     {
         title.Position = new(
-            WindowManager.Size.X / 2,
+            VisualServer.WindowSize.X / 2,
             title.Position.Y);
     }
 }

@@ -1,4 +1,4 @@
-﻿using Cherris;
+﻿namespace Cherris;
 
 public class Label : Control
 {
@@ -111,11 +111,11 @@ public class Label : Control
             Theme.FontSize * Scale.Length(),
             Theme.FontSpacing,
             Theme.FontColor,
-            Theme.OutlineThickness,
+            Theme.OutlineSize,
             Theme.OutlineColor);
     }
 
-    // TextDC modification
+    // Text modification
 
     private void ClipDisplayedText()
     {
@@ -206,7 +206,12 @@ public class Label : Control
         get
         {
             // Measure the text size based on the font and font size
-            var textSize = Raylib_cs.Raylib.MeasureTextEx(Theme.Font, displayedText, Theme.FontSize, Theme.FontSpacing);
+            Vector2 textSize = Raylib_cs.Raylib.MeasureTextEx(
+                Theme.Font,
+                displayedText,
+                Theme.FontSize,
+                Theme.FontSpacing);
+
             return new Vector2(textSize.X, textSize.Y);
         }
     }

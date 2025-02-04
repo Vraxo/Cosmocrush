@@ -71,7 +71,7 @@ public class RayCast : Node2D
         // Store all potential hits
         List<(Collider collider, float distance)> hits = new List<(Collider, float)>();
 
-        foreach (Collider collider in CollisionManager.Instance.Colliders)
+        foreach (Collider collider in CollisionServer.Instance.Colliders)
         {
             if (collider.RayIntersects(rayStart, rayEnd))
             {

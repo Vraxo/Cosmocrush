@@ -4,16 +4,16 @@ using Raylib_cs;
 
 namespace Cherris;
 
-public sealed class AppManager
+public sealed class AppServer
 {
-    private static AppManager? _instance;
-    public static AppManager Instance => _instance ??= new();
+    private static AppServer? _instance;
+    public static AppServer Instance => _instance ??= new();
 
     public Node? RootNode;
 
     private readonly Configuration config;
 
-    private AppManager()
+    private AppServer()
     {
         string configFilePath = "Res/Cherris/Config.yaml";
         config = LoadConfig(configFilePath);
@@ -46,7 +46,7 @@ public sealed class AppManager
             return;
         }
 
-        WindowManager.OriginalSize = new(config.Width, config.Height);
+        VisualServer.OriginalWindowSize = new(config.Width, config.Height);
 
         ConfigFlags flags = ConfigFlags.VSyncHint | ConfigFlags.HighDpiWindow | ConfigFlags.AlwaysRunWindow;
 
@@ -76,7 +76,7 @@ public sealed class AppManager
 
     private void SetRootNodeFromConfig(string scenePath)
     {
-        PackedSceneYamlNested packedScene = new(scenePath);
+        PackedScene packedScene = new(scenePath);
         RootNode = packedScene.Instantiate<Node>();
     }
 
@@ -96,10 +96,10 @@ public sealed class AppManager
 
     private static void ProcessManagers()
     {
-        TimeManager.Instance.Process();
-        ClickManager.Instance.Process();
-        CollisionManager.Instance.Process();
-        RenderManager.Instance.Process();
+        TimeServer.Instance.Process();
+        ClickServer.Instance.Process();
+        CollisionServer.Instance.Process();
+        RenderServer.Instance.Process();
     }
 
     private void PrintTree()

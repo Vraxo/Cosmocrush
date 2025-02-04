@@ -12,7 +12,7 @@ public class KinematicBody : Node2D
         Vector2 targetPosition = GlobalPosition + velocity;
 
         // Check for potential collisions with other KinematicBodies
-        foreach (var other in PhysicsManager.Instance.KinematicBodies)
+        foreach (var other in PhysicsServer.Instance.KinematicBodies)
         {
             // Skip self
             if (other == this) continue;
@@ -64,11 +64,11 @@ public class KinematicBody : Node2D
         return MathF.Min(horizontalOverlap, verticalOverlap);
     }
 
-    // Override the Start method to register this KinematicBody in the PhysicsManager
+    // Override the Start method to register this KinematicBody in the PhysicsServer
     public override void Start()
     {
         base.Start();
-        PhysicsManager.Instance.RegisterKinematicBody(this);
+        PhysicsServer.Instance.RegisterKinematicBody(this);
     }
 
     // For debugging, draw the bounding box for this KinematicBody

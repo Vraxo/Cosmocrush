@@ -13,14 +13,14 @@ public partial class ParticleGenerator
             base.Ready();
 
             AddChild(new Timer(), "DestructionTimer");
-            GetNode<Timer>("DestructionTimer").TimedOut += OnDestructionTimerTimedOut;
+            GetNode<Timer>("DestructionTimer").Timeout += OnDestructionTimerTimedOut;
             GetNode<Timer>("DestructionTimer").WaitTime = Lifetime;
         }
 
         private void OnDestructionTimerTimedOut(Timer sender)
         {
             GetParent<ParticleGenerator>().Remove(this);
-            Destroy();
+            Free();
         }
 
         public override void Update()
@@ -28,10 +28,10 @@ public partial class ParticleGenerator
             base.Update();
 
             // Update speed with acceleration
-            Speed += Acceleration * TimeManager.Delta;
+            Speed += Acceleration * TimeServer.Delta;
 
             // Update position
-            float x = Position.X + Speed * TimeManager.Delta;
+            float x = Position.X + Speed * TimeServer.Delta;
             float y = Position.Y;
 
             Position = new(x, y);

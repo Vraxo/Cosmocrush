@@ -13,7 +13,7 @@ public class Sound(string filePath)
 
     public void Play(string bus)
     {
-        AudioManager.PlaySound(this, bus);
+        AudioServer.PlaySound(this, bus);
     }
 
     public void Dispose()

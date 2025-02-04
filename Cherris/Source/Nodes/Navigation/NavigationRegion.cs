@@ -17,7 +17,7 @@ public class NavigationRegion : Node2D
 
     public override void Ready()
     {
-        NavigationManager.Instance.RegisterRegion(this);
+        NavigationServer.Instance.RegisterRegion(this);
 
         grid = new bool[Width, Height];
 
@@ -30,9 +30,9 @@ public class NavigationRegion : Node2D
         }
     }
 
-    public override void Destroy()
+    public override void Free()
     {
-        NavigationManager.Instance.UnregisterRegion(this);
+        NavigationServer.Instance.UnregisterRegion(this);
     }
 
     protected override void Draw()

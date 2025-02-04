@@ -47,7 +47,7 @@ public class Player : ColliderRectangle
     private void HandleMovement()
     {
         Vector2 direction = Input.GetVector("MoveLeft", "MoveRight", "MoveUp", "MoveDown");
-        Position += direction * TimeManager.Delta * speed;
+        Position += direction * TimeServer.Delta * speed;
     }
 
     private void PlayDamageSound()
@@ -58,12 +58,12 @@ public class Player : ColliderRectangle
         };
 
         AddChild(audioPlayer);
-        audioPlayer.Finished += (audioPlayer) => audioPlayer.Destroy();
+        audioPlayer.Finished += (audioPlayer) => audioPlayer.Free();
         audioPlayer.Play();
     }
 
     private void Die()
     {
-        Destroy();
+        Free();
     }
 }

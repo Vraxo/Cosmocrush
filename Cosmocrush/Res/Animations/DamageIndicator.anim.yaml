@@ -1,0 +1,22 @@
+- T: 0
+  Nodes:
+    "Path/To/Node1":
+      Scale:
+        X: 1
+        Y: 1
+    "Path/To/Node2":
+      Position:
+        X: 100
+        Y: 200
+- T: 0.5
+  Nodes:
+    "Path/To/Node1":
+      Scale:
+        X: 2
+        Y: 2
+- T: 1
+  Nodes:
+    "Path/To/Node1":
+      Scale:
+        X: 2
+        Y: 2

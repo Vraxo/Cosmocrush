@@ -10,7 +10,7 @@ public class Timer : Node
     private bool fired = false;
 
     public delegate void TimerEventHandler(Timer sender);
-    public event TimerEventHandler? TimedOut;
+    public event TimerEventHandler? Timeout;
 
     public override void Ready()
     {
@@ -28,14 +28,14 @@ public class Timer : Node
 
         if (fired)
         {
-            TimePassed += TimeManager.Delta;
+            TimePassed += TimeServer.Delta;
 
             if (TimePassed >= WaitTime)
             {
                 fired = false;
                 TimePassed = 0;
 
-                TimedOut?.Invoke(this);
+                Timeout?.Invoke(this);
 
                 if (Loop)
                 {

@@ -7,13 +7,13 @@ public class ColliderCircle : Collider
     public override void Start()
     {
         base.Start();
-        CollisionManager.Instance.RegisterCircle(this);
+        CollisionServer.Instance.RegisterCircle(this);
     }
 
-    public override void Destroy()
+    public override void Free()
     {
-        base.Destroy();
-        CollisionManager.Instance.UnregisterCircle(this);
+        base.Free();
+        CollisionServer.Instance.UnregisterCircle(this);
     }
 
     public override bool RayIntersects(Vector2 rayStart, Vector2 rayEnd)

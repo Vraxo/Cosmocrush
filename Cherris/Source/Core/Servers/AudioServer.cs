@@ -1,6 +1,6 @@
 ﻿namespace Cherris;
 
-public static class AudioManager
+public static class AudioServer
 {
     public static event AudioManagerCore.BusVolumeChangedEventHandler VolumeChanged
     {

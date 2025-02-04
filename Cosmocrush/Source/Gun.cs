@@ -33,7 +33,7 @@ public class Gun : Sprite
 
     private void HandleFiring()
     {
-        bool isCooledDown = TimeManager.Elapsed - lastFiredTime >= cooldown;
+        bool isCooledDown = TimeServer.Elapsed - lastFiredTime >= cooldown;
 
         if (Input.IsActionDown("Fire") && isCooledDown)
         {
@@ -61,12 +61,12 @@ public class Gun : Sprite
 
     private void OnGunshotAudioFinished(AudioPlayer sender)
     {
-        sender.Destroy();
+        sender.Free();
     }
 
     private void Fire()
     {
-        lastFiredTime = TimeManager.Elapsed;
+        lastFiredTime = TimeServer.Elapsed;
         PlayGunshotSound();
         FireRaycast();
     }

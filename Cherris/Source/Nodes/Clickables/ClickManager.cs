@@ -2,7 +2,7 @@
 //
 //namespace Cherris;
 //
-//public class ClickManager : Node
+//public class ClickServer : Node
 //{
 //    public List<Clickable> Clickables = [];
 //    public int MinLayer = -1;

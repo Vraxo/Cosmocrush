@@ -5,7 +5,7 @@ public partial class Dialog : Node2D
     public override void Start()
     {
         Offset = GetNode<ThemedRectangle>("Background").Size / 2;
-        ClickManager.Instance.MinLayer = ClickableLayer.DialogButtons;
+        ClickServer.Instance.MinLayer = ClickableLayer.DialogButtons;
         GetNode<Button>("CloseButton").LeftClicked += OnCloseButtonLeftClicked;
     }
 
@@ -16,8 +16,8 @@ public partial class Dialog : Node2D
 
     protected void Close()
     {
-        ClickManager.Instance.MinLayer = 0;
-        Destroy();
+        ClickServer.Instance.MinLayer = 0;
+        Free();
     }
 
     private void OnCloseButtonLeftClicked(Button sender)
@@ -27,6 +27,6 @@ public partial class Dialog : Node2D
 
     private void UpdatePosition()
     {
-        Position = WindowManager.Size / 2;
+        Position = VisualServer.WindowSize / 2;
     }
 }

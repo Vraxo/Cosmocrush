@@ -1,15 +1,15 @@
 ﻿namespace Cherris;
 
-public sealed class CollisionManager
+public sealed class CollisionServer
 {
-    private static CollisionManager? _instance;
-    public static CollisionManager Instance => _instance ??= new();
+    private static CollisionServer? _instance;
+    public static CollisionServer Instance => _instance ??= new();
 
     public List<Collider> Colliders = new();
     public List<ColliderCircle> ColliderCircles = new();
     public List<ColliderRectangle> ColliderRectangles = new();
 
-    private CollisionManager() { }
+    private CollisionServer() { }
 
     public void RegisterCircle(ColliderCircle collider)
     {

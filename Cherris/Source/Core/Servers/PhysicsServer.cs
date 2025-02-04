@@ -1,9 +1,9 @@
 ﻿namespace Cherris;
 
-public sealed class PhysicsManager
+public sealed class PhysicsServer
 {
-    private static PhysicsManager? _instance;
-    public static PhysicsManager Instance => _instance ??= new();
+    private static PhysicsServer? _instance;
+    public static PhysicsServer Instance => _instance ??= new();
 
     public List<KinematicBody> KinematicBodies { get; } = [];
 
