@@ -1,6 +1,9 @@
 name: Enemy
 type: Enemy
 Size: [32, 48]
+sprite: Sprite
+navigationAgent: NavigationAgent
+hitBox: HitBox
 children:
   - name: Sprite
     type: Sprite

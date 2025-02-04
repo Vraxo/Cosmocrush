@@ -11,6 +11,8 @@ public sealed class CollisionServer
 
     private CollisionServer() { }
 
+    // Public
+
     public void RegisterCircle(ColliderCircle collider)
     {
         ColliderCircles.Add(collider);
@@ -41,15 +43,44 @@ public sealed class CollisionServer
         ProcessRectangleCollisions();
     }
 
+    public void PrintColliders()
+    {
+        Console.WriteLine("[CollisionServer - Colliders]");
+
+        foreach (Collider collider in Colliders)
+        {
+            Console.WriteLine(collider.Name);
+        }
+    }
+
+    // General
+
+    private static bool AreLayersMatching(List<int> layersA, List<int> layersB)
+    {
+        foreach (var layerA in layersA)
+        {
+            if (layersB.Contains(layerA))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Circle collision logic
+
     private void ProcessCircleCollisions()
     {
         for (int i = 0; i < ColliderCircles.Count; i++)
         {
             for (int j = i + 1; j < ColliderCircles.Count; j++)
             {
-                if (AreLayersMatching(ColliderCircles[i].CollisionLayers, ColliderCircles[j].CollisionLayers))
+                var colliderA = ColliderCircles[i];
+                var colliderB = ColliderCircles[j];
+
+                if (colliderA.Enabled && colliderB.Enabled && AreLayersMatching(colliderA.CollisionLayers, colliderB.CollisionLayers))
                 {
-                    HandleCircleCollision(ColliderCircles[i], ColliderCircles[j]);
+                    HandleCircleCollision(colliderA, colliderB);
                 }
             }
         }
@@ -80,22 +111,29 @@ public sealed class CollisionServer
         if (!colliderB.IsStatic) colliderB.Position += pushVector;
     }
 
+    // Rectangle collision logic
+
     private void ProcessRectangleCollisions()
     {
         for (int i = 0; i < ColliderRectangles.Count; i++)
         {
             for (int j = i + 1; j < ColliderRectangles.Count; j++)
             {
-                if (AreLayersMatching(ColliderRectangles[i].CollisionLayers, ColliderRectangles[j].CollisionLayers))
+                var colliderA = ColliderRectangles[i];
+                var colliderB = ColliderRectangles[j];
+
+                if (colliderA.Enabled && colliderB.Enabled && AreLayersMatching(colliderA.CollisionLayers, colliderB.CollisionLayers))
                 {
-                    HandleRectangleCollision(ColliderRectangles[i], ColliderRectangles[j]);
+                    HandleRectangleCollision(colliderA, colliderB);
                 }
             }
         }
     }
 
-    private void HandleRectangleCollision(ColliderRectangle colliderA, ColliderRectangle colliderB)
+    private static void HandleRectangleCollision(ColliderRectangle colliderA, ColliderRectangle colliderB)
     {
+        if (!colliderA.Enabled || !colliderB.Enabled) return;
+
         if (IsRectangleColliding(colliderA, colliderB))
         {
             Vector2 overlap = GetRectangleOverlap(colliderA, colliderB);
@@ -110,83 +148,29 @@ public sealed class CollisionServer
         float scaledWidthB = colliderB.Size.X * colliderB.Scale.X;
         float scaledHeightB = colliderB.Size.Y * colliderB.Scale.Y;
 
-        return colliderA.GlobalPosition.X - colliderA.Origin.X < colliderB.GlobalPosition.X + scaledWidthB - colliderB.Origin.X &&
-               colliderA.GlobalPosition.X + scaledWidthA - colliderA.Origin.X > colliderB.GlobalPosition.X - colliderB.Origin.X &&
-               colliderA.GlobalPosition.Y - colliderA.Origin.Y < colliderB.GlobalPosition.Y + scaledHeightB - colliderB.Origin.Y &&
-               colliderA.GlobalPosition.Y + scaledHeightA - colliderA.Origin.Y > colliderB.GlobalPosition.Y - colliderB.Origin.Y;
+        return colliderA.GlobalPosition.X < colliderB.GlobalPosition.X + scaledWidthB &&
+               colliderA.GlobalPosition.X + scaledWidthA > colliderB.GlobalPosition.X &&
+               colliderA.GlobalPosition.Y < colliderB.GlobalPosition.Y + scaledHeightB &&
+               colliderA.GlobalPosition.Y + scaledHeightA > colliderB.GlobalPosition.Y;
     }
 
     private static Vector2 GetRectangleOverlap(ColliderRectangle colliderA, ColliderRectangle colliderB)
     {
-        float scaledWidthA = colliderA.Size.X * colliderA.Scale.X;
-        float scaledHeightA = colliderA.Size.Y * colliderA.Scale.Y;
-        float scaledWidthB = colliderB.Size.X * colliderB.Scale.X;
-        float scaledHeightB = colliderB.Size.Y * colliderB.Scale.Y;
+        float overlapX = MathF.Min(colliderA.GlobalPosition.X + colliderA.Size.X, colliderB.GlobalPosition.X + colliderB.Size.X) -
+                         MathF.Max(colliderA.GlobalPosition.X, colliderB.GlobalPosition.X);
 
-        float overlapX = MathF.Min(colliderA.GlobalPosition.X + scaledWidthA - colliderA.Origin.X, colliderB.GlobalPosition.X + scaledWidthB - colliderB.Origin.X) -
-                         MathF.Max(colliderA.GlobalPosition.X - colliderA.Origin.X, colliderB.GlobalPosition.X - colliderB.Origin.X);
-
-        float overlapY = MathF.Min(colliderA.GlobalPosition.Y + scaledHeightA - colliderA.Origin.Y, colliderB.GlobalPosition.Y + scaledHeightB - colliderB.Origin.Y) -
-                         MathF.Max(colliderA.GlobalPosition.Y - colliderA.Origin.Y, colliderB.GlobalPosition.Y - colliderB.Origin.Y);
+        float overlapY = MathF.Min(colliderA.GlobalPosition.Y + colliderA.Size.Y, colliderB.GlobalPosition.Y + colliderB.Size.Y) -
+                         MathF.Max(colliderA.GlobalPosition.Y, colliderB.GlobalPosition.Y);
 
         return new Vector2(overlapX, overlapY);
     }
 
-    private void ResolveRectangleOverlap(ColliderRectangle colliderA, ColliderRectangle colliderB, Vector2 overlap)
+    private static void ResolveRectangleOverlap(ColliderRectangle colliderA, ColliderRectangle colliderB, Vector2 overlap)
     {
         if (colliderA.IsStatic && colliderB.IsStatic) return;
 
-        if (overlap.X < overlap.Y)
-        {
-            ResolveHorizontalOverlap(colliderA, colliderB, overlap.X);
-        }
-        else
-        {
-            ResolveVerticalOverlap(colliderA, colliderB, overlap.Y);
-        }
-    }
-
-    private static void ResolveHorizontalOverlap(ColliderRectangle colliderA, ColliderRectangle colliderB, float overlapX)
-    {
-        float pushVectorX = overlapX / 2;
-
-        if (colliderA.GlobalPosition.X - colliderA.Origin.X < colliderB.GlobalPosition.X - colliderB.Origin.X)
-        {
-            if (!colliderA.IsStatic) colliderA.Position -= new Vector2(pushVectorX, 0);
-            if (!colliderB.IsStatic) colliderB.Position += new Vector2(pushVectorX, 0);
-        }
-        else
-        {
-            if (!colliderA.IsStatic) colliderA.Position += new Vector2(pushVectorX, 0);
-            if (!colliderB.IsStatic) colliderB.Position -= new Vector2(pushVectorX, 0);
-        }
-    }
-
-    private static void ResolveVerticalOverlap(ColliderRectangle colliderA, ColliderRectangle colliderB, float overlapY)
-    {
-        float pushVectorY = overlapY / 2;
-
-        if (colliderA.GlobalPosition.Y - colliderA.Origin.Y < colliderB.GlobalPosition.Y - colliderB.Origin.Y)
-        {
-            if (!colliderA.IsStatic) colliderA.Position -= new Vector2(0, pushVectorY);
-            if (!colliderB.IsStatic) colliderB.Position += new Vector2(0, pushVectorY);
-        }
-        else
-        {
-            if (!colliderA.IsStatic) colliderA.Position += new Vector2(0, pushVectorY);
-            if (!colliderB.IsStatic) colliderB.Position -= new Vector2(0, pushVectorY);
-        }
-    }
-
-    private static bool AreLayersMatching(List<int> layersA, List<int> layersB)
-    {
-        foreach (var layerA in layersA)
-        {
-            if (layersB.Contains(layerA))
-            {
-                return true;
-            }
-        }
-        return false;
+        Vector2 pushVector = overlap / 2;
+        if (!colliderA.IsStatic) colliderA.Position -= pushVector;
+        if (!colliderB.IsStatic) colliderB.Position += pushVector;
     }
 }

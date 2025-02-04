@@ -94,10 +94,10 @@ public class AudioPlayer : Node
         }
     }
 
-    public delegate void AudioPlayerEventHandler(AudioPlayer sender);
-    public event AudioPlayerEventHandler? Paused;
-    public event AudioPlayerEventHandler? Resumed;
-    public event AudioPlayerEventHandler? Finished;
+    public delegate void EventHandler(AudioPlayer sender);
+    public event EventHandler? Paused;
+    public event EventHandler? Resumed;
+    public event EventHandler? Finished;
 
     public AudioPlayer()
     {

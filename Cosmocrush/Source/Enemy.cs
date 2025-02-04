@@ -8,10 +8,12 @@ public class Enemy : ColliderRectangle
     private const int maxHealth = 20;
     private Vector2 knockback = Vector2.Zero;
     private double lastDamageTime = -0.5f;
+    private bool alive = true;
 
-    private Sprite? sprite;
     private Player? player;
-    private NavigationAgent? navigationAgent;
+    private readonly Sprite? sprite;
+    private readonly NavigationAgent? navigationAgent;
+    private readonly ColliderRectangle? hitBox;
 
     private readonly int damage = 2;
     private readonly float speed = 100f;
@@ -24,15 +26,18 @@ public class Enemy : ColliderRectangle
     {
         base.Ready();
 
-        navigationAgent = GetNode<NavigationAgent>("NavigationAgent");
-        navigationAgent.Region = GetNode<NavigationRegion>("/root/NavReg");
-        sprite = GetNode<Sprite>("Sprite");
+        navigationAgent!.Region = GetNode<NavigationRegion>("/root/NavigationRegion");
         player = GetNode<Player>("/root/Player");
     }
 
     public override void Update()
     {
         base.Update();
+
+        if (!alive)
+        {
+            return;
+        }
 
         SufferKnockback();
         ChasePlayer();
@@ -110,7 +115,7 @@ public class Enemy : ColliderRectangle
 
     private void AttemptToDamagePlayer()
     {
-        bool isPlayerInRange = GlobalPosition.DistanceTo(player.GlobalPosition) <= damageRadius;
+        bool isPlayerInRange = GlobalPosition.DistanceTo(player!.GlobalPosition) <= damageRadius;
         bool canShoot = TimeServer.Elapsed - lastDamageTime >= damageCooldown;
 
         if (isPlayerInRange && canShoot)
@@ -122,6 +127,8 @@ public class Enemy : ColliderRectangle
 
     private void Die()
     {
-        Free();
+        alive = false;
+        hitBox!.Enabled = false;
+        sprite!.Visible = false;
     }
 }

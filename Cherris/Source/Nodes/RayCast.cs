@@ -31,6 +31,8 @@ public class RayCast : Node2D
         }
     }
 
+    // Public
+
     public RayCast()
     {
         ReadyForVisibility = true;
@@ -42,12 +44,16 @@ public class RayCast : Node2D
         base.Update();
     }
 
+    // Protected
+
     protected override void Draw()
     {
         base.Draw();
         Vector2 rayEnd = GlobalPosition + TargetPosition;
         DrawLine(GlobalPosition, rayEnd, 5, Color.Red);
     }
+
+    // Private
 
     private void PerformRaycast()
     {
@@ -62,8 +68,8 @@ public class RayCast : Node2D
 
         foreach (Collider collider in CollisionServer.Instance.Colliders)
         {
-            // Ensure there's at least one common collision layer
-            if (!CollisionLayers.Any(layer => collider.CollisionLayers.Contains(layer)))
+            // Ensure collider is enabled and there's at least one common collision layer
+            if (!collider.Enabled || !CollisionLayers.Any(layer => collider.CollisionLayers.Contains(layer)))
                 continue;
 
             // Check if the ray intersects
@@ -80,11 +86,11 @@ public class RayCast : Node2D
         // Loop through sorted hits and apply IgnoreFirst logic
         foreach (var (collider, distance) in hits)
         {
-            //if (IgnoreFirst && !firstHitSkipped)
-            //{
-            //    firstHitSkipped = true;
-            //    continue; // Skip the first valid hit
-            //}
+            if (IgnoreFirst && !firstHitSkipped)
+            {
+                firstHitSkipped = true;
+                continue; // Skip the first valid hit
+            }
 
             // Once we find the closest valid hit, mark it
             IsColliding = true;

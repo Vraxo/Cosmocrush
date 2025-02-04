@@ -14,7 +14,25 @@ public class Node
     public Node? Parent { get; set; } = null;
     public List<Node> Children { get; set; } = [];
 
-    public bool Active { get; private set; } = true;
+    private bool _active = true;
+    public bool Active 
+    {
+        get => _active;
+        
+        set
+        {
+            if (_active == value)
+            {
+                return;
+            }
+
+            _active = value;
+            ActiveChanged?.Invoke(this, _active);
+        }
+    }
+
+    public delegate void ActiveChangedEventHandler(Node sender, bool active);
+    public event ActiveChangedEventHandler? ActiveChanged;
 
     /// <summary>Gets the absolute path to this node, starting with "/root/".</summary>
     public string AbsolutePath

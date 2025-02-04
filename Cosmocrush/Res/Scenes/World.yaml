@@ -14,7 +14,7 @@ children:
     Color: [64, 64, 64, 255]
     Size: [2000, 2000]
 
-  - name: NavReg
+  - name: NavigationRegion
     type: NavigationRegion
 
   - name: Rock

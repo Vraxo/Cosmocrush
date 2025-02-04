@@ -4,18 +4,6 @@ public class ColliderCircle : Collider
 {
     public float Radius { get; set; } = 16;
 
-    public override void Start()
-    {
-        base.Start();
-        CollisionServer.Instance.RegisterCircle(this);
-    }
-
-    public override void Free()
-    {
-        base.Free();
-        CollisionServer.Instance.UnregisterCircle(this);
-    }
-
     public override bool RayIntersects(Vector2 rayStart, Vector2 rayEnd)
     {
         Vector2 closestPoint = ClosestPointOnLine(rayStart, rayEnd, GlobalPosition);
@@ -24,20 +12,31 @@ public class ColliderCircle : Collider
         return distanceToCircle <= Radius;
     }
 
-    private Vector2 ClosestPointOnLine(Vector2 lineStart, Vector2 lineEnd, Vector2 point)
+    protected override void Draw()
+    {
+        base.Draw();
+
+        DrawCircleOutline(
+            GlobalPosition - Origin,
+            Radius,
+            Color.Blue);
+    }
+
+    protected override void Register()
+    {
+        CollisionServer.Instance.RegisterCircle(this);
+    }
+
+    protected override void Unregister()
+    {
+        CollisionServer.Instance.UnregisterCircle(this);
+    }
+
+    private static Vector2 ClosestPointOnLine(Vector2 lineStart, Vector2 lineEnd, Vector2 point)
     {
         Vector2 line = lineEnd - lineStart;
         float t = Vector2.Dot(point - lineStart, line) / Vector2.Dot(line, line);
         t = Math.Clamp(t, 0, 1);
         return lineStart + t * line;
-    }
-
-    protected override void Draw()
-    {
-        base.Draw();
-        DrawCircleOutline(
-            GlobalPosition - Origin,
-            Radius,
-            Color.Blue);
     }
 }

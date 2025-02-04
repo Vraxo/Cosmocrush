@@ -2,18 +2,6 @@
 
 public class ColliderRectangle : Collider
 {
-    public override void Start()
-    {
-        base.Start();
-        CollisionServer.Instance.RegisterRectangle(this);
-    }
-
-    public override void Free()
-    {
-        base.Free();
-        CollisionServer.Instance.UnregisterRectangle(this);
-    }
-
     public override bool RayIntersects(Vector2 rayStart, Vector2 rayEnd)
     {
         Vector2 rectMin = GlobalPosition - Origin;
@@ -35,14 +23,29 @@ public class ColliderRectangle : Collider
             Color);
     }
 
+    protected override void Register()
+    {
+        CollisionServer.Instance.RegisterRectangle(this);
+        CollisionServer.Instance.PrintColliders();
+    }
+
+    protected override void Unregister()
+    {
+        CollisionServer.Instance.UnregisterRectangle(this);
+        CollisionServer.Instance.PrintColliders();
+    }
+
     private static bool RayIntersectsLine(Vector2 rayStart, Vector2 rayEnd, Vector2 lineStart, Vector2 lineEnd)
     {
         Vector2 r = rayEnd - rayStart;
         Vector2 s = lineEnd - lineStart;
 
         float denominator = r.X * s.Y - r.Y * s.X;
+        
         if (denominator == 0)
+        {
             return false;
+        }
 
         Vector2 delta = lineStart - rayStart;
         float t = (delta.X * s.Y - delta.Y * s.X) / denominator;
