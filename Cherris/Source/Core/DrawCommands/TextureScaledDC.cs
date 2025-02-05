@@ -31,8 +31,8 @@ public class TextureScaledDC : DrawCommand
 
         if (UseShader)
         {
-            Raylib.BeginShaderMode(Shader);
             UpdateShaderUniforms?.Invoke(Shader);
+            Raylib.BeginShaderMode(Shader);
         }
 
         Raylib.DrawTexturePro(

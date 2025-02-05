@@ -26,13 +26,11 @@ public class ColliderRectangle : Collider
     protected override void Register()
     {
         CollisionServer.Instance.RegisterRectangle(this);
-        CollisionServer.Instance.PrintColliders();
     }
 
     protected override void Unregister()
     {
         CollisionServer.Instance.UnregisterRectangle(this);
-        CollisionServer.Instance.PrintColliders();
     }
 
     private static bool RayIntersectsLine(Vector2 rayStart, Vector2 rayEnd, Vector2 lineStart, Vector2 lineEnd)

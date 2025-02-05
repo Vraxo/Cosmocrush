@@ -23,12 +23,12 @@ public class Sprite : Node2D
     }
 
     public Color FlashColor { get; set; } = Color.White;
-    public float FlashValue { get; set; } = 0f;
+    public float FlashValue { get; set; } = 1f;
 
     public Sprite()
     {
         UseShader = true;
-        Shader = Raylib.LoadShader(null, "Res/Shaders/HitFlash.fs");
+        Shader = Raylib.LoadShader(null, "Res/Shaders/HitFlash.shader");
         flashColorLoc = Raylib.GetShaderLocation(Shader, "flash_color");
         flashValueLoc = Raylib.GetShaderLocation(Shader, "flash_value");
     }
@@ -37,12 +37,18 @@ public class Sprite : Node2D
     {
         base.Draw();
 
-        if (Texture is null)
-        {
-            return;
-        }
+        if (Texture is null) return;
 
-        // Create and configure the draw command.
+        // Convert flash color to [0.0, 1.0] range for shader
+        float[] flashColorData = new float[]
+        {
+            FlashColor.R / 255.0f,
+            FlashColor.G / 255.0f,
+            FlashColor.B / 255.0f,
+            FlashColor.A / 255.0f
+        };
+
+        // Prepare the TextureScaledDC and submit it
         TextureScaledDC textureScaledDC = new()
         {
             Texture = Texture,
@@ -57,13 +63,14 @@ public class Sprite : Node2D
             UseShader = UseShader,
             UpdateShaderUniforms = (shader) =>
             {
-                Raylib.SetShaderValue(shader, Raylib.GetShaderLocation(shader, "texture0"), ((Texture2D)Texture).Id, ShaderUniformDataType.Sampler2D);
-                Raylib.SetShaderValue(shader, Raylib.GetShaderLocation(shader, "flash_value"), flashValueLoc, ShaderUniformDataType.Float);
-                Raylib.SetShaderValue(shader, Raylib.GetShaderLocation(shader, "flash_color"), flashColorLoc, ShaderUniformDataType.Vec4);
+                // Pass the shader uniform values
+                Raylib.SetShaderValue(shader, flashValueLoc, new[] { FlashValue }, ShaderUniformDataType.Float);
+                Raylib.SetShaderValue(shader, flashColorLoc, flashColorData, ShaderUniformDataType.Vec4);
+                // No need to manually bind the texture; Raylib handles this automatically
             }
         };
 
-        // Submit the draw command.
+        // Submit the draw command to the renderer
         RenderServer.Instance.Submit(textureScaledDC);
     }
 }

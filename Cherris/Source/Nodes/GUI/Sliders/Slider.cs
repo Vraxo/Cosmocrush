@@ -8,7 +8,7 @@ public abstract class Slider : Control
     public Sound? MoveSound { get; set; }
     public SliderTheme Theme { get; set; } = new();
     public ButtonThemePack GrabberTheme { get; set; } = new();
-    public Vector2 GrabberSize { get; set; } = new(20, 20);
+    public Vector2 GrabberSize { get; set; } = new(40);
 
     protected bool grabberPressed;
     protected bool grabberHovered;
