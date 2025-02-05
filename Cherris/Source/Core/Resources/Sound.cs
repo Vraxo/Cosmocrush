@@ -4,6 +4,8 @@ namespace Cherris;
 
 public class Sound
 {
+    public string Path { get; private set; }
+
     private Raylib_cs.Sound raylibSound;
 
     public static implicit operator Raylib_cs.Sound(Sound soundEffect) => soundEffect.raylibSound;
@@ -11,6 +13,7 @@ public class Sound
     public Sound(string filePath)
     {
         raylibSound = Raylib.LoadSound(filePath);
+        Path = filePath;
 
         if (raylibSound.FrameCount == 0)
         {

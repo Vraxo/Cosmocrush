@@ -4,25 +4,18 @@ namespace Cosmocrush;
 
 public class MainMenu : Node
 {
-    private Button playButton = new();
-    private Button settingsButton = new();
-    private Button quitButton = new();
-    private Label title = new();
+    private readonly Button? playButton;
+    private readonly Button? settingsButton;
+    private readonly Button? quitButton;
+    private readonly Label? title;
 
     public override void Ready()
     {
         base.Ready();
 
-        playButton = GetNode<Button>("PlayButton");
-        playButton.LeftClicked += OnPlayButtonLeftClicked;
-
-        settingsButton = GetNode<Button>("SettingsButton");
-        settingsButton.LeftClicked += OnSettingsButtonLeftClicked;
-
-        quitButton = GetNode<Button>("QuitButton");
-        quitButton.LeftClicked += OnQuitButtonLeftClicked;
-
-        title = GetNode<Label>("Title");
+        playButton!.LeftClicked += OnPlayButtonLeftClicked;
+        settingsButton!.LeftClicked += OnSettingsButtonLeftClicked;
+        quitButton!.LeftClicked += OnQuitButtonLeftClicked;
     }
 
     public override void Update()
@@ -58,22 +51,22 @@ public class MainMenu : Node
 
     private void UpdatePlayButton()
     {
-        playButton.Position = VisualServer.WindowSize / 2 - new Vector2(0, 50);
+        playButton!.Position = VisualServer.WindowSize / 2 - new Vector2(0, 50);
     }
 
     private void UpdateSettingsButton()
     {
-        settingsButton.Position = VisualServer.WindowSize / 2;
+        settingsButton!.Position = VisualServer.WindowSize / 2;
     }
 
     private void UpdateQuitButton()
     {
-        quitButton.Position = VisualServer.WindowSize / 2 + new Vector2(0, 50);
+        quitButton!.Position = VisualServer.WindowSize / 2 + new Vector2(0, 50);
     }
 
     private void UpdateTitle()
     {
-        title.Position = new(
+        title!.Position = new(
             VisualServer.WindowSize.X / 2,
             title.Position.Y);
     }

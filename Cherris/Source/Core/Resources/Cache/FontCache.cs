@@ -26,7 +26,7 @@ public sealed class FontCache
         return newFont;
     }
 
-    // Parses the font key string to extract the font path and size
+    // Parses the font key string to extract the font Pathetic and size
     private static (string fontPath, int fontSize) ParseFontKey(string fontKey)
     {
         int colonIndex = fontKey.LastIndexOf(':');

@@ -1,5 +1,9 @@
 name: MainMenu
 type: MainMenu
+playButton: PlayButton
+settingsButton: SettingsButton
+quitButton: QuitButton
+title: Title
 children:
   - name: Title
     type: Label

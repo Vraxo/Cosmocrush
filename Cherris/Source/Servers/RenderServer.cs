@@ -14,13 +14,13 @@ public sealed class RenderServer
 
     public void Process()
     {
-        Raylib.BeginDrawing();
+        //Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.DarkGray);
-            BeginCameraMode();
-                AppServer.Instance.RootNode?.Process();
-                ProcessDrawCommands();
-            EndCameraMode();
-        Raylib.EndDrawing();
+        BeginCameraMode();
+        //AppServer.Instance.RootNode?.Process();
+        ProcessDrawCommands();
+        EndCameraMode();
+        //Raylib.EndDrawing();
     }
 
     public void Submit(DrawCommand drawCommand)

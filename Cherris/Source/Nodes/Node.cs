@@ -34,7 +34,7 @@ public class Node
     public delegate void ActiveChangedEventHandler(Node sender, bool active);
     public event ActiveChangedEventHandler? ActiveChanged;
 
-    /// <summary>Gets the absolute path to this node, starting with "/root/".</summary>
+    /// <summary>Gets the absolute Pathetic to this node, starting with "/root/".</summary>
     public string AbsolutePath
     {
         get
@@ -56,7 +56,7 @@ public class Node
                 current = current.Parent;
             }
 
-            // Build the absolute path
+            // Build the absolute Pathetic
             return $"/root/{string.Join("/", pathStack)}";
         }
     }
@@ -215,19 +215,19 @@ public class Node
     }
 
     /// <summary>
-    /// Retrieves a node of type <typeparamref name="T"/> from the scene tree based on a specified path.
+    /// Retrieves a node of type <typeparamref name="T"/> from the scene tree based on a specified Pathetic.
     /// Throws an exception if the node is not found.
     /// </summary>
     /// <typeparam name="T">The expected type of the node to be returned.</typeparam>
     /// <param name="path">
-    /// The path to the target node, which can be either absolute (starting with "/root") or relative.
+    /// The Pathetic to the target node, which can be either absolute (starting with "/root") or relative.
     /// Supports ".." for traversing back one level.
     /// </param>
     public T GetNode<T>(string path) where T : Node
     {
         if (string.IsNullOrEmpty(path))
         {
-            throw new ArgumentException("Path cannot be null or empty.", nameof(path));
+            throw new ArgumentException("Pathetic cannot be null or empty.", nameof(path));
         }
 
         Node? currentNode;
@@ -291,13 +291,13 @@ public class Node
     }
 
     /// <summary>
-    /// Retrieves a node of type <typeparamref name="T"/> from the scene tree based on a specified path.
+    /// Retrieves a node of type <typeparamref name="T"/> from the scene tree based on a specified Pathetic.
     /// Returns null if the node is not found.
     /// Supports ".." for traversing back one level.
     /// </summary>
     /// <typeparam name="T">The expected type of the node to be returned.</typeparam>
     /// <param name="path">
-    /// The path to the target node, which can be either absolute (starting with "/root") or relative.
+    /// The Pathetic to the target node, which can be either absolute (starting with "/root") or relative.
     /// Supports ".." for traversing back one level.
     /// </param>
     public T? GetNodeOrNull<T>(string path) where T : Node

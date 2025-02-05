@@ -124,7 +124,7 @@
     <None Update="Res\Scenes\UI\Slider.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Shaders\old_tv_shader.fs">
+    <None Update="Res\Shaders\HitFlash.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Sprites\Astronaut.png">

@@ -12,6 +12,8 @@ public class TextureScaledDC : DrawCommand
     public bool FlipH { get; set; } = false;
     public bool FlipV { get; set; } = false;
 
+    public Action<Shader>? UpdateShaderUniforms { get; set; }
+
     public override void Draw()
     {
         Rectangle source = new()
@@ -27,6 +29,12 @@ public class TextureScaledDC : DrawCommand
             Size = Texture.Size * Scale
         };
 
+        if (UseShader)
+        {
+            Raylib.BeginShaderMode(Shader);
+            UpdateShaderUniforms?.Invoke(Shader);
+        }
+
         Raylib.DrawTexturePro(
             Texture,
             source,
@@ -34,5 +42,10 @@ public class TextureScaledDC : DrawCommand
             Origin,
             Rotation,
             Color.White);
+
+        if (UseShader)
+        {
+            Raylib.EndShaderMode();
+        }
     }
 }

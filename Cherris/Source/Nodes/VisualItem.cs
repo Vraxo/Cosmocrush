@@ -1,9 +1,12 @@
 ﻿using Cherris.DrawCommands;
+using Raylib_cs;
 
 namespace Cherris;
 
 public abstract class VisualItem : Node
 {
+    public Shader Shader { get; set; }
+    public bool UseShader { get; set; } = false;
     public bool ReadyForVisibility { get; set; } = false;
 
     private bool _visible = true;
@@ -197,7 +200,8 @@ public abstract class VisualItem : Node
     }
 
     // Same as V1, except the outline is moved down.
-    //protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
+
+    /*protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
     //{
     //    float top = theme.BorderLengthTop;
     //    float right = theme.BorderLengthRight;
@@ -290,6 +294,7 @@ public abstract class VisualItem : Node
     //        (int)size.Y,
     //        theme.FillColor);
     //}
+    */
 
     // Texture
 
@@ -319,7 +324,9 @@ public abstract class VisualItem : Node
             Scale = scale,
             FlipH = flipH,
             FlipV = flipV,
-            Layer = Layer
+            Layer = Layer,
+            Shader = Shader,
+            UseShader = UseShader
         };
 
         RenderServer.Instance.Submit(textureDrawCommand);

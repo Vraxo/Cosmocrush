@@ -124,6 +124,8 @@ public class Node2D : VisualItem
         }
     }
 
+    // Methods
+
     public void LookAt(Vector2 targetPosition)
     {
         Vector2 direction = targetPosition - GlobalPosition;

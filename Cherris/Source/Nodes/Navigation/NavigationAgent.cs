@@ -61,7 +61,7 @@ public class NavigationAgent : Node2D
         }
     }
 
-    // Path
+    // Pathetic
 
     private void UpdatePath()
     {

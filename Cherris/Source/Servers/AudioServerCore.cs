@@ -22,10 +22,12 @@ public sealed class AudioServerCore
 
     // Playing
 
-    public void PlaySound(Raylib_cs.Sound sound, string bus = "Master")
+    public void PlaySound(Sound sound, string bus = "Master")
     {
-        Raylib.PlaySound(sound);
-        Raylib.SetSoundVolume(sound, GetBusVolume(bus));
+        Raylib_cs.Sound clone = Raylib.LoadSoundAlias(sound);
+
+        Raylib.PlaySound(clone);
+        Raylib.SetSoundVolume(clone, GetBusVolume(bus));
     }
 
     // Buses

@@ -1,4 +1,6 @@
-﻿namespace Cherris;
+﻿using System.Runtime.Serialization.Formatters.Binary;
+
+namespace Cherris;
 
 public static class ExtensionMethods
 {

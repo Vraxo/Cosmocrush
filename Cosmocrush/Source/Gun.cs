@@ -5,7 +5,7 @@ namespace Cosmocrush;
 public class Gun : Sprite
 {
     private RayCast rayCast = new();
-    private readonly string gunshotAudioPath = "Res/Audio/SFX/Gunshot.mp3";
+    private readonly Sound gunshotSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Gunshot.mp3");
 
     private float lastFiredTime = 0f;
     private const int damage = 5;
@@ -52,32 +52,12 @@ public class Gun : Sprite
         LookAt(Input.WorldMousePosition);
     }
 
-    // Gunshot sound
-
-    private void OnGunshotAudioFinished(AudioPlayer sender)
-    {
-        sender.Free();
-    }
-
-    private void PlayGunshotSound()
-    {
-        AudioPlayer newAudioPlayer = new()
-        {
-            Audio = ResourceLoader.Load<Audio>(gunshotAudioPath),
-            Bus = "SFX"
-        };
-
-        AddChild(newAudioPlayer);
-        newAudioPlayer.Finished += OnGunshotAudioFinished;
-        newAudioPlayer.Play();
-    }
-
     // Firing
 
     private void Fire()
     {
         lastFiredTime = TimeServer.Elapsed;
-        PlayGunshotSound();
+        gunshotSound.Play("SFX");
         FireRaycast();
     }
 
