@@ -1,18 +1,15 @@
 - T: 0
   Nodes:
     "..":
-      Scale:
-        X: 1
-        Y: 1
+      Scale/X: 1
+      Scale/Y: 1
 - T: 0.25
   Nodes:
     "..":
-      Scale:
-        X: 4
-        Y: 4
+      Scale/X: 2.5
+      Scale/Y: 2.5
 - T: 0.5
   Nodes:
     "..":
-      Scale:
-        X: 1
-        Y: 1
+      Scale/X: 1
+      Scale/Y: 1

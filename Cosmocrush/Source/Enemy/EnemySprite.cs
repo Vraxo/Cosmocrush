@@ -7,8 +7,9 @@ public class EnemySprite : Sprite
 {
     private int flashColorLoc;
     private int flashValueLoc;
-    private Color flashColor = Color.White;
-    private float flashValue = 1f;
+
+    public Color flashColor { get; set; } = Color.White;
+    public float flashValue { get; set; } = 0f;
 
     public override void Ready()
     {

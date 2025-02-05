@@ -31,6 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Res\Animations\HitFlash.anim.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Res\Animations\DamageIndicator.anim.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -206,7 +209,6 @@
 
   <ItemGroup>
     <Folder Include="Res\Cherris\Temporary\" />
-    <Folder Include="Res\Animations\" />
   </ItemGroup>
 
 </Project>

@@ -4,7 +4,11 @@ Size: [32, 48]
 sprite: Sprite
 navigationAgent: NavigationAgent
 hitBox: HitBox
+hitFlashAnimationPlayer: HitFlashAnimationPlayer
 children:
+  - name: HitFlashAnimationPlayer
+    type: AnimationPlayer
+
   - name: Sprite
     type: EnemySprite
     Position: [0, -24]

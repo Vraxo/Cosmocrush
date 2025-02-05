@@ -1,0 +1,12 @@
+- T: 0
+  Nodes:
+    "../Sprite":
+      flashValue: 0
+- T: 0.2
+  Nodes:
+    "../Sprite":
+      flashValue: 1
+- T: 0.4
+  Nodes:
+    "../Sprite":
+      flashValue: 0

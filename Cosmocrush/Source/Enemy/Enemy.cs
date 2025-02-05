@@ -14,6 +14,7 @@ public class Enemy : ColliderRectangle
     private readonly Sprite? sprite;
     private readonly NavigationAgent? navigationAgent;
     private readonly ColliderRectangle? hitBox;
+    private readonly AnimationPlayer? hitFlashAnimationPlayer;
 
     private readonly int damage = 2;
     private readonly float speed = 100f;
@@ -59,6 +60,8 @@ public class Enemy : ColliderRectangle
         }
 
         CreateDamageIndicator(damage);
+
+        hitFlashAnimationPlayer!.Play("Res/Animations/HitFlash.anim.yaml");
     }
 
     public void ApplyKnockback(Vector2 force)
