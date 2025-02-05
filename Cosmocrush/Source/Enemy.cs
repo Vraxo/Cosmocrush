@@ -22,6 +22,8 @@ public class Enemy : ColliderRectangle
     private readonly float damageRadius = 100;
     private readonly float damageCooldown = 0.5f;
 
+    // Main
+
     public override void Ready()
     {
         base.Ready();
@@ -44,6 +46,8 @@ public class Enemy : ColliderRectangle
         LookAtPlayer();
         AttemptToDamagePlayer();
     }
+
+    // Public
 
     public void TakeDamage(int damage)
     {
@@ -69,6 +73,13 @@ public class Enemy : ColliderRectangle
         }
     }
 
+    // Take damage
+
+    private void SufferKnockback()
+    {
+        knockback = Vector2.Lerp(knockback, Vector2.Zero, knockbackRecoverySpeed);
+    }
+
     private void CreateDamageIndicator(int damage)
     {
         PackedScene damageIndicatorScene = new("Res/Scenes/DamageIndicator.yaml");
@@ -81,14 +92,19 @@ public class Enemy : ColliderRectangle
         AddChild(damageIndicator);
     }
 
+    private void Die()
+    {
+        alive = false;
+        Enabled = false;
+        hitBox!.Enabled = false;
+        sprite!.Visible = false;
+    }
+
+    // Follow player
+
     private void LookAtPlayer()
     {
         sprite!.FlipH = player!.GlobalPosition.X < GlobalPosition.X;
-    }
-
-    private void SufferKnockback()
-    {
-        knockback = Vector2.Lerp(knockback, Vector2.Zero, knockbackRecoverySpeed);
     }
 
     private void ChasePlayer()
@@ -123,12 +139,5 @@ public class Enemy : ColliderRectangle
             player?.TakeDamage(damage);
             lastDamageTime = TimeServer.Elapsed;
         }
-    }
-
-    private void Die()
-    {
-        alive = false;
-        hitBox!.Enabled = false;
-        sprite!.Visible = false;
     }
 }

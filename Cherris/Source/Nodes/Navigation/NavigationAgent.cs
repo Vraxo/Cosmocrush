@@ -3,94 +3,40 @@
 public class NavigationAgent : Node2D
 {
     public Vector2 TargetPosition { get; set; } = new(0, 0);
-    public List<Vector2> Path = new() { new() };
+    public List<Vector2> Path = [new()];
     public NavigationRegion? Region { get; set; }
     public Color Color { get; set; } = new(255, 0, 0, 255);
 
     private float CellSize => Region?.CellSize ?? 32f;
-
     private Vector2 lastTargetPosition;
-
     private const float TargetMoveThreshold = 1.0f;
+
+    // Main
 
     public override void Update()
     {
         base.Update();
 
-        if (Region != null && TargetPosition.DistanceTo(lastTargetPosition) > TargetMoveThreshold)
+        bool notTooClose = TargetPosition.DistanceTo(lastTargetPosition) > TargetMoveThreshold;
+
+        if (Region is not null && notTooClose)
         {
             UpdatePath();
             lastTargetPosition = TargetPosition;
         }
     }
 
+    // Draw
+
     protected override void Draw()
     {
-        if (Region != null)
+        if (Region is null)
         {
-            DrawTarget();
-            DrawPath();
+            return;
         }
-    }
 
-    private void UpdatePath()
-    {
-        Vector2 start = GlobalPosition;
-        Vector2 goal = AdjustTargetPosition(TargetPosition);
-
-        Vector2 startGrid = GetGridPosition(start);
-        Vector2 goalGrid = GetGridPosition(goal);
-
-        List<Vector2> openList = new() { startGrid };
-        Dictionary<Vector2, Vector2> cameFrom = new();
-        Dictionary<Vector2, float> gScore = new() { [startGrid] = 0 };
-        Dictionary<Vector2, float> fScore = new() { [startGrid] = Heuristic(startGrid, goalGrid) };
-
-        while (openList.Count > 0)
-        {
-            Vector2 current = GetLowestFScoreNode(openList, fScore);
-
-            if (current == goalGrid)
-            {
-                ReconstructPath(cameFrom, current);
-                break;
-            }
-
-            openList.Remove(current);
-
-            foreach (var neighbor in GetNeighbors(current))
-            {
-                if (!Region.IsCellWalkable((int)neighbor.X, (int)neighbor.Y))
-                {
-                    continue;
-                }
-
-                float tentativeGScore = gScore[current] + 1;
-
-                if (!gScore.ContainsKey(neighbor) || tentativeGScore < gScore[neighbor])
-                {
-                    cameFrom[neighbor] = current;
-                    gScore[neighbor] = tentativeGScore;
-                    fScore[neighbor] = gScore[neighbor] + Heuristic(neighbor, goalGrid);
-
-                    if (!openList.Contains(neighbor))
-                    {
-                        openList.Add(neighbor);
-                    }
-                }
-            }
-        }
-    }
-
-    private void ReconstructPath(Dictionary<Vector2, Vector2> cameFrom, Vector2 current)
-    {
-        Path.Clear();
-        while (cameFrom.ContainsKey(current))
-        {
-            Path.Add((current * CellSize) + new Vector2(CellSize / 2, CellSize / 2));
-            current = cameFrom[current];
-        }
-        Path.Reverse();
+        DrawTarget();
+        DrawPath();
     }
 
     private void DrawTarget()
@@ -115,6 +61,71 @@ public class NavigationAgent : Node2D
         }
     }
 
+    // Path
+
+    private void UpdatePath()
+    {
+        Vector2 start = GlobalPosition;
+        Vector2 goal = AdjustTargetPosition(TargetPosition);
+
+        Vector2 startGrid = GetGridPosition(start);
+        Vector2 goalGrid = GetGridPosition(goal);
+
+        List<Vector2> openList = [startGrid];
+        Dictionary<Vector2, Vector2> cameFrom = [];
+        Dictionary<Vector2, float> gScore = new() { [startGrid] = 0 };
+        Dictionary<Vector2, float> fScore = new() { [startGrid] = Heuristic(startGrid, goalGrid) };
+
+        while (openList.Count > 0)
+        {
+            Vector2 current = GetLowestFScoreNode(openList, fScore);
+
+            if (current == goalGrid)
+            {
+                ReconstructPath(cameFrom, current);
+                break;
+            }
+
+            openList.Remove(current);
+
+            foreach (var neighbor in GetNeighbors(current))
+            {
+                if (!Region!.IsCellWalkable((int)neighbor.X, (int)neighbor.Y))
+                {
+                    continue;
+                }
+
+                float tentativeGScore = gScore[current] + 1;
+
+                if (!gScore.ContainsKey(neighbor) || tentativeGScore < gScore[neighbor])
+                {
+                    cameFrom[neighbor] = current;
+                    gScore[neighbor] = tentativeGScore;
+                    fScore[neighbor] = gScore[neighbor] + Heuristic(neighbor, goalGrid);
+
+                    if (!openList.Contains(neighbor))
+                    {
+                        openList.Add(neighbor);
+                    }
+                }
+            }
+        }
+    }
+
+    private void ReconstructPath(Dictionary<Vector2, Vector2> cameFrom, Vector2 current)
+    {
+        Path.Clear();
+
+        while (cameFrom.ContainsKey(current))
+        {
+            Path.Add((current * CellSize) + new Vector2(CellSize / 2, CellSize / 2));
+            current = cameFrom[current];
+        }
+        Path.Reverse();
+    }
+
+    // Other
+
     private static List<Vector2> GetNeighbors(Vector2 node)
     {
         return new List<Vector2>
@@ -131,6 +142,16 @@ public class NavigationAgent : Node2D
         return openList.OrderBy(v => fScore.ContainsKey(v) ? fScore[v] : float.MaxValue).First();
     }
 
+    private static Vector2 GetGridPosition(Vector2 position)
+    {
+        return new(MathF.Floor(position.X / 32f), MathF.Floor(position.Y / 32f));
+    }
+
+    private static float Heuristic(Vector2 a, Vector2 b)
+    {
+        return MathF.Abs(a.X - b.X) + MathF.Abs(a.Y - b.Y);
+    }
+
     private Vector2 AdjustTargetPosition(Vector2 target)
     {
         Vector2 targetGrid = GetGridPosition(target);
@@ -140,12 +161,7 @@ public class NavigationAgent : Node2D
 
         return FindNearbyWalkablePosition(targetGrid);
     }
-
-    private static Vector2 GetGridPosition(Vector2 position)
-    {
-        return new(MathF.Floor(position.X / 32f), MathF.Floor(position.Y / 32f));
-    }
-
+    
     private Vector2 FindNearbyWalkablePosition(Vector2 targetGrid)
     {
         for (int radius = 1; radius <= 10; radius++)
@@ -164,10 +180,5 @@ public class NavigationAgent : Node2D
             }
         }
         return targetGrid * 32f;
-    }
-
-    private static float Heuristic(Vector2 a, Vector2 b)
-    {
-        return MathF.Abs(a.X - b.X) + MathF.Abs(a.Y - b.Y);
     }
 }
