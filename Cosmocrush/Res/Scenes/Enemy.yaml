@@ -6,7 +6,7 @@ navigationAgent: NavigationAgent
 hitBox: HitBox
 children:
   - name: Sprite
-    type: Sprite
+    type: EnemySprite
     Position: [0, -24]
     Texture: Res/Sprites/Enemy.png
     InheritScale: false
