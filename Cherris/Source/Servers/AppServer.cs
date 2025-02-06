@@ -10,8 +10,6 @@ public sealed class AppServer
     private static AppServer? _instance;
     public static AppServer Instance => _instance ??= new();
 
-    public Node? RootNode;
-
     private const string configFilePath = "Res/Cherris/Config.yaml";
     private const string logFilePath = "Res/Cherris/Log.txt";
 
@@ -26,15 +24,15 @@ public sealed class AppServer
         Update();
     }
 
-    public void SetRootNode(Node node, bool packedScene = false)
-    {
-        RootNode = node;
-
-        if (!packedScene)
-        {
-            RootNode.Make();
-        }
-    }
+    //public void SetRootNode(Node node, bool packedScene = false)
+    //{
+    //    RootNode = node;
+    //
+    //    if (!packedScene)
+    //    {
+    //        RootNode.Make();
+    //    }
+    //}
 
     private void Start()
     {
@@ -43,10 +41,10 @@ public sealed class AppServer
         ApplyConfig();
     }
 
-    private void SetRootNodeFromConfig(string scenePath)
+    private static void SetRootNodeFromConfig(string scenePath)
     {
         PackedScene packedScene = new(scenePath);
-        RootNode = packedScene.Instantiate<Node>();
+        SceneTree.Instance.RootNode = packedScene.Instantiate<Node>();
     }
 
     private void Update()
@@ -55,10 +53,8 @@ public sealed class AppServer
         {
             Raylib.BeginDrawing();
             ProcessServers();
-            RootNode?.Process();
+            SceneTree.Instance.Process();
             Raylib.EndDrawing();
-
-            PrintTree();
         }
     }
 
@@ -68,15 +64,6 @@ public sealed class AppServer
         ClickServer.Instance.Process();
         CollisionServer.Instance.Process();
         RenderServer.Instance.Process();
-    }
-
-    private void PrintTree()
-    {
-        if (Input.IsKeyPressed(KeyCode.Enter))
-        {
-            Console.Clear();
-            RootNode?.PrintChildren();
-        }
     }
 
     private static void CreateLogFile()

@@ -100,10 +100,19 @@ public class Enemy : ColliderRectangle
 
     private void Die()
     {
+        hitFlashAnimationPlayer!.Stop();
+
         alive = false;
         Enabled = false;
         hitBox!.Enabled = false;
         sprite!.Visible = false;
+
+        foreach (Node child in Children.Where(child => child.Name != "DamageIndicator").ToList())
+        {
+            child.Free();
+        }
+
+        Tree.CreateTimer(1).Timeout += () => Free();
     }
 
     // Follow player

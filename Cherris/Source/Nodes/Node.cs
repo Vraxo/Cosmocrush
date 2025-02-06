@@ -8,7 +8,8 @@ namespace Cherris;
 public class Node
 {
     /// <summary>Gets the root node of the application scene tree.</summary>
-    public static Node RootNode => AppServer.Instance.RootNode!;
+    public static Node RootNode => SceneTree.Instance.RootNode!;
+    public static SceneTree Tree => SceneTree.Instance;
 
     public string Name { get; set; } = "";
     public Node? Parent { get; set; } = null;
@@ -235,7 +236,7 @@ public class Node
         if (path.StartsWith("/root"))
         {
             path = path["/root".Length..];
-            currentNode = AppServer.Instance.RootNode;
+            currentNode = SceneTree.Instance.RootNode;
 
             if (path.StartsWith('/'))
             {
@@ -312,7 +313,7 @@ public class Node
         if (path.StartsWith("/root"))
         {
             path = path.Substring("/root".Length);
-            currentNode = AppServer.Instance.RootNode;
+            currentNode = SceneTree.Instance.RootNode;
 
             if (path.StartsWith("/"))
             {
@@ -415,7 +416,7 @@ public class Node
             }
         }
 
-        AppServer.Instance.RootNode.PrintChildren();
+        SceneTree.Instance.RootNode?.PrintChildren();
 
         throw new InvalidOperationException($"Child node with name '{name}' not found.");
     }
@@ -484,8 +485,8 @@ public class Node
     /// </summary>
     public static void ChangeScene(Node node)
     {
-        AppServer.Instance.RootNode.Free();
-        AppServer.Instance.RootNode = node;
+        SceneTree.Instance.RootNode?.Free();
+        SceneTree.Instance.RootNode = node;
 
         node.Name = node.GetType().Name;
     }

@@ -8,6 +8,7 @@ public class AnimationPlayer : Node
 {
     public Animation? DefaultAnimation { get; set; }
     public bool AutoPlay { get; set; }
+    public bool IsPlaying => playing;
 
     private Animation? currentAnimation;
     private float animationTime;
@@ -18,7 +19,6 @@ public class AnimationPlayer : Node
         if (AutoPlay && DefaultAnimation != null)
         {
             Play(DefaultAnimation);
-            Console.WriteLine($"[AnimationPlayer] Auto-playing: {DefaultAnimation}");
         }
     }
 
@@ -31,12 +31,30 @@ public class AnimationPlayer : Node
 
         if (prev == null || next == null)
         {
-            playing = false;
+            Stop();
             return;
         }
 
         float t = float.Clamp((animationTime - prev.Time) / (next.Time - prev.Time), 0, 1);
         AnimateBetweenKeyframes(prev, next, t);
+    }
+
+    public void Play(string name) => Play(ResourceLoader.Load<Animation>(name));
+
+    public void Play(Animation animation)
+    {
+        currentAnimation = animation;
+        animationTime = 0f;
+        playing = true;
+        Console.WriteLine($"[AnimationPlayer] Started animation: {animation}");
+    }
+
+    public void Stop()
+    {
+        playing = false;
+        currentAnimation = null;
+        animationTime = 0f;
+        Console.WriteLine("[AnimationPlayer] Animation stopped");
     }
 
     private void AnimateBetweenKeyframes(Animation.Keyframe prev, Animation.Keyframe next, float t)
@@ -65,7 +83,7 @@ public class AnimationPlayer : Node
             var hierarchy = new List<(object Parent, MemberInfo Member)>();
             object? modifiedChild = null;
 
-            // Traverse hierarchy
+            // Traverse property hierarchy
             for (int i = 0; i < parts.Length - 1; i++)
             {
                 MemberInfo member = GetMember(currentObj.GetType(), parts[i]);
@@ -81,7 +99,7 @@ public class AnimationPlayer : Node
             SetMemberValue(finalMember, currentObj, value);
             modifiedChild = currentObj;
 
-            // Propagate changes back up
+            // Propagate changes back through hierarchy
             for (int i = hierarchy.Count - 1; i >= 0; i--)
             {
                 var (parent, member) = hierarchy[i];
@@ -92,6 +110,7 @@ public class AnimationPlayer : Node
         catch (Exception ex)
         {
             Console.WriteLine($"[AnimationPlayer] Error: {ex}");
+            Stop();
         }
     }
 
@@ -102,7 +121,7 @@ public class AnimationPlayer : Node
         object instance = Activator.CreateInstance(type)!;
         float value = float.Lerp(prev, next, t);
 
-        // Try to set component directly
+        // Try to set component
         FieldInfo? field = type.GetField(component) ?? TryFindComponentField(type);
         PropertyInfo? prop = type.GetProperty(component) ?? TryFindComponentProperty(type);
 
@@ -113,10 +132,6 @@ public class AnimationPlayer : Node
         else if (prop != null && prop.PropertyType == typeof(float))
         {
             prop.SetValue(instance, value);
-        }
-        else
-        {
-            Console.WriteLine($"[AnimationPlayer] Couldn't find component {component} in {type.Name}");
         }
 
         return instance;
@@ -139,7 +154,10 @@ public class AnimationPlayer : Node
 
         foreach (var keyframe in currentAnimation?.Keyframes ?? Enumerable.Empty<Animation.Keyframe>())
         {
-            if (keyframe.Time <= time) prev = keyframe;
+            if (keyframe.Time <= time)
+            {
+                prev = keyframe;
+            }
             else
             {
                 next = keyframe;
@@ -150,16 +168,6 @@ public class AnimationPlayer : Node
         return (prev, next);
     }
 
-    public void Play(string name) => Play(ResourceLoader.Load<Animation>(name));
-
-    public void Play(Animation animation)
-    {
-        currentAnimation = animation;
-        animationTime = 0f;
-        playing = true;
-    }
-
-    #region Reflection Helpers
     private static MemberInfo GetMember(Type type, string name)
     {
         return type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance) as MemberInfo
@@ -201,5 +209,4 @@ public class AnimationPlayer : Node
             _ => throw new InvalidOperationException("Unsupported member type")
         };
     }
-    #endregion
 }
