@@ -15,7 +15,7 @@ public class AudioPlayer : Node
                 return;
             }
 
-            if (!AudioServer.BusExists(Name))
+            if (!AudioServerCore.Instance.BusExists(value))
             {
                 Log.Error($"[AudioPlayer] [{Name}] Bus: '{value}' does not exist.");
                 return;

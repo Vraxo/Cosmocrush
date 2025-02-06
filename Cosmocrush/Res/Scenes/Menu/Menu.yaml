@@ -5,6 +5,7 @@ children:
     type: AudioPlayer
     Audio: Res/Audio/Music/Menu.mp3
     AutoPlay: true
+    Bus: Music
 
   - name: Background
     type: MenuBackground

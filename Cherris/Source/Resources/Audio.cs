@@ -5,14 +5,17 @@ namespace Cherris;
 public class Audio
 {
     public float Length { get; private set; } = 0.1f;
+    public string Path { get; private set; }
+    
     private Music raylibMusic;
 
     public static implicit operator Music(Audio audio) => audio.raylibMusic;
 
-    private Audio(Music music, float length)
+    private Audio(Music music, float length, string path)
     {
         raylibMusic = music;
         Length = length;
+        Path = path;
     }
 
     public static Audio? Load(string filePath)
@@ -22,10 +25,9 @@ public class Audio
 
         if (float.IsNaN(length))
         {
-            Log.Error($"[Audio] [{filePath} Failed to load.");
             return null;
         }
 
-        return new(music, length);
+        return new(music, length, filePath);
     }
 }

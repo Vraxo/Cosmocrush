@@ -1,6 +1,4 @@
 ﻿using Raylib_cs;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Cherris;
 
@@ -9,23 +7,25 @@ public sealed class AudioServerCore
     private static AudioServerCore? _instance;
     public static AudioServerCore Instance => _instance ??= new();
 
-    private readonly Dictionary<string, float> buses = [];
     private const string busesPath = "Res/Cherris/AudioBuses.yaml";
 
     public delegate void BusVolumeChangedEventHandler(string bus, float volume);
     public event BusVolumeChangedEventHandler? VolumeChanged;
 
+    private readonly Dictionary<string, float> buses = [];
+
+    // Main
+
     private AudioServerCore()
     {
         LoadBuses();
     }
-
-    // Playing
+    
+    // Play
 
     public void PlaySound(Sound sound, string bus = "Master")
     {
         Raylib_cs.Sound clone = Raylib.LoadSoundAlias(sound);
-
         Raylib.PlaySound(clone);
         Raylib.SetSoundVolume(clone, GetBusVolume(bus));
     }
@@ -36,7 +36,7 @@ public sealed class AudioServerCore
     {
         if (!buses.ContainsKey(bus))
         {
-            throw new Exception($"Bus '{bus}' does not exist.");
+            Log.Error($"[AudioServer]: Cannnot set bus volume. Bus '{bus}' does not exist.");
         }
 
         buses[bus] = volume;
@@ -47,7 +47,7 @@ public sealed class AudioServerCore
     {
         if (!buses.TryGetValue(bus, out float value))
         {
-            throw new Exception($"Bus '{bus}' does not exist.");
+            Log.Error($"[AudioServer]: Cannot get bus volume. Bus '{bus}' does not exist.");
         }
 
         return value;
@@ -57,7 +57,8 @@ public sealed class AudioServerCore
     {
         if (buses.ContainsKey(name))
         {
-            throw new Exception($"Bus '{name}' already exists.");
+            Log.Error($"[AudioServer]: Bus '{name}' aleady exists");
+            return;
         }
 
         buses.Add(name, volume);
@@ -65,7 +66,7 @@ public sealed class AudioServerCore
 
     public bool BusExists(string name)
     {
-        return buses.ContainsKey(name); 
+        return buses.ContainsKey(name);
     }
 
     private void LoadBuses()
@@ -85,22 +86,25 @@ public sealed class AudioServerCore
         }
 
         string yamlContent = File.ReadAllText(fullPath);
-        var deserializer = new DeserializerBuilder()
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+        var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
+            .WithNamingConvention(YamlDotNet.Serialization.NamingConventions.CamelCaseNamingConvention.Instance)
             .Build();
 
         var loadedBuses = deserializer.Deserialize<Dictionary<string, float>>(yamlContent);
 
+        Console.WriteLine("Buses loaded.");
+
         foreach (KeyValuePair<string, float> kvp in loadedBuses)
         {
             buses[kvp.Key] = kvp.Value;
+            Console.WriteLine(kvp.Key);
         }
     }
 
     private static void SaveBusesToYaml(string path, Dictionary<string, float> busesToSave)
     {
-        var serializer = new SerializerBuilder()
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+        var serializer = new YamlDotNet.Serialization.SerializerBuilder()
+            .WithNamingConvention(YamlDotNet.Serialization.NamingConventions.CamelCaseNamingConvention.Instance)
             .Build();
 
         var yaml = serializer.Serialize(busesToSave);
