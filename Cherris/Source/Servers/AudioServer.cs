@@ -27,4 +27,9 @@ public static class AudioServer
     {
         AudioServerCore.Instance.AddBus(name, volume);
     }
+
+    public static bool BusExists(string name)
+    {
+        return AudioServerCore.Instance.BusExists(name);
+    }
 }

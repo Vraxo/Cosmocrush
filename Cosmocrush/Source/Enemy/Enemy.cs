@@ -16,6 +16,7 @@ public class Enemy : ColliderRectangle
     private readonly ColliderRectangle? hitBox;
     private readonly AnimationPlayer? hitFlashAnimationPlayer;
 
+    private readonly Sound damageSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/EnemyDamage.mp3");
     private readonly int damage = 2;
     private readonly float speed = 100f;
     private readonly float proximityThreshold = 10f;
@@ -85,6 +86,8 @@ public class Enemy : ColliderRectangle
 
     private void CreateDamageIndicator(int damage)
     {
+        damageSound.Play("SFX");
+
         PackedScene damageIndicatorScene = new("Res/Scenes/DamageIndicator.yaml");
         var damageIndicator = damageIndicatorScene.Instantiate<DamageIndicator>();
 

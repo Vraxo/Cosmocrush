@@ -63,6 +63,11 @@ public sealed class AudioServerCore
         buses.Add(name, volume);
     }
 
+    public bool BusExists(string name)
+    {
+        return buses.ContainsKey(name); 
+    }
+
     private void LoadBuses()
     {
         string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, busesPath);

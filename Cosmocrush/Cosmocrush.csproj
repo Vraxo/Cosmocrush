@@ -58,10 +58,13 @@
     <None Update="Res\Audio\Music\Menu.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Res\Audio\SFX\EnemyDamage.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Res\Audio\SFX\Gunshot.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Audio\SFX\Damage.mp3">
+    <None Update="Res\Audio\SFX\PlayerDamage.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Audio\SFX\Ui.mp3">

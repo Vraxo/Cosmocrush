@@ -190,7 +190,7 @@ public static class PackedSceneUtils
             _ when targetType == typeof(double) => double.Parse(stringValue),
             _ when targetType == typeof(bool) => bool.Parse(stringValue),
             _ when targetType == typeof(string) => stringValue,
-            _ when targetType == typeof(Audio) => new Audio(stringValue),
+            _ when targetType == typeof(Audio) => Audio.Load(stringValue)!,
             _ when targetType == typeof(Sound) => ResourceLoader.Load<Sound>(stringValue),
             _ when targetType == typeof(Animation) => ResourceLoader.Load<Animation>(stringValue),
             _ when targetType == typeof(Texture) => ResourceLoader.Load<Texture>(stringValue),

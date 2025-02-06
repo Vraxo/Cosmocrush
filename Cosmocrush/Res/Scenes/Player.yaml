@@ -2,6 +2,7 @@ name: Player
 type: Player
 Position: [500, 500]
 Size: [32, 48]
+sprite: Sprite
 children:
   - name: Sprite
     type: Sprite

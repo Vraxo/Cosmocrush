@@ -6,17 +6,9 @@ public class Player : ColliderRectangle
 {
     public int Health { get; private set; } = 100;
 
-    private Sprite sprite = new();
+    private Sprite sprite;
     private readonly float speed = 200f;
-    private readonly string damageAudioPath = "Res/Audio/SFX/Damage.mp3";
-
-    public override void Ready()
-    {
-        base.Ready();
-        sprite = GetNode<Sprite>("Sprite");
-
-        //GetNode<ColliderRectangle>("ActualCollider").CollisionLayers = [10];
-    }
+    private readonly Sound? damageSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/PlayerDamage6.mp3");
 
     public override void Update()
     {
@@ -24,14 +16,12 @@ public class Player : ColliderRectangle
 
         LookAtMouse();
         HandleMovement();
-
-        //GlobalPosition = GetNode<ColliderRectangle>("ActualCollider").GlobalPosition;
     }
 
     public void TakeDamage(int damage)
     {
         Health -= damage;
-        PlayDamageSound();
+        damageSound?.Play("SFX");
 
         if (Health <= 0)
         {
@@ -48,19 +38,6 @@ public class Player : ColliderRectangle
     {
         Vector2 direction = Input.GetVector("MoveLeft", "MoveRight", "MoveUp", "MoveDown");
         Position += direction * TimeServer.Delta * speed;
-    }
-
-    private void PlayDamageSound()
-    {
-        AudioPlayer audioPlayer = new()
-        {
-            Audio = ResourceLoader.Load<Audio>(damageAudioPath),
-            Bus = "SFX"
-        };
-
-        AddChild(audioPlayer);
-        audioPlayer.Finished += (audioPlayer) => audioPlayer.Free();
-        audioPlayer.Play();
     }
 
     private void Die()

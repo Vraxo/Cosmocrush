@@ -4,9 +4,9 @@ namespace Cosmocrush;
 
 public partial class CombatThemePlayer : AudioPlayer
 {
-    private readonly Random random = new Random();
+    private readonly Random random = new();
     private int currentThemeIndex = -1;
-    private readonly string themePathTemplate = "Res/Audio/Music/CombatThemes/CombatTheme{0}.mp3";
+    private readonly string themePathTemplate = "Res/Audio/Music/CombatThemes/CombatTheme5{0}.mp3";
 
     public override void Ready()
     {
@@ -17,6 +17,7 @@ public partial class CombatThemePlayer : AudioPlayer
     private void PlayRandomTheme()
     {
         int nextThemeIndex;
+
         do
         {
             nextThemeIndex = random.Next(1, 7);
@@ -24,7 +25,9 @@ public partial class CombatThemePlayer : AudioPlayer
         while (nextThemeIndex == currentThemeIndex);
 
         currentThemeIndex = nextThemeIndex;
-        Audio = new(string.Format(themePathTemplate, currentThemeIndex));
+        string path = string.Format(themePathTemplate, currentThemeIndex);
+        Audio = ResourceLoader.Load<Audio>(path);
+
         Play();
     }
 

@@ -4,7 +4,27 @@ namespace Cherris;
 
 public class AudioPlayer : Node
 {
-    public string Bus { get; set; } = "Master";
+    private string _bus = "Master";
+    public string Bus 
+    {
+        get => _bus;
+        set
+        {
+            if (Bus == value)
+            {
+                return;
+            }
+
+            if (!AudioServer.BusExists(Name))
+            {
+                Log.Error($"[AudioPlayer] [{Name}] Bus: '{value}' does not exist.");
+                return;
+            }
+
+            _bus = value;
+            BusChanged?.Invoke(this, Bus);
+        }
+    }
 
     private Audio? _audio;
     public Audio? Audio
@@ -94,14 +114,20 @@ public class AudioPlayer : Node
         }
     }
 
+    // Events
+
     public delegate void EventHandler(AudioPlayer sender);
+    public delegate void BusEventHandler(AudioPlayer sender, string bus);
     public event EventHandler? Paused;
     public event EventHandler? Resumed;
     public event EventHandler? Finished;
+    public event BusEventHandler? BusChanged;
+
+    // Main
 
     public AudioPlayer()
     {
-        AudioServerCore.Instance.VolumeChanged += OnAudioManagerBusVolumeChanged;
+        AudioServerCore.Instance.VolumeChanged += OnBusVolumeChanged;
     }
 
     public override void Ready()
@@ -136,6 +162,8 @@ public class AudioPlayer : Node
             }
         }
     }
+
+    // Public
 
     public void Play(float timestamp = 0.1f)
     {
@@ -211,7 +239,9 @@ public class AudioPlayer : Node
         Raylib.SeekMusicStream(Audio, timestamp);
     }
 
-    private void OnAudioManagerBusVolumeChanged(string bus, float volume)
+    // Private
+
+    private void OnBusVolumeChanged(string bus, float volume)
     {
         if (Bus == bus)
         {
