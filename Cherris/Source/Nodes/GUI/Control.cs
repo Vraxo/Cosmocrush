@@ -110,7 +110,13 @@ public class Control : ClickableRectangle
 
     private void NavigateToControl(string controlPath)
     {
-        var neighbor = GetNode<Control>(controlPath);
+        var neighbor = GetNodeOrNull<Control>(controlPath);
+
+        if (neighbor is null)
+        {
+            Log.Error($"[Control] [{Name}] NavigateToControl: Could not find '{controlPath}'.");
+            return;
+        }
 
         if (neighbor.Disabled)
         {

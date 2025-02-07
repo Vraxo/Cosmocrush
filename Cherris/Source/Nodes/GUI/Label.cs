@@ -14,6 +14,8 @@ public class Label : Control
     public string Ellipsis { get; set; } = "...";
     public TextCase Case { get; set; } = TextCase.Both;
 
+    private string displayedText = "";
+
     public int VisibleCharacters
     {
         get;
@@ -46,8 +48,6 @@ public class Label : Control
         }
     } = 1.0f;
 
-    private string displayedText = "";
-
     public string Text
     {
         get;
@@ -69,6 +69,7 @@ public class Label : Control
     {
         ClipDisplayedText();
         ApplyCase();
+
         base.Update();
     }
 
@@ -200,18 +201,20 @@ public class Label : Control
     }
 
     // Calculate the size based on the text
-    public new Vector2 Size
+
+    public override Vector2 Size
     {
         get
         {
             float scaledFontSize = Theme.FontSize * Scale.Length();
+
             Vector2 textSize = Raylib_cs.Raylib.MeasureTextEx(
                 Theme.Font,
                 displayedText,
                 scaledFontSize,
                 Theme.FontSpacing);
 
-            return new Vector2(textSize.X, textSize.Y);
+            return new(textSize.X, textSize.Y);
         }
     }
 

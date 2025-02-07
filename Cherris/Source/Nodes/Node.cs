@@ -355,7 +355,7 @@ public class Node
                 }
                 else if (name != "")
                 {
-                    currentNode = currentNode?.GetChild(name);
+                    currentNode = currentNode?.GetChildOrNull(name);
                 }
 
                 if (currentNode == null)

@@ -13,7 +13,7 @@ public class Node2D : VisualItem
 
     public event EventHandler<Vector2>? SizeChanged;
 
-    public Vector2 Size
+    public virtual Vector2 Size
     {
         get ;
 
@@ -24,7 +24,7 @@ public class Node2D : VisualItem
         }
     } = new(320, 320);
 
-    public Vector2 Scale
+    public virtual Vector2 Scale
     {
         get
         {

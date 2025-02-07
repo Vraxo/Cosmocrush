@@ -1,68 +1,71 @@
 name: Settings
 type: SettingsMenu
-masterLabel: MasterLabel
-musicLabel: MusicLabel
-sfxLabel: SfxLabel
-masterSlider: MasterLabel/Slider
-musicSlider: MusicLabel/Slider
-sfxSlider: SfxLabel/Slider
+sliderContainer: SliderContainer
+masterLabel: SliderContainer/MasterLabel
+musicLabel: SliderContainer/MusicLabel
+sfxLabel: SliderContainer/SfxLabel
+masterSlider: SliderContainer/MasterLabel/Slider
+musicSlider: SliderContainer/MusicLabel/Slider
+sfxSlider: SliderContainer/SfxLabel/Slider
 applyButton: ApplyButton
 returnButton: ReturnButton
 children:
-
-  - name: MasterLabel
-    type: Label
-    HorizontalAlignment: Right
-    Text: Master
-    Theme:
-        Font: Res/Fonts/RaceSport.ttf:16
+  - name: SliderContainer
+    type: VBoxContainer
     children:
-      - name: Slider
-        type: HSlider
-        path: Res/Scenes/UI/Slider.yaml
-        HorizontalAlignment: Left
-        FocusNeighborTop: ../../ReturnButton
-        FocusNeighborBottom: ../../MusicLabel/Slider
-
-  - name: MusicLabel
-    type: Label
-    HorizontalAlignment: Right
-    Text: Music
-    Theme:
-        Font: Res/Fonts/RaceSport.ttf:16
-    children:
-      - name: Slider
-        type: HSlider
-        path: Res/Scenes/UI/Slider.yaml
-        FocusNeighborTop: ../../MasterLabel/Slider
-        FocusNeighborBottom: ../../SfxLabel/Slider
-
-  - name: SfxLabel
-    type: Label
-    HorizontalAlignment: Right
-    Text: SFX
-    Theme:
-        Font: Res/Fonts/RaceSport.ttf:16
-    children:
-      - name: Slider
-        type: HSlider
-        path: Res/Scenes/UI/Slider.yaml
-        FocusNeighborTop: ../../MusicLabel/Slider
-        FocusNeighborBottom: ../../ReturnButton
-
+    - name: MasterLabel
+      type: Label
+      HorizontalAlignment: Right
+      Text: Master
+      Theme:
+          Font: Res/Fonts/RaceSport.ttf:16
+      children:
+        - name: Slider
+          type: HSlider
+          path: Res/Scenes/UI/Slider.yaml
+          HorizontalAlignment: Left
+          FocusNeighborTop: ../../../ReturnButton
+          FocusNeighborBottom: ../../MusicLabel/Slider
+    
+    - name: MusicLabel
+      type: Label
+      HorizontalAlignment: Right
+      Text: Music
+      Theme:
+          Font: Res/Fonts/RaceSport.ttf:16
+      children:
+        - name: Slider
+          type: HSlider
+          path: Res/Scenes/UI/Slider.yaml
+          FocusNeighborTop: ../../MasterLabel/Slider
+          FocusNeighborBottom: ../../SfxLabel/Slider
+    
+    - name: SfxLabel
+      type: Label
+      HorizontalAlignment: Right
+      Text: SFX
+      Theme:
+          Font: Res/Fonts/RaceSport.ttf:16
+      children:
+        - name: Slider
+          type: HSlider
+          path: Res/Scenes/UI/Slider.yaml
+          FocusNeighborTop: ../../MusicLabel/Slider
+          FocusNeighborBottom: ../../../ReturnButton
+    
   - name: ApplyButton
     type: Button
     path: Res/Scenes/UI/Button.yaml
     Text: Apply
     FocusNeighborLeft: ../ReturnButton
-    FocusNeighborTop: ../SfxLabel/Slider
+    FocusNeighborTop: ../SliderContainer/SfxLabel/Slider
     FocusNeighborRight: ../ReturnButton
-
+  
   - name: ReturnButton
     type: Button
     path: Res/Scenes/UI/Button.yaml
     Text: Return
     FocusNeighborLeft: ../ApplyButton
-    FocusNeighborTop: ../SfxLabel/Slider
-    FocusNeighborBottom: ../MasterLabel/Slider
+    FocusNeighborTop: ../SliderContainer/SfxLabel/Slider
+    FocusNeighborBottom: ../SliderContainer/MasterLabel/Slider
     FocusNeighborRight: ../ApplyButton

@@ -4,11 +4,15 @@ namespace Cosmocrush;
 
 public class SettingsMenu : Node2D
 {
+    private readonly VBoxContainer? sliderContainer;
+
     private readonly Label? masterLabel;
     private readonly Label? musicLabel;
     private readonly Label? sfxLabel;
+    
     private readonly HSlider? masterSlider;
     private readonly HSlider? musicSlider;
+    
     private readonly HSlider? sfxSlider;
     private readonly Button? applyButton;
     private readonly Button? returnButton;
@@ -16,6 +20,8 @@ public class SettingsMenu : Node2D
     private float previousMasterVolume = 0;
     private float previousMusicVolume = 0;
     private float previousSfxVolume = 0;
+
+    // Main
 
     public override void Ready()
     {
@@ -32,9 +38,17 @@ public class SettingsMenu : Node2D
     public override void Update()
     {
         UpdateApplyAvailability();
-        UpdateLabels();
+        //UpdateLabels();
         UpdateButtons();
+
+        sliderContainer!.Position = VisualServer.WindowSize / 2;
+
+        sliderContainer!.Position = new(
+            VisualServer.WindowSize.X / 2 - (masterSlider!.Size.X + masterLabel!.Size.X) / 2,
+            VisualServer.WindowSize.Y * 0.25F);
     }
+
+    // Events
 
     private void OnApplyButtonLeftClicked(Button sender)
     {
@@ -53,6 +67,8 @@ public class SettingsMenu : Node2D
         Parent!.AddChild(mainMenu);
         Free();
     }
+
+    // Update
 
     private void CapturePreviousVolumes()
     {
