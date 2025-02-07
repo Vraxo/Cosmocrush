@@ -202,7 +202,7 @@
     <None Update="Res\Themes\ButtonStyle.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Themes\Score.theme.yaml">
+    <None Update="Res\Themes\Label.theme.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Themes\Title.theme.yaml">

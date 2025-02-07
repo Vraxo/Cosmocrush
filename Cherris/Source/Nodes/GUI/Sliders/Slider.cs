@@ -123,7 +123,10 @@ public abstract class Slider : Control
             grabberHovered ? Theme.Grabber.Hover :
             Theme.Grabber.Hover;
 
-        DrawRectangleThemed(grabberPos, GrabberSize, themeState);
+        DrawRectangleThemed(
+            grabberPos,
+            GrabberSize,
+            themeState);
     }
 
     protected override void HandleClickFocus()

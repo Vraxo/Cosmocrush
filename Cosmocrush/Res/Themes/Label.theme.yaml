@@ -5,5 +5,5 @@ FontColor: [13,27,42,255]
 EnableShadow: false
 ShadowColor: [0,255,255,255]
 ShadowOffset: [3,3]
-OutlineSize: 4
+OutlineSize: 1
 OutlineColor: [0,168,232,255]
