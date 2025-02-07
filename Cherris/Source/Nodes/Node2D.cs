@@ -13,19 +13,17 @@ public class Node2D : VisualItem
 
     public event EventHandler<Vector2>? SizeChanged;
 
-    private Vector2 _size = Vector2.Zero;
     public Vector2 Size
     {
-        get => _size;
+        get ;
 
         set
         {
-            _size = value;
+            field = value;
             SizeChanged?.Invoke(this, Size);
         }
-    }
+    } = new(320, 320);
 
-    private Vector2 _scale = Vector2.One;
     public Vector2 Scale
     {
         get
@@ -35,18 +33,17 @@ public class Node2D : VisualItem
                 return node2DParent.Scale;
             }
 
-            return _scale;
+            return field;
         }
 
         set
         {
-            _scale = value;
+            field = value;
         }
-    }
+    } = new(1, 1);
 
-    public Vector2 FinalSize => Size * Scale;
+    public Vector2 ScaledSize => Size * Scale;
 
-    private Vector2 _globalPosition = Vector2.Zero;
     public Vector2 GlobalPosition
     {
         get
@@ -58,7 +55,7 @@ public class Node2D : VisualItem
                     return parentNode.GlobalPosition + Position;
                 }
 
-                return _globalPosition;
+                return field;
             }
             else
             {
@@ -68,7 +65,7 @@ public class Node2D : VisualItem
 
         set
         {
-            _globalPosition = value;
+            field = value;
 
             if (Parent is not Node2D)
             {
@@ -77,7 +74,6 @@ public class Node2D : VisualItem
         }
     }
 
-    private Vector2 _offset = Vector2.Zero;
     public Vector2 Offset
     {
         get
@@ -90,14 +86,14 @@ public class Node2D : VisualItem
                 }
             }
 
-            return _offset;
+            return field;
         }
 
         set
         {
-            _offset = value;
+            field = value;
         }
-    }
+    } = Vector2.Zero;
 
     public Vector2 Origin
     {

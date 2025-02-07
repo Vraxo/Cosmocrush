@@ -8,9 +8,9 @@ public abstract class ClickableRectangle : Clickable
 
         bool isMouseOver =
             mousePosition.X > GlobalPosition.X - Origin.X &&
-            mousePosition.X < GlobalPosition.X + FinalSize.X - Origin.X &&
+            mousePosition.X < GlobalPosition.X + ScaledSize.X - Origin.X &&
             mousePosition.Y > GlobalPosition.Y - Origin.Y &&
-            mousePosition.Y < GlobalPosition.Y + FinalSize.Y - Origin.Y;
+            mousePosition.Y < GlobalPosition.Y + ScaledSize.Y - Origin.Y;
 
         return isMouseOver;
     }

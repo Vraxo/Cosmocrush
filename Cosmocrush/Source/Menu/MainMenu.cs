@@ -4,10 +4,13 @@ namespace Cosmocrush;
 
 public class MainMenu : Node
 {
+    private readonly Label? title;
+    private readonly VBoxContainer? buttonContainer;
     private readonly Button? playButton;
     private readonly Button? settingsButton;
     private readonly Button? quitButton;
-    private readonly Label? title;
+
+    // Main
 
     public override void Ready()
     {
@@ -23,10 +26,10 @@ public class MainMenu : Node
         base.Update();
 
         UpdateTitle();
-        UpdatePlayButton();
-        UpdateSettingsButton();
-        UpdateQuitButton();
+        UpdateButtonContainer();
     }
+
+    // Events
 
     private void OnPlayButtonLeftClicked(Button sender)
     {
@@ -49,25 +52,17 @@ public class MainMenu : Node
         Environment.Exit(0);
     }
 
-    private void UpdatePlayButton()
-    {
-        playButton!.Position = VisualServer.WindowSize / 2 - new Vector2(0, 50);
-    }
-
-    private void UpdateSettingsButton()
-    {
-        settingsButton!.Position = VisualServer.WindowSize / 2;
-    }
-
-    private void UpdateQuitButton()
-    {
-        quitButton!.Position = VisualServer.WindowSize / 2 + new Vector2(0, 50);
-    }
+    // Update
 
     private void UpdateTitle()
     {
         title!.Position = new(
             VisualServer.WindowSize.X / 2,
             title.Position.Y);
+    }
+
+    private void UpdateButtonContainer()
+    {
+        buttonContainer!.Position = VisualServer.WindowSize / 2;
     }
 }

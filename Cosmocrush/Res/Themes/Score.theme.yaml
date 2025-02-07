@@ -1,6 +1,6 @@
-﻿Font: Res/Fonts/RaceSport.ttf:128
-FontSize: 64
-FontSpacing: 16
+﻿Font: Res/Fonts/RaceSport.ttf:16
+FontSize: 16
+FontSpacing: 0
 FontColor: [13,27,42,255]
 EnableShadow: false
 ShadowColor: [0,255,255,255]

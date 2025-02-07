@@ -1,6 +1,6 @@
 ﻿namespace Cherris;
 
-public class HBoxContainer : Node2D
+public class VBoxContainer : Node2D
 {
     public float Spacing { get; set; } = 16;
 
@@ -8,12 +8,12 @@ public class HBoxContainer : Node2D
     {
         base.Update();
 
-        float width = 0;
+        float height = 0;
 
         foreach (var child in Children.OfType<Node2D>())
         {
-            child.Position = new(width, 0);
-            width += child.Size.X + Spacing;
+            child.Position = new(0, height);
+            height += child.Size.Y + Spacing;
         }
     }
 }

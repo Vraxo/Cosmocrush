@@ -5,11 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ini-parser" Version="2.5.2" />
-    <PackageReference Include="INIParser" Version="1.0.1" />
     <PackageReference Include="MessagePack" Version="3.1.2" />
     <PackageReference Include="Raylib-cs" Version="6.1.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />

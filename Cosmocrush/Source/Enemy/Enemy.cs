@@ -104,8 +104,6 @@ public class Enemy : ColliderRectangle
 
         alive = false;
         Enabled = false;
-        hitBox!.Enabled = false;
-        sprite!.Visible = false;
 
         foreach (Node child in Children.Where(child => child.Name != "DamageIndicator").ToList())
         {

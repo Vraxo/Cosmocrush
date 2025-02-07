@@ -4,8 +4,7 @@ namespace Cherris;
 
 public sealed class TextureCache
 {
-    private static TextureCache? _instance;
-    public static TextureCache Instance => _instance ??= new();
+    public static TextureCache? Instance => field ??= new();
 
     private readonly Dictionary<string, Texture> textures = [];
 

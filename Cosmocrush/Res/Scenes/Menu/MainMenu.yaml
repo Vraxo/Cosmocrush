@@ -1,9 +1,10 @@
 name: MainMenu
 type: MainMenu
-playButton: PlayButton
-settingsButton: SettingsButton
-quitButton: QuitButton
 title: Title
+buttonContainer: ButtonContainer
+playButton: ButtonContainer/PlayButton
+settingsButton: ButtonContainer/SettingsButton
+quitButton: ButtonContainer/QuitButton
 children:
   - name: Title
     type: Label
@@ -13,28 +14,31 @@ children:
     HorizontalAlignment: Center
     ThemeFile: Res/Themes/Title.theme.yaml
 
-  - name: PlayButton
-    type: Button
-    path: Res/Scenes/UI/Button.yaml
-    Size: [640,31]
-    Layer: 2
-    FocusNeighborTop: ../QuitButton
-    FocusNeighborBottom: ../SettingsButton
-    Text: Start
-
-  - name: SettingsButton
-    type: Button
-    path: Res/Scenes/UI/Button.yaml
-    Size: [640,31]
-    Layer: 2
-    FocusNeighborTop: ../PlayButton
-    FocusNeighborBottom: ../QuitButton
-    Text: Settings
-
-  - name: QuitButton
-    type: Button
-    path: Res/Scenes/UI/Button.yaml
-    Size: [640,31]
-    FocusNeighborTop: ../SettingsButton
-    FocusNeighborBottom: ../PlayButton
-    Text: Quit
+  - name: ButtonContainer
+    type: VBoxContainer
+    children:
+    - name: PlayButton
+      type: Button
+      path: Res/Scenes/UI/Button.yaml
+      Size: [640,31]
+      Layer: 2
+      FocusNeighborTop: ../QuitButton
+      FocusNeighborBottom: ../SettingsButton
+      Text: Start
+    
+    - name: SettingsButton
+      type: Button
+      path: Res/Scenes/UI/Button.yaml
+      Size: [640,31]
+      Layer: 2
+      FocusNeighborTop: ../PlayButton
+      FocusNeighborBottom: ../QuitButton
+      Text: Settings
+    
+    - name: QuitButton
+      type: Button
+      path: Res/Scenes/UI/Button.yaml
+      Size: [640,31]
+      FocusNeighborTop: ../SettingsButton
+      FocusNeighborBottom: ../PlayButton
+      Text: Quit

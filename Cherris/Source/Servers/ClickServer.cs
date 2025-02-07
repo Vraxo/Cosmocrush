@@ -115,9 +115,9 @@ public sealed class ClickServer
 
         bool isMouseOver =
             mousePosition.X > node.GlobalPosition.X - node.Origin.X &&
-            mousePosition.X < node.GlobalPosition.X + node.FinalSize.X - node.Origin.X &&
+            mousePosition.X < node.GlobalPosition.X + node.ScaledSize.X - node.Origin.X &&
             mousePosition.Y > node.GlobalPosition.Y - node.Origin.Y &&
-            mousePosition.Y < node.GlobalPosition.Y + node.FinalSize.Y - node.Origin.Y;
+            mousePosition.Y < node.GlobalPosition.Y + node.ScaledSize.Y - node.Origin.Y;
 
         return isMouseOver;
     }

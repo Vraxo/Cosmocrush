@@ -8,16 +8,16 @@ public class Sprite : Node2D
     public bool FlipH { get; set; } = false;
     public bool FlipV { get; set; } = false;
 
-    private Texture? _texture = null;
     public Texture? Texture
     {
-        get => _texture;
+        get;
+
         set
         {
-            _texture = value;
-            Size = _texture?.Size ?? Size;
+            field = value;
+            Size = field?.Size ?? Size;
         }
-    }
+    } = null;
 
     protected override void Draw()
     {

@@ -19,7 +19,7 @@ public class ColliderRectangle : Collider
 
         DrawRectangleOutline(
             GlobalPosition - Origin,
-            FinalSize,
+            ScaledSize,
             Color);
     }
 

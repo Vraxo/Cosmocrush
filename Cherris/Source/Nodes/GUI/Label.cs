@@ -14,50 +14,49 @@ public class Label : Control
     public string Ellipsis { get; set; } = "...";
     public TextCase Case { get; set; } = TextCase.Both;
 
-    private int _visibleCharacters = -1;
     public int VisibleCharacters
     {
-        get => _visibleCharacters;
+        get;
+
         set
         {
-            if (value == _visibleCharacters)
+            if (value == field)
             {
                 return;
             }
 
-            _visibleCharacters = value;
+            field = value;
             UpdateVisibleRatio();
         }
-    }
+    } = -1;
 
-    private float _visibleRatio = 1.0f;
     public float VisibleRatio
     {
-        get => _visibleRatio;
+        get;
+
         set
         {
-            if (value == _visibleRatio)
+            if (value == field)
             {
                 return;
             }
 
-            _visibleRatio = value;
+            field = value;
             UpdateVisibleCharacters();
         }
-    }
+    } = 1.0f;
 
     private string displayedText = "";
 
-    private string _text = "";
     public string Text
     {
-        get => _text;
+        get;
         set
         {
-            _text = value;
+            field = value;
             UpdateVisibleCharacters();
         }
-    }
+    } = "";
 
     // Main
 
@@ -120,8 +119,8 @@ public class Label : Control
     private void ClipDisplayedText()
     {
         string textToConsider = VisibleCharacters == -1 ?
-                                _text :
-                                _text[..Math.Min(VisibleCharacters, _text.Length)];
+                                Text :
+                                Text[..Math.Min(VisibleCharacters, Text.Length)];
 
         if (!Clip)
         {

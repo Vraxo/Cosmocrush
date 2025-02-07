@@ -28,7 +28,7 @@ public class TextureRectangle : Node2D
             false);
 
         Rectangle source = new(Vector2.Zero, Texture.Size);
-        Rectangle target = new(GlobalPosition, FinalSize);
+        Rectangle target = new(GlobalPosition, ScaledSize);
 
         DrawTexturedRectangle(
             Texture,

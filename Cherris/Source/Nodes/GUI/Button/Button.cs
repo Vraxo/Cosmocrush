@@ -213,7 +213,7 @@ public class Button : Control
     {
         DrawRectangleThemed(
             GlobalPosition - Origin,
-            FinalSize,
+            ScaledSize,
             Themes.Current);
     }
 
@@ -259,13 +259,13 @@ public class Button : Control
     //
     //    float x = TextAlignment.Horizontal switch
     //    {
-    //        HorizontalAlignment.Center => FinalSize.X / 2,
-    //        HorizontalAlignment.Right => FinalSize.X - textSize.X / 2
+    //        HorizontalAlignment.Center => ScaledSize.X / 2,
+    //        HorizontalAlignment.Right => ScaledSize.X - textSize.X / 2
     //    };
     //
     //    float y = TextAlignment.Vertical switch
     //    {
-    //        VerticalAlignment.Center => FinalSize.Y / 2
+    //        VerticalAlignment.Center => ScaledSize.Y / 2
     //    };
     //
     //    Vector2 origin = new(x, y);
@@ -286,8 +286,8 @@ public class Button : Control
         // Horizontal alignment calculation
         float x = TextAlignment.Horizontal switch
         {
-            HorizontalAlignment.Center => FinalSize.X / 2 - textSize.X / 2, // Center text horizontally
-            HorizontalAlignment.Right => FinalSize.X - textSize.X, // Align right
+            HorizontalAlignment.Center => ScaledSize.X / 2 - textSize.X / 2, // Center text horizontally
+            HorizontalAlignment.Right => ScaledSize.X - textSize.X, // Align right
             HorizontalAlignment.Left => 0, // Align left
             _ => 0
         };
@@ -295,8 +295,8 @@ public class Button : Control
         // Vertical alignment calculation
         float y = TextAlignment.Vertical switch
         {
-            VerticalAlignment.Center => FinalSize.Y / 2 - textSize.Y / 2, // Center text vertically
-            VerticalAlignment.Bottom => FinalSize.Y - textSize.Y, // Align bottom
+            VerticalAlignment.Center => ScaledSize.Y / 2 - textSize.Y / 2, // Center text vertically
+            VerticalAlignment.Bottom => ScaledSize.Y - textSize.Y, // Align bottom
             VerticalAlignment.Top => 0, // Align top
             _ => 0
         };

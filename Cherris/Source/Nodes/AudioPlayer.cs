@@ -4,10 +4,13 @@ namespace Cherris;
 
 public class AudioPlayer : Node
 {
-    private string _bus = "Master";
-    public string Bus 
+    public bool AutoPlay { get; set; } = false;
+    public bool Loop { get; set; } = false;
+    public bool Playing = false;
+
+    public string Bus
     {
-        get => _bus;
+        get;
         set
         {
             if (Bus == value)
@@ -21,86 +24,76 @@ public class AudioPlayer : Node
                 return;
             }
 
-            _bus = value;
+            field = value;
             BusChanged?.Invoke(this, Bus);
         }
-    }
+    } = "Master";
 
-    private Audio? _audio;
     public Audio? Audio
     {
-        get => _audio;
+        get;
 
         set
         {
-            _audio = value;
-            Volume = _volume;
+            field = value;
+            Volume = Volume;
             Volume = AudioServer.GetBusVolume(Bus);
-            Pitch = _pitch;
-            Pan = _pan;
+            Pitch = Pitch;
+            Pan = Pan;
         }
     }
-
-    public bool AutoPlay { get; set; } = false;
-    public bool Loop { get; set; } = false;
-    public bool Playing = false;
 
     public float TimePlayed
     {
         get
         {
-            if (Audio is not null)
-            {
-                return Raylib.GetMusicTimePlayed(Audio!);
-            }
-            else
+            if (Audio is null)
             {
                 Log.Error($"[AudioPlayer] [{Name}] TimePlayed: Audio is null.");
                 return 0;
             }
+
+            return Raylib.GetMusicTimePlayed(Audio!);
         }
     }
 
-    private float _volume = 1;
     public float Volume
     {
-        get => _volume;
+        get;
 
         set
         {
-            _volume = value;
+            field = value;
 
             if (Audio is null)
             {
                 return;
             }
 
-            Raylib.SetMusicVolume(Audio, _volume);
+            Raylib.SetMusicVolume(Audio, field);
         }
-    }
+    } = 1;
 
-    private float _pitch = 1;
     public float Pitch
     {
-        get => _pitch;
+        get;
 
         set
         {
-            _pitch = value;
+            field = value;
 
             if (Audio is null)
             {
                 return;
             }
 
-            Raylib.SetMusicPitch(Audio, _pitch);
+            Raylib.SetMusicPitch(Audio, field);
         }
-    }
+    } = 1;
 
-    private float _pan = 1f;
     public float Pan
     {
-        get => _pan;
+        get;
 
         set
         {
@@ -109,10 +102,10 @@ public class AudioPlayer : Node
                 return;
             }
 
-            _pan = value;
-            Raylib.SetMusicPan(Audio, _pan);
+            field = value;
+            Raylib.SetMusicPan(Audio, field);
         }
-    }
+    } = 1;
 
     // Events
 

@@ -26,17 +26,21 @@ public abstract class VisualItem : Node
         }
     }
 
-    private int _layer = 0;
     public int Layer
     {
-        get => _layer;
+        get;
+
         set
         {
-            if (_layer == value) return;
-            _layer = value;
-            LayerChanged?.Invoke(this, _layer);
+            if (field == value)
+            {
+                return;
+            }
+            
+            field = value;
+            LayerChanged?.Invoke(this, field);
         }
-    }
+    } = 0;
 
     public delegate void VisualItemVisibleEventHandler(VisualItem sender, bool visible);
     public delegate void VisualItemLayerEventHandler(VisualItem sender, int layer);

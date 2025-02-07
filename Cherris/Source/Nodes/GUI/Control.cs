@@ -22,36 +22,34 @@ public class Control : ClickableRectangle
     public string AudioBus { get; set; } = "Master";
     public Sound? FocusGainedSound { get; set; }
 
-    private bool _disabled = false;
     public bool Disabled
     {
-        get => _disabled;
+        get;
         set
         {
-            if (value == _disabled)
+            if (value == field)
             {
                 return;
             }
 
-            _disabled = value;
+            field = value;
             WasDisabled?.Invoke(this);
         }
-    }
+    } = false;
 
-    private bool _focused = false;
     public bool Focused
     {
-        get => _focused;
+        get;
         set
         {
-            if (_focused == value)
+            if (field == value)
             {
                 return;
             }
-            _focused = value;
+            field = value;
             FocusChanged?.Invoke(this);
 
-            if (_focused)
+            if (field)
             {
                 FocusGained?.Invoke(this);
 
@@ -65,7 +63,7 @@ public class Control : ClickableRectangle
 
             }
         }
-    }
+    } = false;
 
     public string ThemeFile
     {
@@ -74,6 +72,8 @@ public class Control : ClickableRectangle
             OnThemeFileChanged(value);
         }
     }
+
+    // Main
 
     public override void Update()
     {
@@ -87,6 +87,8 @@ public class Control : ClickableRectangle
         UpdateFocusOnOutsideClicked();
         wasFocusedLastFrame = Focused;
     }
+
+    // Navigation
 
     private void HandleArrowNavigation()
     {
@@ -119,6 +121,8 @@ public class Control : ClickableRectangle
         Focused = false;
     }
 
+    // Focus
+
     private void UpdateFocusOnOutsideClicked()
     {
         if (!IsMouseOver() && Input.IsMouseButtonPressed(MouseButtonCode.Left))
@@ -135,6 +139,8 @@ public class Control : ClickableRectangle
             Focused = true;
         }
     }
+
+    // Theme
 
     protected virtual void OnThemeFileChanged(string themeFile) { }
 }

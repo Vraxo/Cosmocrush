@@ -10,8 +10,8 @@ children:
 
   - name: Background
     type: ColorRectangle
-    #Color: [160, 96, 0, 255]
-    Color: [64, 64, 64, 255]
+    Color: [160, 96, 0, 255]
+    #Color: [64, 64, 64, 255]
     Size: [2000, 2000]
 
   - name: NavigationRegion
@@ -37,6 +37,12 @@ children:
   - name: Player
     type: Player
     path: Res/Scenes/Player.yaml
+    children:
+      - name: Score
+        type: Label
+        Position: [500, 500]
+        ThemeFile: Res/Themes/Score.theme.yaml
+        Text: Score
 
   - name: Enemy1
     type: Enemy
@@ -49,4 +55,9 @@ children:
       - name: HealthBar
         type: HealthBar
         path: Res/Scenes/HealthBar.yaml
-        # Position: [300, 100]  # Commented out as in your example
+
+      - name: Score
+        type: Label
+        Text: Score
+        Position: [50, 50]
+        ThemeFile: Res/Themes/Score.theme.yaml

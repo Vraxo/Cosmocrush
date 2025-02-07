@@ -21,13 +21,6 @@ public partial class ParticleGenerator : Node2D
         GenerateParticles();
     }
 
-    protected override void Draw()
-    {
-        base.Draw();
-
-        DrawRectangle(Position, Size, Color.Red);
-    }
-
     private void Remove(Particle particle)
     {
         particles.Remove(particle);

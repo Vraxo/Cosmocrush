@@ -6,10 +6,9 @@ public class VerticalContainer : ClickableRectangle
 {
     public float MovementSpeed { get; set; } = 16;
 
-    private float _startY = 0;
     public float StartY
     {
-        get => _startY;
+        get;
 
         set
         {
@@ -27,9 +26,11 @@ public class VerticalContainer : ClickableRectangle
 
             float minimumY = Math.Min(0, Size.Y - totalHeight - lastChildHeight);
 
-            _startY = Math.Clamp(value, minimumY, 0);
+            field = Math.Clamp(value, minimumY, 0);
         }
-    }
+    } = 0;
+
+    // Main
 
     public VerticalContainer()
     {
@@ -64,6 +65,8 @@ public class VerticalContainer : ClickableRectangle
             Size,
             Color.Gray);
     }
+
+    // utils
 
     private void SortChildren()
     {

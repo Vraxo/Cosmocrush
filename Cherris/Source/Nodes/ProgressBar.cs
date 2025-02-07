@@ -6,16 +6,15 @@ public class ProgressBar : Node2D
     public BoxTheme BackgroundTheme { get; set; } = new();
     public BoxTheme ProgressTheme { get; set; } = new();
 
-    private float _percentage = 0;
     public float Percentage
     {
-        get => _percentage;
+        get;
 
         set
         {
-            _percentage = Math.Clamp(value, 0, 1);
+            field = Math.Clamp(value, 0, 1);
         }
-    }
+    } = 0;
 
     public ProgressBar()
     {

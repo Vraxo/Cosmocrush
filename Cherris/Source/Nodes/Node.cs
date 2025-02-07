@@ -15,22 +15,21 @@ public class Node
     public Node? Parent { get; set; } = null;
     public List<Node> Children { get; set; } = [];
 
-    private bool _active = true;
-    public bool Active 
+    public bool Active
     {
-        get => _active;
-        
+        get;
+
         set
         {
-            if (_active == value)
+            if (field == value)
             {
                 return;
             }
 
-            _active = value;
-            ActiveChanged?.Invoke(this, _active);
+            field = value;
+            ActiveChanged?.Invoke(this, field);
         }
-    }
+    } = true;
 
     public delegate void ActiveChangedEventHandler(Node sender, bool active);
     public event ActiveChangedEventHandler? ActiveChanged;
@@ -94,6 +93,8 @@ public class Node
         Parent?.Children.Remove(this);
     }
 
+    public virtual void ProcessBegin() { }
+
     /// <summary>Processes the node and its children, handling initialization and updating.</summary>
     public virtual void Process()
     {
@@ -108,6 +109,8 @@ public class Node
             started = true;
         }
 
+        ProcessBegin();
+
         Update();
 
         for (int i = 0; i < Children.Count; i++)
@@ -118,10 +121,7 @@ public class Node
         ProcessEnd();
     }
 
-    public virtual void ProcessEnd()
-    {
-
-    }
+    public virtual void ProcessEnd() { }
 
     /// <summary>Prints the node and all its children in a tree structure.</summary>
     //public void PrintChildren(string indent = "")

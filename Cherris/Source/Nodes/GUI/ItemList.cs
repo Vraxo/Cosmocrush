@@ -18,27 +18,26 @@ public class ItemList : ClickableRectangle
     private int maxItemsShownAtOnce = 0;
     private int updateCount = 0;
 
-    private int _startingIndex = 0;
     public int StartingIndex
     {
-        get => _startingIndex;
+        get;
 
         set
         {
             if (value < 0)
             {
-                _startingIndex = 0;
+                field = 0;
             }
             else if (value > Items.Count - maxItemsShownAtOnce)
             {
-                _startingIndex = Math.Max(0, Items.Count - maxItemsShownAtOnce);
+                field = Math.Max(0, Items.Count - maxItemsShownAtOnce);
             }
             else
             {
-                _startingIndex = value;
+                field = value;
             }
         }
-    }
+    } = 0;
 
     public ItemList()
     {

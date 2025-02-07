@@ -17,16 +17,15 @@ public abstract class Slider : Control
     protected float trackMin;
     protected float trackMax;
 
-    private float _step = 0.01f;
     public float Step
     {
-        get => _step;
+        get;
 
         set 
         {
-            _step = Math.Max(value, 0); 
+            field = Math.Max(value, 0); 
         }
-    }
+    } = 0.01f;
 
     public Slider()
     {
