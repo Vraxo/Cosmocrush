@@ -2,8 +2,6 @@ name: Settings
 type: SettingsMenu
 sliderContainer: SliderContainer
 masterLabel: SliderContainer/MasterLabel
-musicLabel: SliderContainer/MusicLabel
-sfxLabel: SliderContainer/SfxLabel
 masterSlider: SliderContainer/MasterLabel/Slider
 musicSlider: SliderContainer/MusicLabel/Slider
 sfxSlider: SliderContainer/SfxLabel/Slider

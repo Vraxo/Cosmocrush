@@ -13,9 +13,9 @@ Pressed:
   BorderColor: [0, 140, 192, 255]
   FontColor: [0, 255, 255, 255]
 Focused:
-  FillColor: [0, 168, 232, 255]
+  FillColor: [0, 168, 232, 128]
   BorderColor: [0, 140, 192, 255]
-  FontColor: [0, 255, 255, 255]
+  FontColor: [255, 255, 255, 255]
 Disabled:
   FillColor: [74, 74, 74, 128]
   BorderColor: [44, 44, 44, 255]

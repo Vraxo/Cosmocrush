@@ -7,8 +7,6 @@ public class SettingsMenu : Node2D
     private readonly VBoxContainer? sliderContainer;
 
     private readonly Label? masterLabel;
-    private readonly Label? musicLabel;
-    private readonly Label? sfxLabel;
     
     private readonly HSlider? masterSlider;
     private readonly HSlider? musicSlider;
@@ -38,7 +36,6 @@ public class SettingsMenu : Node2D
     public override void Update()
     {
         UpdateApplyAvailability();
-        //UpdateLabels();
         UpdateButtons();
 
         sliderContainer!.Position = VisualServer.WindowSize / 2;
@@ -75,26 +72,6 @@ public class SettingsMenu : Node2D
         previousMasterVolume = masterSlider!.Value;
         previousMusicVolume = musicSlider!.Value;
         previousSfxVolume = sfxSlider!.Value;
-    }
-
-    private void UpdateLabels()
-    {
-        Vector2 windowSize = VisualServer.WindowSize;
-
-        masterLabel!.Position = new(
-            windowSize.X / 2 - masterSlider!.Size.X / 2 - masterLabel.Size.X,
-            windowSize.Y / 2 - 50
-        );
-
-        musicLabel!.Position = new(
-            windowSize.X / 2 - musicSlider!.Size.X / 2 - masterLabel.Size.X,
-            windowSize.Y / 2
-        );
-
-        sfxLabel!.Position = new(
-            windowSize.X / 2 - sfxSlider!.Size.X / 2 - masterLabel.Size.X,
-            windowSize.Y / 2 + 50
-        );
     }
 
     private void UpdateButtons()
