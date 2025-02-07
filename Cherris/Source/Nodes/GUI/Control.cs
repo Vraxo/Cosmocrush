@@ -4,6 +4,7 @@ public class Control : ClickableRectangle
 {
     public bool Focusable { get; set; } = true;
     public bool Navigable { get; set; } = true;
+    public bool RapidNavigation { get; set; } = true;
     public string? FocusNeighborTop { get; set; }
     public string? FocusNeighborBottom { get; set; }
     public string? FocusNeighborLeft { get; set; }
@@ -18,6 +19,9 @@ public class Control : ClickableRectangle
     public event ControlEventHandler? ClickedOutside;
 
     private bool wasFocusedLastFrame = false;
+    private Dictionary<string, float> actionHoldTimes = new Dictionary<string, float>();
+    private const float InitialDelay = 0.5f;
+    private const float RepeatInterval = 0.1f;
 
     public string AudioBus { get; set; } = "Master";
     public Sound? FocusGainedSound { get; set; }
@@ -58,10 +62,6 @@ public class Control : ClickableRectangle
                     FocusGainedSound?.Play(AudioBus);
                 }
             }
-            else
-            {
-
-            }
         }
     } = false;
 
@@ -72,8 +72,6 @@ public class Control : ClickableRectangle
             OnThemeFileChanged(value);
         }
     }
-
-    // Main
 
     public override void Update()
     {
@@ -88,27 +86,58 @@ public class Control : ClickableRectangle
         wasFocusedLastFrame = Focused;
     }
 
-    // Navigation
-
     private void HandleArrowNavigation()
     {
-        NavigateToControlIfPressed("UiLeft", FocusNeighborLeft);
-        NavigateToControlIfPressed("UiUp", FocusNeighborTop);
-        NavigateToControlIfPressed("UiRight", FocusNeighborRight);
-        NavigateToControlIfPressed("UiDown", FocusNeighborBottom);
-        NavigateToControlIfPressed("UiNext", FocusNeighborBottom);
-        NavigateToControlIfPressed("UiPrevious", FocusNeighborBottom);
-    }
-
-    private void NavigateToControlIfPressed(string action, string? path)
-    {
-        if (Input.IsActionPressed(action) && !string.IsNullOrEmpty(path))
+        var actions = new (string Action, string? Path)[]
         {
-            NavigateToControl(path);
+            ("UiLeft", FocusNeighborLeft),
+            ("UiUp", FocusNeighborTop),
+            ("UiRight", FocusNeighborRight),
+            ("UiDown", FocusNeighborBottom),
+            ("UiNext", FocusNeighborNext),
+            ("UiPrevious", FocusNeighborPrevious)
+        };
+
+        foreach (var entry in actions)
+        {
+            if (string.IsNullOrEmpty(entry.Path)) continue;
+
+            if (RapidNavigation)
+            {
+                if (Input.IsActionDown(entry.Action))
+                {
+                    if (!actionHoldTimes.ContainsKey(entry.Action))
+                    {
+                        actionHoldTimes[entry.Action] = 0f;
+                    }
+
+                    actionHoldTimes[entry.Action] += TimeServer.Delta;
+                    float holdTime = actionHoldTimes[entry.Action];
+
+                    bool shouldNavigate = (holdTime <= TimeServer.Delta + float.Epsilon) ||
+                        (holdTime >= InitialDelay && (holdTime - InitialDelay) % RepeatInterval < TimeServer.Delta);
+
+                    if (shouldNavigate)
+                    {
+                        NavigateToControl(entry.Path, entry.Action, holdTime);
+                    }
+                }
+                else
+                {
+                    actionHoldTimes[entry.Action] = 0f;
+                }
+            }
+            else
+            {
+                if (Input.IsActionPressed(entry.Action))
+                {
+                    NavigateToControl(entry.Path, entry.Action, 0f);
+                }
+            }
         }
     }
 
-    private void NavigateToControl(string controlPath)
+    private void NavigateToControl(string controlPath, string action, float holdTime)
     {
         var neighbor = GetNodeOrNull<Control>(controlPath);
 
@@ -123,11 +152,14 @@ public class Control : ClickableRectangle
             return;
         }
 
+        if (RapidNavigation)
+        {
+            neighbor.actionHoldTimes[action] = holdTime;
+        }
+
         neighbor.Focused = true;
         Focused = false;
     }
-
-    // Focus
 
     private void UpdateFocusOnOutsideClicked()
     {
@@ -145,8 +177,6 @@ public class Control : ClickableRectangle
             Focused = true;
         }
     }
-
-    // Theme
 
     protected virtual void OnThemeFileChanged(string themeFile) { }
 }

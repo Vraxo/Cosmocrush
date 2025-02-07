@@ -37,12 +37,6 @@ children:
   - name: Player
     type: Player
     path: Res/Scenes/Player.yaml
-    children:
-      - name: Score
-        type: Label
-        Position: [500, 500]
-        ThemeFile: Res/Themes/Score.theme.yaml
-        Text: Score
 
   - name: Enemy1
     type: Enemy
@@ -60,4 +54,4 @@ children:
         type: Label
         Text: Score
         Position: [50, 50]
-        ThemeFile: Res/Themes/Score.theme.yaml
+        ThemeFile: Res/Themes/Label.theme.yaml

@@ -2,3 +2,5 @@
 * Timed bullet trail
 * Reload
 * Reload progress bar
+* Use timer for gun cooldown
+* Add score

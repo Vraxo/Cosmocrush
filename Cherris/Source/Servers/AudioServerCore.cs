@@ -92,12 +92,9 @@ public sealed class AudioServerCore
 
         var loadedBuses = deserializer.Deserialize<Dictionary<string, float>>(yamlContent);
 
-        Console.WriteLine("Buses loaded.");
-
         foreach (KeyValuePair<string, float> kvp in loadedBuses)
         {
             buses[kvp.Key] = kvp.Value;
-            Console.WriteLine(kvp.Key);
         }
     }
 

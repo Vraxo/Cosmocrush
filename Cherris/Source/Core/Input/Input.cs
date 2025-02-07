@@ -71,7 +71,6 @@ public sealed class Input
         return Instance.GetVectorImpl(_x, x, _y, y, deadzone);
     }
 
-
     private Input()
     {
         LoadMappings(mappingsFilePath);
