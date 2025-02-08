@@ -8,7 +8,7 @@ public partial class LineEdit : Button
 
         private new Vector2 GlobalPosition => parent.GlobalPosition + Position;
 
-        protected override void Draw()
+        public override void Draw()
         {
             if (!parent.Visible || ShouldSkipDrawing())
             {

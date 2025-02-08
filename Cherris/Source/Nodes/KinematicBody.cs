@@ -72,7 +72,7 @@ public class KinematicBody : Node2D
     }
 
     // For debugging, draw the bounding box for this KinematicBody
-    protected override void Draw()
+    public override void Draw()
     {
         Raylib.DrawRectangleLines(
             (int)(GlobalPosition.X - Origin.X),

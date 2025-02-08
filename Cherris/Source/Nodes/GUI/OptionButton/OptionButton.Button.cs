@@ -28,7 +28,7 @@ public partial class OptionButton : Button
             base.Start();
         }
 
-        protected override void Draw()
+        public override void Draw()
         {
             base.Draw();
 

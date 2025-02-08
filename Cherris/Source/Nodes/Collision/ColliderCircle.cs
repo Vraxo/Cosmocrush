@@ -12,7 +12,7 @@ public class ColliderCircle : Collider
         return distanceToCircle <= Radius;
     }
 
-    protected override void Draw()
+    public override void Draw()
     {
         base.Draw();
 

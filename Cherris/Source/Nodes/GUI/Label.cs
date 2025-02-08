@@ -80,8 +80,9 @@ public class Label : Control
 
     // Drawing
 
-    protected override void Draw()
+    public override void Draw()
     {
+        base.Draw();
         DrawShadow();
         DrawDisplayedText();
     }

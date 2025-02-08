@@ -202,7 +202,7 @@ public class Button : Control
 
     // Draw
 
-    protected override void Draw()
+    public override void Draw()
     {
         DrawBackground();
         DrawIcon();

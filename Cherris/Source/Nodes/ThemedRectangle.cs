@@ -10,7 +10,7 @@ public class ThemedRectangle : Node2D
         OriginPreset = OriginPreset.TopLeft;
     }
 
-    protected override void Draw()
+    public override void Draw()
     {
         DrawRectangleThemed(
             GlobalPosition - Origin,

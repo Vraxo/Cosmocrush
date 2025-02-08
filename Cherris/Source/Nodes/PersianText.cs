@@ -20,7 +20,7 @@ namespace Cherris
             base.Update();
         }
 
-        protected override void Draw()
+        public override void Draw()
         {
             base.Draw();
         }

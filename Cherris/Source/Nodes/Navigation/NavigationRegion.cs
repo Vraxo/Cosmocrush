@@ -35,7 +35,7 @@ public class NavigationRegion : Node2D
         NavigationServer.Instance.UnregisterRegion(this);
     }
 
-    protected override void Draw()
+    public override void Draw()
     {
         DrawGrid();
         DrawUnwalkableCells();

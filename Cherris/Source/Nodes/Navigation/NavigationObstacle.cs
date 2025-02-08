@@ -18,7 +18,7 @@ public class NavigationObstacle : Node2D
         NavigationServer.Instance.UnregisterObstacle(this);
     }
 
-    protected override void Draw()
+    public override void Draw()
     {
         base.Draw();
 

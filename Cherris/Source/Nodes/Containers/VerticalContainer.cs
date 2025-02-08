@@ -56,7 +56,7 @@ public class VerticalContainer : ClickableRectangle
         HandleScrolling();
     }
 
-    protected override void Draw()
+    public override void Draw()
     {
         base.Draw();
 

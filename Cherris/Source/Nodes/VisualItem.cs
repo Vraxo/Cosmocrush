@@ -9,22 +9,21 @@ public abstract class VisualItem : Node
     public bool UseShader { get; set; } = false;
     public bool ReadyForVisibility { get; set; } = false;
 
-    private bool _visible = true;
     public bool Visible 
     {
-        get => _visible; 
+        get; 
         
         set
         {
-            if (_visible == value)
+            if (field == value)
             {
                 return;
             }
 
-            _visible = value;
-            VisibleChanged?.Invoke(this, _visible);
+            field = value;
+            VisibleChanged?.Invoke(this, Visible);
         }
-    }
+    } = true;
 
     public int Layer
     {
@@ -38,31 +37,33 @@ public abstract class VisualItem : Node
             }
             
             field = value;
-            LayerChanged?.Invoke(this, field);
+            LayerChanged?.Invoke(this, Layer);
         }
     } = 0;
 
-    public delegate void VisualItemVisibleEventHandler(VisualItem sender, bool visible);
-    public delegate void VisualItemLayerEventHandler(VisualItem sender, int layer);
+    // Events
 
-    public event VisualItemVisibleEventHandler? VisibleChanged;
-    public event VisualItemLayerEventHandler? LayerChanged;
+    public delegate void VisibleEvent(VisualItem sender, bool visible);
+    public delegate void LayerEvent(VisualItem sender, int layer);
+
+    public event VisibleEvent? VisibleChanged;
+    public event LayerEvent? LayerChanged;
 
     // Main
 
-    public override void Update()
-    {
-        base.Update();
+    //public override void Update()
+    //{
+    //    base.Update();
+    //
+    //    if (Visible && ReadyForVisibility)
+    //    {
+    //        Draw();
+    //    }
+    //
+    //    ReadyForVisibility = true;
+    //}
 
-        if (Visible && ReadyForVisibility)
-        {
-            Draw();
-        }
-
-        ReadyForVisibility = true;
-    }
-
-    protected virtual void Draw() { }
+    public virtual void Draw() { }
 
     // Circle
 

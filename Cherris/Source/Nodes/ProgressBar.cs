@@ -26,7 +26,7 @@ public class ProgressBar : Node2D
 
     // Draw
 
-    protected override void Draw()
+    public override void Draw()
     {
         DrawEmpty();
         DrawFilled();

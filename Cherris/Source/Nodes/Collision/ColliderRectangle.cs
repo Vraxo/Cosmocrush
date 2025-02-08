@@ -13,7 +13,7 @@ public class ColliderRectangle : Collider
                RayIntersectsLine(rayStart, rayEnd, new(rectMin.X, rectMax.Y), rectMin);
     }
 
-    protected override void Draw()
+    public override void Draw()
     {
         base.Draw();
 

@@ -30,7 +30,7 @@
 //        base.Process();
 //    }
 //
-//    protected override void Draw()
+//    public override void Draw()
 //    {
 //        RectangleDC rectangle = new()
 //        {

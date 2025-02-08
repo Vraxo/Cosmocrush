@@ -11,7 +11,7 @@ public class TextureRectangle : Node2D
         Size = new(32, 32);
     }
 
-    protected override void Draw()
+    public override void Draw()
     {
         if (Texture is null)
         {

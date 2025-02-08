@@ -25,7 +25,7 @@ public class GridContainer : Node2D
         base.Update();
     }
 
-    protected override void Draw()
+    public override void Draw()
     {
         if (!ShowGrid)
         {

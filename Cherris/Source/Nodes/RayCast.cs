@@ -46,7 +46,7 @@ public class RayCast : Node2D
 
     // Protected
 
-    protected override void Draw()
+    public override void Draw()
     {
         base.Draw();
         Vector2 rayEnd = GlobalPosition + TargetPosition;

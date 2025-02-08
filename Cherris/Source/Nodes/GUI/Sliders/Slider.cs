@@ -98,7 +98,7 @@ public abstract class Slider : Control
         return Math.Clamp(steppedValue, MinValue, MaxValue);
     }
 
-    protected override void Draw()
+    public override void Draw()
     {
         base.Draw();
         DrawBackground();

@@ -28,7 +28,7 @@ public class NavigationAgent : Node2D
 
     // Draw
 
-    protected override void Draw()
+    public override void Draw()
     {
         if (Region is null)
         {

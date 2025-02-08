@@ -10,7 +10,7 @@ public class ColorRectangle : Node2D
         OriginPreset = OriginPreset.TopLeft;
     }
 
-    protected override void Draw()
+    public override void Draw()
     {
         DrawRectangle(
             GlobalPosition - Origin,

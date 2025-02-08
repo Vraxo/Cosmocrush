@@ -19,7 +19,7 @@ public class Sprite : Node2D
         }
     } = null;
 
-    protected override void Draw()
+    public override void Draw()
     {
         base.Draw();
 
