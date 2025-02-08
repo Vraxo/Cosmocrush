@@ -67,6 +67,9 @@
     <None Update="Res\Audio\SFX\PlayerDamage.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Res\Audio\SFX\Reload.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Res\Audio\SFX\Ui.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -11,20 +11,13 @@ public class Control : ClickableRectangle
     public string? FocusNeighborRight { get; set; }
     public string? FocusNeighborNext { get; set; }
     public string? FocusNeighborPrevious { get; set; }
-
-    public delegate void ControlEventHandler(Control control);
-    public event ControlEventHandler? FocusChanged;
-    public event ControlEventHandler? FocusGained;
-    public event ControlEventHandler? WasDisabled;
-    public event ControlEventHandler? ClickedOutside;
-
-    private bool wasFocusedLastFrame = false;
-    private Dictionary<string, float> actionHoldTimes = new Dictionary<string, float>();
-    private const float InitialDelay = 0.5f;
-    private const float RepeatInterval = 0.1f;
-
     public string AudioBus { get; set; } = "Master";
     public Sound? FocusGainedSound { get; set; }
+
+    private bool wasFocusedLastFrame = false;
+    private readonly Dictionary<string, float> actionHoldTimes = [];
+    private const float InitialDelay = 0.5f;
+    private const float RepeatInterval = 0.1f;
 
     public bool Disabled
     {
@@ -73,6 +66,16 @@ public class Control : ClickableRectangle
         }
     }
 
+    // Events
+
+    public delegate void Event(Control control);
+    public event Event? FocusChanged;
+    public event Event? FocusGained;
+    public event Event? WasDisabled;
+    public event Event? ClickedOutside;
+
+    // Main
+
     public override void Update()
     {
         base.Update();
@@ -85,6 +88,8 @@ public class Control : ClickableRectangle
         UpdateFocusOnOutsideClicked();
         wasFocusedLastFrame = Focused;
     }
+
+    // Navigation
 
     private void HandleArrowNavigation()
     {
@@ -161,6 +166,8 @@ public class Control : ClickableRectangle
         Focused = false;
     }
 
+    // Focus
+
     private void UpdateFocusOnOutsideClicked()
     {
         if (!IsMouseOver() && Input.IsMouseButtonPressed(MouseButtonCode.Left))
@@ -177,6 +184,8 @@ public class Control : ClickableRectangle
             Focused = true;
         }
     }
+
+    // Other
 
     protected virtual void OnThemeFileChanged(string themeFile) { }
 }

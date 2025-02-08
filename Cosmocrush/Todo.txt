@@ -1,4 +1,4 @@
-* Enemy death
+* Enemy death sound
 * Timed bullet trail
 * Reload
 * Reload progress bar

@@ -9,4 +9,11 @@ public class Menu : Node
         base.Ready();
         GameSettings.Instance.Load();
     }
+
+    public override void Update()
+    {
+        base.Update();
+
+        Raylib_cs.Raylib.DrawFPS(10, 10);
+    }
 }
