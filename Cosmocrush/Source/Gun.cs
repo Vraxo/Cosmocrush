@@ -20,13 +20,17 @@ public class Gun : Sprite
     private const int damage = 5;
     private const float knockbackForce = 3f;
 
+    // Bloom-related variables
+    private float currentBloom = 0f;
+    private const float maxBloom = 0.1f;
+    private const float bloomIncrease = 0.02f;
+    private const float bloomResetSpeed = 0.05f;
+
     // Main
 
     public override void Ready()
     {
         base.Ready();
-
-        //Offset = new(8, 0);
 
         rayCast!.Deactivate();
 
@@ -45,6 +49,12 @@ public class Gun : Sprite
         if (reloading)
         {
             UpdateReloadProgressBar();
+        }
+
+        // Reset bloom when not firing
+        if (!Input.IsActionDown("Fire"))
+        {
+            currentBloom = float.Max(0, currentBloom - bloomResetSpeed * TimeServer.Delta);
         }
     }
 
@@ -92,6 +102,9 @@ public class Gun : Sprite
         gunshotSound.Play("SFX");
         FireRaycast();
 
+        // Increase bloom
+        currentBloom = float.Min(maxBloom, currentBloom + bloomIncrease);
+
         if (bulletsInMagazine <= 0)
         {
             StartReloading();
@@ -119,6 +132,9 @@ public class Gun : Sprite
         Vector2 mousePosition = Input.WorldMousePosition;
         Vector2 angleVector = mousePosition - GlobalPosition;
         float angle = MathF.Atan2(angleVector.Y, angleVector.X);
+
+        // Apply bloom to the angle
+        angle += RandomRange(-currentBloom, currentBloom);
 
         rayCast!.Rotation = angle * 180 / MathF.PI;
         rayCast.GlobalPosition = GlobalPosition;
@@ -175,5 +191,10 @@ public class Gun : Sprite
 
         reloadProgressBar.Free();
         reloadProgressBar = null;
+    }
+
+    private static float RandomRange(float min, float max)
+    {
+        return (float)(new Random().NextDouble() * (max - min) + min);
     }
 }
