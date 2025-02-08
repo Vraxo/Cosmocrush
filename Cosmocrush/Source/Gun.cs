@@ -4,21 +4,22 @@ namespace Cosmocrush;
 
 public class Gun : Sprite
 {
-    private RayCast rayCast = new();
     private readonly Sound gunshotSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Gunshot.mp3");
     private readonly Sound reloadSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Reload.mp3");
 
-    private float lastFiredTime = 0f;
     private const int damage = 5;
-    private const float cooldown = 0.182f;
     private const float knockbackForce = 3f;
 
-    // New magazine system
-    private const int magazineSize = 10;
+    private readonly RayCast? rayCast;
+    private readonly Timer? cooldownTimer;
+    private readonly Timer? reloadTimer;
+
+    private bool canFire = true;
     private int bulletsInMagazine;
-    private bool isReloading = false;
-    private float reloadStartTime = 0f;
-    private const float reloadTime = 2.0f;
+    private bool reloading = false;
+    private const int magazineSize = 10;
+
+    // Main
 
     public override void Ready()
     {
@@ -28,41 +29,67 @@ public class Gun : Sprite
         Offset = new(8, 0);
         Offset = new(0, 0);
 
-        rayCast = GetNode<RayCast>("RayCast");
-        rayCast.Deactivate();
+        rayCast!.Deactivate();
 
-        // Initialize magazine
         bulletsInMagazine = magazineSize;
+
+        cooldownTimer!.Timeout += OnCooldownTimerTimeout;
+        reloadTimer!.Timeout += OnReloadTimerTimeout;
     }
 
     public override void Update()
     {
         base.Update();
 
-        HandleReloading();
         HandleFiring();
+        HandleReloadingInput();
         LookAtMouse();
     }
 
+    // Timer event handlers
+
+    private void OnCooldownTimerTimeout(Timer timer)
+    {
+        canFire = true;
+    }
+
+    private void OnReloadTimerTimeout(Timer timer)
+    {
+        bulletsInMagazine = magazineSize;
+        reloading = false;
+        Console.WriteLine("Reload complete. Magazine full.");
+    }
+
+    // Input handling
+
     private void HandleFiring()
     {
-        bool isCooledDown = TimeServer.Elapsed - lastFiredTime >= cooldown;
-        bool canFire = isCooledDown && !isReloading && bulletsInMagazine > 0;
+        bool canShoot = canFire && !reloading && bulletsInMagazine > 0;
 
-        if (Input.IsActionDown("Fire") && canFire)
+        if (Input.IsActionDown("Fire") && canShoot)
         {
             Fire();
         }
     }
 
+    private void HandleReloadingInput()
+    {
+        if (Input.IsActionPressed("Reload") && !reloading && bulletsInMagazine < magazineSize)
+        {
+            StartReloading();
+        }
+    }
+
     private void Fire()
     {
-        lastFiredTime = TimeServer.Elapsed;
+        canFire = false;
+        cooldownTimer!.Fire();
+
         bulletsInMagazine--;
         gunshotSound.Play("SFX");
         FireRaycast();
 
-        // Start reload automatically when empty
+        // Auto-reload if the magazine is empty.
         if (bulletsInMagazine <= 0)
         {
             StartReloading();
@@ -71,23 +98,10 @@ public class Gun : Sprite
 
     private void StartReloading()
     {
-        isReloading = true;
-        reloadStartTime = TimeServer.Elapsed;
+        reloading = true;
         reloadSound.Play("SFX");
         Console.WriteLine("Reloading initiated...");
-    }
-
-    private void HandleReloading()
-    {
-        if (!isReloading) return;
-
-        if (TimeServer.Elapsed - reloadStartTime >= reloadTime)
-        {
-            // Infinite ammo implementation as ordered
-            bulletsInMagazine = magazineSize;
-            isReloading = false;
-            Console.WriteLine("Reload complete. Magazine full.");
-        }
+        reloadTimer!.Fire();
     }
 
     private void LookAtMouse()
@@ -102,7 +116,7 @@ public class Gun : Sprite
         Vector2 angleVector = mousePosition - GlobalPosition;
         float angle = MathF.Atan2(angleVector.Y, angleVector.X);
 
-        rayCast.Rotation = angle * 180 / MathF.PI;
+        rayCast!.Rotation = angle * 180 / MathF.PI;
         rayCast.GlobalPosition = GlobalPosition;
 
         rayCast.Update();

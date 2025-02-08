@@ -1,8 +1,20 @@
 ﻿name: Gun
 type: Gun
+rayCast: RayCast
+cooldownTimer: CooldownTimer
+reloadTimer: ReloadTimer
 children:
   - name: RayCast
     type: RayCast
     Length: 5000
     CollisionLayers:
       - 1
+  - name: CooldownTimer
+    type: Timer
+    WaitTime: 0.182
+
+  - name: ReloadTimer
+    type: Timer
+    WaitTime: 2
+    OneShot: true
+    AutoStart: false

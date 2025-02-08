@@ -4,13 +4,17 @@ public class Timer : Node
 {
     public float TimePassed { get; private set; } = 0;
     public bool AutoStart { get; set; } = false;
-    public bool Loop { get; set; } = false;
-
+    public bool OneShot { get; set; } = false;
     public float WaitTime { get; set; } = 1.0f;
+    
     private bool fired = false;
 
-    public delegate void TimerEventHandler(Timer sender);
-    public event TimerEventHandler? Timeout;
+    // Events
+
+    public delegate void Event(Timer sender);
+    public event Event? Timeout;
+
+    // Main
 
     public override void Ready()
     {
@@ -37,13 +41,15 @@ public class Timer : Node
 
                 Timeout?.Invoke(this);
 
-                if (Loop)
+                if (!OneShot)
                 {
                     Fire();
                 }
             }
         }
     }
+
+    // Public
 
     public void Fire()
     {
