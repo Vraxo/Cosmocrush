@@ -82,7 +82,7 @@
     <None Update="Res\Cherris\Fonts\RobotoMono.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Cherris\InputMappings.yaml">
+    <None Update="Res\Cherris\InputMap.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Cherris\LogSettings.yaml">

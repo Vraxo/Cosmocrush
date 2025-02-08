@@ -12,7 +12,7 @@ public sealed class InputServer
     public static InputServer Instance { get; } = new();
 
     private readonly Dictionary<string, List<InputAction>> actionKeyMap = [];
-    private readonly string mappingsFilePath = "Res/Cherris/InputMappings.yaml";
+    private readonly string mappingsFilePath = "Res/Cherris/InputMap.yaml";
 
     private InputServer()
     {

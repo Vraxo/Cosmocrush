@@ -24,6 +24,10 @@ Fire:
   - Type: MouseButton
     KeyOrButton: Left
 
+Reload:
+  - Type: Keyboard
+    KeyOrButton: R
+
 MoveLeft:
   - Type: Keyboard
     KeyOrButton: A
