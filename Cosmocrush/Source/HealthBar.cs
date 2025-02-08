@@ -10,7 +10,7 @@ public class HealthBar : ProgressBar
     {
         base.Ready();
 
-        ProgressTheme.FillColor = Color.Green;
+        ForegroundTheme.FillColor = Color.Green;
         player = GetNode<Player>("/root/Player");
     }
 

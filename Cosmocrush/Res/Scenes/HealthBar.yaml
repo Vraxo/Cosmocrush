@@ -1,7 +1,7 @@
 name: HealthBar
 type: HealthBar
 Size: [250, 20]
-ProgressTheme:
+ForegroundTheme:
   Roundness: 0
   FillColor: [34, 139, 34, 255]
   BorderColor: [0, 128, 0, 255]

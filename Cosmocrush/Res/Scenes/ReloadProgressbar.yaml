@@ -1,0 +1,10 @@
+name: ReloadProgressBar
+type: ProgressBar
+Position: [0, -75]
+Size: [100, 10]
+ForegroundTheme:
+  Roundness: 0
+  FillColor: [255, 255, 255]
+BackgroundTheme:
+  Roundness: 0
+  FillColor: [0, 0, 0]

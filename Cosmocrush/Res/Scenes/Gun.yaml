@@ -1,5 +1,6 @@
 ﻿name: Gun
 type: Gun
+HorizontalAlignment: Left
 rayCast: RayCast
 cooldownTimer: CooldownTimer
 reloadTimer: ReloadTimer
@@ -16,5 +17,3 @@ children:
   - name: ReloadTimer
     type: Timer
     WaitTime: 2
-    OneShot: true
-    AutoStart: false

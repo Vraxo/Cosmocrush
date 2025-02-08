@@ -4,9 +4,11 @@ public class Timer : Node
 {
     public float TimePassed { get; private set; } = 0;
     public bool AutoStart { get; set; } = false;
-    public bool OneShot { get; set; } = false;
+    public bool OneShot { get; set; } = true;
     public float WaitTime { get; set; } = 1.0f;
-    
+
+    public float TimeLeft => float.Max(0, WaitTime - TimePassed);
+
     private bool fired = false;
 
     // Events

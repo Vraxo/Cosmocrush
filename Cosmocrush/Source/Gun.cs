@@ -6,18 +6,19 @@ public class Gun : Sprite
 {
     private readonly Sound gunshotSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Gunshot.mp3");
     private readonly Sound reloadSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Reload.mp3");
-
-    private const int damage = 5;
-    private const float knockbackForce = 3f;
+    private readonly PackedScene reloadProgressBarScene = new("Res/Scenes/ReloadProgressBar.yaml");
 
     private readonly RayCast? rayCast;
     private readonly Timer? cooldownTimer;
     private readonly Timer? reloadTimer;
+    private ProgressBar? reloadProgressBar;
 
     private bool canFire = true;
-    private int bulletsInMagazine;
+    private int bulletsInMagazine = magazineSize;
     private bool reloading = false;
     private const int magazineSize = 10;
+    private const int damage = 5;
+    private const float knockbackForce = 3f;
 
     // Main
 
@@ -25,13 +26,9 @@ public class Gun : Sprite
     {
         base.Ready();
 
-        HorizontalAlignment = HorizontalAlignment.Left;
-        Offset = new(8, 0);
-        Offset = new(0, 0);
+        //Offset = new(8, 0);
 
         rayCast!.Deactivate();
-
-        bulletsInMagazine = magazineSize;
 
         cooldownTimer!.Timeout += OnCooldownTimerTimeout;
         reloadTimer!.Timeout += OnReloadTimerTimeout;
@@ -44,6 +41,11 @@ public class Gun : Sprite
         HandleFiring();
         HandleReloadingInput();
         LookAtMouse();
+
+        if (reloading)
+        {
+            UpdateReloadProgressBar();
+        }
     }
 
     // Timer event handlers
@@ -58,6 +60,7 @@ public class Gun : Sprite
         bulletsInMagazine = magazineSize;
         reloading = false;
         Console.WriteLine("Reload complete. Magazine full.");
+        RemoveReloadProgressBar();
     }
 
     // Input handling
@@ -89,7 +92,6 @@ public class Gun : Sprite
         gunshotSound.Play("SFX");
         FireRaycast();
 
-        // Auto-reload if the magazine is empty.
         if (bulletsInMagazine <= 0)
         {
             StartReloading();
@@ -102,6 +104,8 @@ public class Gun : Sprite
         reloadSound.Play("SFX");
         Console.WriteLine("Reloading initiated...");
         reloadTimer!.Fire();
+
+        CreateReloadProgressBar();
     }
 
     private void LookAtMouse()
@@ -136,5 +140,40 @@ public class Gun : Sprite
         }
 
         rayCast.Deactivate();
+    }
+
+    // Reload progress bar
+
+    private void CreateReloadProgressBar()
+    {
+        if (reloadProgressBarScene is null)
+        {
+            return;
+        }
+
+        reloadProgressBar = reloadProgressBarScene.Instantiate<ProgressBar>();
+        Parent!.AddChild(reloadProgressBar);
+    }
+
+    private void UpdateReloadProgressBar()
+    {
+        if (reloadProgressBar is null)
+        {
+            return;
+        }
+
+        float reloadProgress = 1.0f - (reloadTimer!.TimeLeft / reloadTimer!.WaitTime);
+        reloadProgressBar.Percentage = reloadProgress;
+    }
+
+    private void RemoveReloadProgressBar()
+    {
+        if (reloadProgressBar is null)
+        {
+            return;
+        }
+
+        reloadProgressBar.Free();
+        reloadProgressBar = null;
     }
 }

@@ -4,7 +4,7 @@ public class ProgressBar : Node2D
 {
     public bool ShowPercentage { get; set; } = true;
     public BoxTheme BackgroundTheme { get; set; } = new();
-    public BoxTheme ProgressTheme { get; set; } = new();
+    public BoxTheme ForegroundTheme { get; set; } = new();
 
     public float Percentage
     {
@@ -16,11 +16,15 @@ public class ProgressBar : Node2D
         }
     } = 0;
 
+    // Main
+
     public ProgressBar()
     {
         Size = new(250, 10);
-        ProgressTheme.FillColor = DefaultTheme.Accent;
+        ForegroundTheme.FillColor = DefaultTheme.Accent;
     }
+
+    // Draw
 
     protected override void Draw()
     {
@@ -48,6 +52,6 @@ public class ProgressBar : Node2D
         DrawRectangleThemed(
             GlobalPosition - Origin,
             filledSize,
-            ProgressTheme);
+            ForegroundTheme);
     }
 }
