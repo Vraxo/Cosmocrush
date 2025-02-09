@@ -11,14 +11,18 @@ public class Node2D : VisualItem
     public VerticalAlignment VerticalAlignment { get; set; } = VerticalAlignment.Center;
     public float Rotation { get; set; } = 0;
 
-    public event EventHandler<Vector2>? SizeChanged;
+    public Vector2 ScaledSize => Size * Scale;
 
     public virtual Vector2 Size
     {
-        get ;
-
+        get;
         set
         {
+            if (Size == value)
+            {
+                return;
+            }
+
             field = value;
             SizeChanged?.Invoke(this, Size);
         }
@@ -32,17 +36,13 @@ public class Node2D : VisualItem
             {
                 return node2DParent.Scale;
             }
-
             return field;
         }
-
         set
         {
             field = value;
         }
     } = new(1, 1);
-
-    public Vector2 ScaledSize => Size * Scale;
 
     public Vector2 GlobalPosition
     {
@@ -52,7 +52,15 @@ public class Node2D : VisualItem
             {
                 if (InheritPosition)
                 {
-                    return parentNode.GlobalPosition + Position;
+                    float angleRadians = parentNode.Rotation * (MathF.PI / 180f);
+                    float cos = MathF.Cos(angleRadians);
+                    float sin = MathF.Sin(angleRadians);
+
+                    Vector2 rotatedPosition = new Vector2(
+                        Position.X * cos - Position.Y * sin,
+                        Position.X * sin + Position.Y * cos);
+
+                    return parentNode.GlobalPosition + rotatedPosition;
                 }
 
                 return field;
@@ -62,7 +70,6 @@ public class Node2D : VisualItem
                 return Position;
             }
         }
-
         set
         {
             field = value;
@@ -85,10 +92,8 @@ public class Node2D : VisualItem
                     return parentNode.Offset;
                 }
             }
-
             return field;
         }
-
         set
         {
             field = value;
@@ -120,12 +125,17 @@ public class Node2D : VisualItem
         }
     }
 
+    // Events
+
+    public delegate void SizeEvent(Node2D sender, Vector2 size);
+    public event SizeEvent? SizeChanged;
+
     // Methods
 
     public void LookAt(Vector2 targetPosition)
     {
         Vector2 direction = targetPosition - GlobalPosition;
-        float angle = MathF.Atan2(direction.Y, direction.X) * 57.29578f;
+        float angle = MathF.Atan2(direction.Y, direction.X) * 57.29578f; // radians to degrees
         Rotation = angle;
     }
 }

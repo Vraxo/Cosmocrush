@@ -11,18 +11,20 @@ public class Gun : Sprite
     private readonly RayCast? rayCast;
     private readonly Timer? cooldownTimer;
     private readonly Timer? reloadTimer;
+    private readonly Line? bulletTrail;
     private ProgressBar? reloadProgressBar;
 
     private bool canFire = true;
     private int bulletsInMagazine = magazineSize;
     private bool reloading = false;
-    private const int magazineSize = 10;
+    private const int magazineSize = 1000;
     private const int damage = 5;
     private const float knockbackForce = 3f;
 
     // Bloom-related variables
     private float currentBloom = 0f;
-    private const float maxBloom = 0.1f;
+    //private const float maxBloom = 0.1f;
+    private const float maxBloom = 0.0f;
     private const float bloomIncrease = 0.02f;
     private const float bloomResetSpeed = 0.05f;
 
@@ -100,10 +102,10 @@ public class Gun : Sprite
 
         bulletsInMagazine--;
         gunshotSound.Play("SFX");
-        FireRaycast();
 
-        // Increase bloom
-        currentBloom = float.Min(maxBloom, currentBloom + bloomIncrease);
+        FireRaycast();
+        UpdateBulletTrail();
+        IncreaseBloom();
 
         if (bulletsInMagazine <= 0)
         {
@@ -121,6 +123,29 @@ public class Gun : Sprite
         CreateReloadProgressBar();
     }
 
+    private void IncreaseBloom()
+    {
+        currentBloom = float.Min(maxBloom, currentBloom + bloomIncrease);
+    }
+
+    private void UpdateBulletTrail()
+    {
+        bulletTrail!.ClearPoints();
+        // Start the trail at the bulletTrail's current global position.
+        bulletTrail.AddPoint(bulletTrail.GlobalPosition);
+
+        // If the raycast didn't hit anything, use the far endpoint (global position + target vector).
+        Vector2 endPoint = rayCast!.IsColliding
+            ? rayCast.CollisionPoint
+            : (rayCast.GlobalPosition + rayCast.TargetPosition);
+
+        bulletTrail.AddPoint(endPoint);
+        bulletTrail.Visible = true;
+
+        // Hide the bullet trail after a short delay.
+        Tree.CreateTimer(0.1f).Timeout += () => bulletTrail.Visible = false;
+    }
+
     private void LookAtMouse()
     {
         FlipV = Input.WorldMousePosition.X < GlobalPosition.X;
@@ -133,11 +158,11 @@ public class Gun : Sprite
         Vector2 angleVector = mousePosition - GlobalPosition;
         float angle = MathF.Atan2(angleVector.Y, angleVector.X);
 
-        // Apply bloom to the angle
         angle += RandomRange(-currentBloom, currentBloom);
 
         rayCast!.Rotation = angle * 180 / MathF.PI;
-        rayCast.GlobalPosition = GlobalPosition;
+        //rayCast.GlobalPosition = GlobalPosition;
+        //rayCast.GlobalPosition = GlobalPosition + rayCast.Position;
 
         rayCast.Update();
 
@@ -192,6 +217,8 @@ public class Gun : Sprite
         reloadProgressBar.Free();
         reloadProgressBar = null;
     }
+
+    // Utils
 
     private static float RandomRange(float min, float max)
     {

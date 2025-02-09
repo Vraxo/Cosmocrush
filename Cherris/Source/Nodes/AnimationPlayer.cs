@@ -46,7 +46,7 @@ public class AnimationPlayer : Node
         currentAnimation = animation;
         animationTime = 0f;
         playing = true;
-        Console.WriteLine($"[AnimationPlayer] Started animation: {animation}");
+        //Console.WriteLine($"[AnimationPlayer] Started animation: {animation}");
     }
 
     public void Stop()
@@ -54,7 +54,7 @@ public class AnimationPlayer : Node
         playing = false;
         currentAnimation = null;
         animationTime = 0f;
-        Console.WriteLine("[AnimationPlayer] Animation stopped");
+        //Console.WriteLine("[AnimationPlayer] Animation stopped");
     }
 
     private void AnimateBetweenKeyframes(Animation.Keyframe prev, Animation.Keyframe next, float t)
@@ -109,7 +109,7 @@ public class AnimationPlayer : Node
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AnimationPlayer] Error: {ex}");
+            //Console.WriteLine($"[AnimationPlayer] Error: {ex}");
             Stop();
         }
     }
@@ -137,12 +137,12 @@ public class AnimationPlayer : Node
         return instance;
     }
 
-    private FieldInfo? TryFindComponentField(Type type)
+    private static FieldInfo? TryFindComponentField(Type type)
     {
         return type.GetField("X") ?? type.GetField("Y") ?? type.GetField("Z") ?? type.GetField("W");
     }
 
-    private PropertyInfo? TryFindComponentProperty(Type type)
+    private static PropertyInfo? TryFindComponentProperty(Type type)
     {
         return type.GetProperty("X") ?? type.GetProperty("Y") ?? type.GetProperty("Z") ?? type.GetProperty("W");
     }

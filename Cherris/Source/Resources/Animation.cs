@@ -25,6 +25,5 @@ public class Animation
             .Build();
 
         Keyframes = deserializer.Deserialize<List<Keyframe>>(File.ReadAllText(filePath));
-        Console.WriteLine($"Loaded animation with {Keyframes.Count} keyframes from {filePath}");
     }
 }

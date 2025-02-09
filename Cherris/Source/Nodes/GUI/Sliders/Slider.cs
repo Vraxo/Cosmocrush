@@ -137,7 +137,6 @@ public abstract class Slider : Control
         }
         else if (IsMouseOver())
         {
-            // Maintain focus if clicking within control
             Focused = true;
         }
     }
