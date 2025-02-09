@@ -1,4 +1,7 @@
-﻿namespace Cherris;
+﻿using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+
+namespace Cherris;
 
 public sealed class CollisionServer
 {
@@ -9,7 +12,12 @@ public sealed class CollisionServer
     public List<ColliderCircle> ColliderCircles = [];
     public List<ColliderRectangle> ColliderRectangles = [];
 
-    private CollisionServer() { }
+    public readonly Dictionary<string, int> CollisionLayers = [];
+
+    private CollisionServer() 
+    {
+        LoadCollisionLayers();
+    }
 
     // Public
 
@@ -50,6 +58,32 @@ public sealed class CollisionServer
         foreach (Collider collider in Colliders)
         {
             Console.WriteLine(collider.Name);
+        }
+    }
+
+    private void LoadCollisionLayers()
+    {
+        string path = "Res/Cherris/CollisionLayers.yaml";
+        if (!File.Exists(path))
+            return;
+    
+        var deserializer = new DeserializerBuilder()
+            .WithNamingConvention(UnderscoredNamingConvention.Instance)
+            .Build();
+    
+        try
+        {
+            var yamlContent = File.ReadAllText(path);
+            var layers = deserializer.Deserialize<Dictionary<string, int>>(yamlContent);
+            CollisionLayers.Clear();
+            foreach (var layer in layers)
+            {
+                CollisionLayers[layer.Key] = layer.Value;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[CollisionServer] Failed to load collision layers: {ex.Message}");
         }
     }
 

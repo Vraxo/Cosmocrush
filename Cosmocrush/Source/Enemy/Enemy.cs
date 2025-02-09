@@ -77,7 +77,7 @@ public class Enemy : ColliderRectangle
         }
     }
 
-    // Take damage
+    // Take Damage
 
     private void SufferKnockback()
     {

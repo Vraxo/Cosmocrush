@@ -8,8 +8,8 @@ children:
     Size: [960, 960]
     IsStatic: true
     CollisionLayers:
-      - 0  
-      - 3
+      - Default  
+      - RayCastToRock
 
   - name: Sprite
     type: Sprite

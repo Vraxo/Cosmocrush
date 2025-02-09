@@ -14,9 +14,30 @@ public static class PackedSceneUtils
         foreach (var (key, value) in element)
         {
             if (SpecialProperties.Contains(key)) continue;
-            SetNestedMember(node, key, value, deferredNodeAssignments);
+
+            if (key == "CollisionLayers" && value is IList layerList)
+            {
+                // Convert string collision layers to their corresponding integer values
+                var convertedLayers = layerList.Cast<object>().Select(layer =>
+                {
+                    if (layer is string layerName && CollisionServer.Instance.CollisionLayers.ContainsKey(layerName))
+                    {
+                        return CollisionServer.Instance.CollisionLayers[layerName];
+                    }
+
+                    return Convert.ToInt32(layer); // for numeric layers
+                }).ToList();
+
+                // Set the converted layers
+                SetNestedMember(node, key, convertedLayers, deferredNodeAssignments);
+            }
+            else
+            {
+                SetNestedMember(node, key, value, deferredNodeAssignments);
+            }
         }
     }
+
 
     public static void SetNestedMember(object target, string memberPath, object value,
         List<(Node, string, object)>? deferredNodeAssignments = null)
