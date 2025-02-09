@@ -7,19 +7,31 @@ public class RayCast : Node2D
     public bool IgnoreFirst { get; set; } = false;
 
     public bool IsColliding { get; private set; } = false;
-    public Vector2 CollisionPoint { get; private set; } = Vector2.Zero;
 
-    private Collider? collider;
+    private Collider? _collider;
     public Collider? Collider
     {
-        get => collider;
-        private set => collider = value;
+        get => _collider;
+        private set
+        {
+            if (_collider != value)
+            {
+                _collider = value;
+            }
+        }
     }
 
-    public Vector2 TargetPosition => new(
-        MathF.Cos(MathF.PI * Rotation / 180) * Length,
-        MathF.Sin(MathF.PI * Rotation / 180) * Length
-    );
+    public Vector2 TargetPosition
+    {
+        get
+        {
+            float x = MathF.Cos(MathF.PI * Rotation / 180) * Length;
+            float y = MathF.Sin(MathF.PI * Rotation / 180) * Length;
+            return new(x, y);
+        }
+    }
+
+    // Public
 
     public RayCast()
     {
@@ -32,90 +44,59 @@ public class RayCast : Node2D
         base.Update();
     }
 
+    // Protected
+
     public override void Draw()
     {
-        DrawLine(
-            GlobalPosition,
-            GlobalPosition + TargetPosition,
-            5,
-            Color.Red);
+        base.Draw();
+        Vector2 rayEnd = GlobalPosition + TargetPosition;
+        DrawLine(GlobalPosition, rayEnd, 5, Color.Red);
     }
+
+    // Private
 
     private void PerformRaycast()
     {
-        ResetCollisionData();
+        IsColliding = false;
+        Collider = null;
 
         Vector2 rayStart = GlobalPosition;
         Vector2 rayEnd = rayStart + TargetPosition;
-        Vector2 rayDirection = (rayEnd - rayStart).Normalized();
 
-        var hits = CollectPotentialHits(rayStart, rayEnd, rayDirection);
-        ProcessCollisionResults(hits);
-    }
+        bool firstHitSkipped = false;
+        List<(Collider collider, float distance)> hits = [];
 
-    private void ResetCollisionData()
-    {
-        IsColliding = false;
-        Collider = null;
-        CollisionPoint = Vector2.Zero;
-    }
-
-    private List<(Collider collider, float distance, Vector2 point)> CollectPotentialHits(Vector2 rayStart, Vector2 rayEnd, Vector2 rayDirection)
-    {
-        var hits = new List<(Collider, float, Vector2)>();
-
-        foreach (var collider in CollisionServer.Instance.Colliders)
+        foreach (Collider collider in CollisionServer.Instance.Colliders)
         {
-            if (!IsValidCollider(collider)) continue;
+            // Ensure collider is enabled and there's at least one common collision layer
+            if (!collider.Enabled || !CollisionLayers.Any(layer => collider.CollisionLayers.Contains(layer)))
+                continue;
 
+            // Check if the ray intersects
             if (collider.RayIntersects(rayStart, rayEnd))
             {
-                var hit = CalculateHitDetails(collider, rayStart, rayDirection);
-                hits.Add(hit);
+                float distance = Vector2.Distance(rayStart, collider.GlobalPosition);
+                hits.Add((collider, distance));
             }
         }
 
-        return hits;
-    }
-
-    private bool IsValidCollider(Collider collider)
-    {
-        return collider.Enabled &&
-               CollisionLayers.Any(layer => collider.CollisionLayers.Contains(layer));
-    }
-
-    private (Collider collider, float distance, Vector2 point) CalculateHitDetails(Collider collider, Vector2 rayStart, Vector2 rayDirection)
-    {
-        Vector2 toCollider = collider.GlobalPosition - rayStart;
-        float distance = Math.Clamp(Vector2.Dot(toCollider, rayDirection), 0f, Length);
-        Vector2 point = rayStart + rayDirection * distance;
-        return (collider, distance, point);
-    }
-
-    private void ProcessCollisionResults(List<(Collider collider, float distance, Vector2 point)> hits)
-    {
+        // Sort hits by distance (closest first)
         hits.Sort((a, b) => a.distance.CompareTo(b.distance));
-        bool skipFirst = IgnoreFirst;
 
-        foreach (var hit in hits)
+        // Loop through sorted hits and apply IgnoreFirst logic
+        foreach (var (collider, distance) in hits)
         {
-            if (skipFirst)
+            if (IgnoreFirst && !firstHitSkipped)
             {
-                Console.WriteLine("skipped first: " + hit.collider.Name);
-                skipFirst = false;
-                continue;
+                firstHitSkipped = true;
+                continue; // Skip the first valid hit
             }
 
-            SetCollisionData(hit);
-            return;
+            // Once we find the closest valid hit, mark it
+            IsColliding = true;
+            Collider = collider;
+            Log.Info($"[RayCast] [{Name}] Hit {Collider.Name}.", "RayCast");
+            break; // Stop after finding the first valid hit
         }
-    }
-
-    private void SetCollisionData((Collider collider, float distance, Vector2 point) hit)
-    {
-        IsColliding = true;
-        Collider = hit.collider;
-        CollisionPoint = hit.point;
-        Console.WriteLine($"[RayCast] [{Name}] Hit {Collider.AbsolutePath} at {CollisionPoint}.", "RayCast");
     }
 }
