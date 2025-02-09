@@ -4,12 +4,19 @@ HorizontalAlignment: Left
 rayCast: RayCast
 cooldownTimer: CooldownTimer
 reloadTimer: ReloadTimer
+bulletTrail: BulletTrail
 children:
   - name: RayCast
     type: RayCast
     Length: 5000
     CollisionLayers:
       - 1
+      - 3
+
+  - name: BulletTrail
+    type: Line
+    Color: [255, 255, 0]
+
   - name: CooldownTimer
     type: Timer
     WaitTime: 0.182

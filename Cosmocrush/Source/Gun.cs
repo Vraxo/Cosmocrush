@@ -7,33 +7,26 @@ public class Gun : Sprite
     private readonly Sound gunshotSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Gunshot.mp3");
     private readonly Sound reloadSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Reload.mp3");
     private readonly PackedScene reloadProgressBarScene = new("Res/Scenes/ReloadProgressBar.yaml");
-
     private readonly RayCast? rayCast;
     private readonly Timer? cooldownTimer;
     private readonly Timer? reloadTimer;
+    private readonly Line? bulletTrail;
     private ProgressBar? reloadProgressBar;
-
     private bool canFire = true;
     private int bulletsInMagazine = magazineSize;
     private bool reloading = false;
     private const int magazineSize = 100;
     private const int damage = 5;
     private const float knockbackForce = 3f;
-
-    // Bloom-related variables
     private float currentBloom = 0f;
     private const float maxBloom = 0.0f;
     private const float bloomIncrease = 0.02f;
     private const float bloomResetSpeed = 0.05f;
 
-    // Main
-
     public override void Ready()
     {
         base.Ready();
-
         rayCast!.Deactivate();
-
         cooldownTimer!.Timeout += OnCooldownTimerTimeout;
         reloadTimer!.Timeout += OnReloadTimerTimeout;
     }
@@ -41,24 +34,18 @@ public class Gun : Sprite
     public override void Update()
     {
         base.Update();
-
         HandleFiring();
         HandleReloadingInput();
         LookAtMouse();
-
         if (reloading)
         {
             UpdateReloadProgressBar();
         }
-
-        // Reset bloom when not firing
         if (!Input.IsActionDown("Fire"))
         {
             currentBloom = float.Max(0, currentBloom - bloomResetSpeed * TimeServer.Delta);
         }
     }
-
-    // Timer event handlers
 
     private void OnCooldownTimerTimeout(Timer timer)
     {
@@ -73,12 +60,9 @@ public class Gun : Sprite
         RemoveReloadProgressBar();
     }
 
-    // Input handling
-
     private void HandleFiring()
     {
         bool canShoot = canFire && !reloading && bulletsInMagazine > 0;
-
         if (Input.IsActionDown("Fire") && canShoot)
         {
             Fire();
@@ -97,18 +81,25 @@ public class Gun : Sprite
     {
         canFire = false;
         cooldownTimer!.Fire();
-
         bulletsInMagazine--;
         gunshotSound.Play("SFX");
         FireRaycast();
-
-        // Increase bloom
+        UpdateBulletTrail();
         currentBloom = float.Min(maxBloom, currentBloom + bloomIncrease);
-
         if (bulletsInMagazine <= 0)
         {
             StartReloading();
         }
+    }
+
+    private void UpdateBulletTrail()
+    {
+        bulletTrail!.ClearPoints();
+        bulletTrail.AddPoint(bulletTrail.GlobalPosition);
+        Vector2 endPoint = rayCast!.IsColliding ? rayCast.CollisionPoint : bulletTrail.GlobalPosition + new Vector2(MathF.Cos(rayCast.Rotation * MathF.PI / 180f), MathF.Sin(rayCast.Rotation * MathF.PI / 180f)) * 10000f;
+        bulletTrail.AddPoint(endPoint);
+        bulletTrail.Visible = true;
+        Tree.CreateTimer(0.025f).Timeout += () => bulletTrail.Visible = false;
     }
 
     private void StartReloading()
@@ -117,7 +108,6 @@ public class Gun : Sprite
         reloadSound.Play("SFX");
         Console.WriteLine("Reloading initiated...");
         reloadTimer!.Fire();
-
         CreateReloadProgressBar();
     }
 
@@ -132,19 +122,13 @@ public class Gun : Sprite
         Vector2 mousePosition = Input.WorldMousePosition;
         Vector2 angleVector = mousePosition - GlobalPosition;
         float angle = MathF.Atan2(angleVector.Y, angleVector.X);
-
-        // Apply bloom to the angle
         angle += RandomRange(-currentBloom, currentBloom);
-
         rayCast!.Rotation = angle * 180 / MathF.PI;
         rayCast.GlobalPosition = GlobalPosition;
-
         rayCast.Update();
-
         if (rayCast.IsColliding)
         {
             Collider? collider = rayCast.Collider;
-
             if (collider is not null)
             {
                 if (collider.Parent is Enemy enemy)
@@ -154,11 +138,8 @@ public class Gun : Sprite
                 }
             }
         }
-
         rayCast.Deactivate();
     }
-
-    // Reload progress bar
 
     private void CreateReloadProgressBar()
     {
@@ -166,7 +147,6 @@ public class Gun : Sprite
         {
             return;
         }
-
         reloadProgressBar = reloadProgressBarScene.Instantiate<ProgressBar>();
         Parent!.AddChild(reloadProgressBar);
     }
@@ -177,7 +157,6 @@ public class Gun : Sprite
         {
             return;
         }
-
         float reloadProgress = 1.0f - (reloadTimer!.TimeLeft / reloadTimer!.WaitTime);
         reloadProgressBar.Percentage = reloadProgress;
     }
@@ -188,7 +167,6 @@ public class Gun : Sprite
         {
             return;
         }
-
         reloadProgressBar.Free();
         reloadProgressBar = null;
     }

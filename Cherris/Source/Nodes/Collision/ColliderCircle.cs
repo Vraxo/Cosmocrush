@@ -4,13 +4,13 @@ public class ColliderCircle : Collider
 {
     public float Radius { get; set; } = 16;
 
-    public override bool RayIntersects(Vector2 rayStart, Vector2 rayEnd)
-    {
-        Vector2 closestPoint = ClosestPointOnLine(rayStart, rayEnd, GlobalPosition);
-        float distanceToCircle = Vector2.Distance(closestPoint, GlobalPosition);
-
-        return distanceToCircle <= Radius;
-    }
+    //public override bool RayIntersects(Vector2 rayStart, Vector2 rayEnd)
+    //{
+    //    Vector2 closestPoint = ClosestPointOnLine(rayStart, rayEnd, GlobalPosition);
+    //    float distanceToCircle = Vector2.Distance(closestPoint, GlobalPosition);
+    //
+    //    return distanceToCircle <= Radius;
+    //}
 
     public override void Draw()
     {
@@ -38,5 +38,10 @@ public class ColliderCircle : Collider
         float t = Vector2.Dot(point - lineStart, line) / Vector2.Dot(line, line);
         t = Math.Clamp(t, 0, 1);
         return lineStart + t * line;
+    }
+
+    public override float? GetIntersection(Vector2 rayStart, Vector2 rayEnd)
+    {
+        throw new NotImplementedException();
     }
 }

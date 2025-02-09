@@ -7,6 +7,9 @@ children:
     type: ColliderRectangle
     Size: [960, 960]
     IsStatic: true
+    CollisionLayers:
+      - 0  
+      - 3
 
   - name: Sprite
     type: Sprite

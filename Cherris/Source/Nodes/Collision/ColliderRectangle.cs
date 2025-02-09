@@ -2,53 +2,51 @@
 
 public class ColliderRectangle : Collider
 {
-    public override bool RayIntersects(Vector2 rayStart, Vector2 rayEnd)
-    {
-        Vector2 rectMin = GlobalPosition - Origin;
-        Vector2 rectMax = rectMin + Size;
-
-        return RayIntersectsLine(rayStart, rayEnd, rectMin, new(rectMax.X, rectMin.Y)) ||
-               RayIntersectsLine(rayStart, rayEnd, new(rectMax.X, rectMin.Y), rectMax) ||
-               RayIntersectsLine(rayStart, rayEnd, rectMax, new(rectMin.X, rectMax.Y)) ||
-               RayIntersectsLine(rayStart, rayEnd, new(rectMin.X, rectMax.Y), rectMin);
-    }
+    public Vector2 Size { get; set; } = Vector2.One * 10;
+    public Vector2 ScaledSize => Size * Scale;
+    public Vector2 Origin => ScaledSize / 2;
 
     public override void Draw()
     {
-        base.Draw();
-
         DrawRectangleOutline(
             GlobalPosition - Origin,
             ScaledSize,
-            Color);
+            Color
+        );
     }
 
-    protected override void Register()
+    public override float? GetIntersection(Vector2 rayStart, Vector2 rayEnd)
     {
-        CollisionServer.Instance.RegisterRectangle(this);
+        Vector2 rectMin = GlobalPosition - Origin;
+        Vector2 rectMax = rectMin + ScaledSize;
+
+        float? closestT = null;
+        CheckEdge(rayStart, rayEnd, rectMin, new Vector2(rectMax.X, rectMin.Y), ref closestT);
+        CheckEdge(rayStart, rayEnd, new Vector2(rectMax.X, rectMin.Y), rectMax, ref closestT);
+        CheckEdge(rayStart, rayEnd, rectMax, new Vector2(rectMin.X, rectMax.Y), ref closestT);
+        CheckEdge(rayStart, rayEnd, new Vector2(rectMin.X, rectMax.Y), rectMin, ref closestT);
+
+        return closestT;
     }
 
-    protected override void Unregister()
+    private void CheckEdge(Vector2 rayStart, Vector2 rayEnd, Vector2 edgeA, Vector2 edgeB, ref float? closestT)
     {
-        CollisionServer.Instance.UnregisterRectangle(this);
-    }
+        Vector2 rayDir = rayEnd - rayStart;
+        Vector2 edgeDir = edgeB - edgeA;
 
-    private static bool RayIntersectsLine(Vector2 rayStart, Vector2 rayEnd, Vector2 lineStart, Vector2 lineEnd)
-    {
-        Vector2 r = rayEnd - rayStart;
-        Vector2 s = lineEnd - lineStart;
+        float denominator = rayDir.X * edgeDir.Y - rayDir.Y * edgeDir.X;
+        if (denominator == 0) return;
 
-        float denominator = r.X * s.Y - r.Y * s.X;
-        
-        if (denominator == 0)
+        Vector2 delta = edgeA - rayStart;
+        float t = (delta.X * edgeDir.Y - delta.Y * edgeDir.X) / denominator;
+        float u = (delta.X * rayDir.Y - delta.Y * rayDir.X) / denominator;
+
+        if (t >= 0 && t <= 1 && u >= 0 && u <= 1 && (t < closestT || !closestT.HasValue))
         {
-            return false;
+            closestT = t;
         }
-
-        Vector2 delta = lineStart - rayStart;
-        float t = (delta.X * s.Y - delta.Y * s.X) / denominator;
-        float u = (delta.X * r.Y - delta.Y * r.X) / denominator;
-
-        return t >= 0 && u >= 0 && u <= 1;
     }
+
+    protected override void Register() => CollisionServer.Instance.RegisterRectangle(this);
+    protected override void Unregister() => CollisionServer.Instance.UnregisterRectangle(this);
 }
