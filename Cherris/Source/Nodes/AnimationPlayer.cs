@@ -46,7 +46,7 @@ public class AnimationPlayer : Node
         currentAnimation = animation;
         animationTime = 0f;
         playing = true;
-        Console.WriteLine($"[AnimationPlayer] Started animation: {animation}");
+        Log.Info($"[AnimationPlayer] Started animation: {animation}");
     }
 
     public void Stop()
@@ -54,7 +54,7 @@ public class AnimationPlayer : Node
         playing = false;
         currentAnimation = null;
         animationTime = 0f;
-        Console.WriteLine("[AnimationPlayer] Animation stopped");
+        Log.Info("[AnimationPlayer] Animation stopped");
     }
 
     private void AnimateBetweenKeyframes(Animation.Keyframe prev, Animation.Keyframe next, float t)
@@ -109,7 +109,7 @@ public class AnimationPlayer : Node
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AnimationPlayer] Error: {ex}");
+            Log.Info($"[AnimationPlayer] Error: {ex}");
             Stop();
         }
     }

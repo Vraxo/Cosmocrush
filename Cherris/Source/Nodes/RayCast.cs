@@ -95,7 +95,7 @@ public class RayCast : Node2D
             // Once we find the closest valid hit, mark it
             IsColliding = true;
             Collider = collider;
-            Log.Info($"[RayCast] [{Name}] Hit {Collider.Name}.", "RayCast");
+            Console.WriteLine($"[RayCast] [{Name}] Hit {Collider.AbsolutePath}.", "RayCast");
             break; // Stop after finding the first valid hit
         }
     }

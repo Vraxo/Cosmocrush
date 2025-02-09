@@ -16,13 +16,13 @@ public class Gun : Sprite
     private bool canFire = true;
     private int bulletsInMagazine = magazineSize;
     private bool reloading = false;
-    private const int magazineSize = 10;
+    private const int magazineSize = 100;
     private const int damage = 5;
     private const float knockbackForce = 3f;
 
     // Bloom-related variables
     private float currentBloom = 0f;
-    private const float maxBloom = 0.1f;
+    private const float maxBloom = 0.0f;
     private const float bloomIncrease = 0.02f;
     private const float bloomResetSpeed = 0.05f;
 
