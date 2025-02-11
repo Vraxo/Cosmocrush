@@ -7,13 +7,13 @@ public class Gun : Sprite
     private readonly Sound gunshotSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Gunshot.mp3");
     private readonly Sound reloadSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Reload.mp3");
     private readonly PackedScene reloadProgressBarScene = new("Res/Scenes/ReloadProgressBar.yaml");
-    
+
     private readonly RayCast? rayCast;
     private readonly Timer? cooldownTimer;
     private readonly Timer? reloadTimer;
     private readonly Line? bulletTrail;
     private ProgressBar? reloadProgressBar;
-    
+
     private bool canFire = true;
     private bool reloading = false;
     private int bulletsInMagazine = MagazineSize;
@@ -21,7 +21,8 @@ public class Gun : Sprite
 
     private const int Damage = 5;
     private const int MagazineSize = 100;
-    private const float KnockbackForce = 3f;
+    private const float KnockbackForce = 3f; // Knockback applied to enemies
+    private const float PlayerKnockbackForce = 300f; // Knockback applied to the player
     private const float MaxBloom = 0.0f;
     private const float BloomIncrease = 0.02f;
     private const float BloomResetSpeed = 0.05f;
@@ -93,6 +94,7 @@ public class Gun : Sprite
     private void HandleFiring()
     {
         bool canShoot = canFire && !reloading && bulletsInMagazine > 0;
+
         if (Input.IsActionDown("Fire") && canShoot)
         {
             Fire();
@@ -108,9 +110,23 @@ public class Gun : Sprite
         FireRayCast();
         UpdateBulletTrail();
         currentBloom = float.Min(MaxBloom, currentBloom + BloomIncrease);
+
+        // Apply knockback to the player
+        ApplyPlayerKnockback();
+
         if (bulletsInMagazine <= 0)
         {
             StartReloading();
+        }
+    }
+
+    private void ApplyPlayerKnockback()
+    {
+        if (Parent is Player player)
+        {
+            Vector2 mousePosition = Input.WorldMousePosition;
+            Vector2 knockbackDirection = (GlobalPosition - mousePosition).Normalized();
+            player.ApplyKnockback(knockbackDirection * PlayerKnockbackForce);
         }
     }
 
@@ -118,9 +134,14 @@ public class Gun : Sprite
     {
         bulletTrail!.ClearPoints();
         bulletTrail.AddPoint(bulletTrail.GlobalPosition);
-        Vector2 endPoint = rayCast!.IsColliding ? rayCast.CollisionPoint : bulletTrail.GlobalPosition + new Vector2(MathF.Cos(rayCast.Rotation * MathF.PI / 180f), MathF.Sin(rayCast.Rotation * MathF.PI / 180f)) * 10000f;
+
+        Vector2 endPoint = rayCast!.IsColliding
+            ? rayCast.CollisionPoint
+            : bulletTrail.GlobalPosition + new Vector2(float.Cos(rayCast.Rotation * MathF.PI / 180f), float.Sin(rayCast.Rotation * MathF.PI / 180f)) * 10000f;
+
         bulletTrail.AddPoint(endPoint);
         bulletTrail.Visible = true;
+
         Tree.CreateTimer(0.025f).Timeout += () => bulletTrail.Visible = false;
     }
 
@@ -137,7 +158,7 @@ public class Gun : Sprite
 
         var angle = float.Atan2(angleVector.Y, angleVector.X);
         angle += RandomRange(-currentBloom, currentBloom);
-        
+
         rayCast!.Rotation = angle * 180 / MathF.PI;
         rayCast.GlobalPosition = GlobalPosition;
         rayCast.Update();
