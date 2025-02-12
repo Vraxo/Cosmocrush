@@ -2,8 +2,7 @@
 
 public sealed class NavigationServer
 {
-    private static NavigationServer? _instance;
-    public static NavigationServer Instance => _instance ??= new();
+    public static NavigationServer Instance { get; } = new();
 
     public List<NavigationRegion> Regions = [];
 

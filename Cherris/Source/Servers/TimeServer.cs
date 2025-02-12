@@ -4,8 +4,7 @@ namespace Cherris;
 
 public class TimeServer
 {
-    private static TimeServer? _instance;
-    public static TimeServer Instance => _instance ??= new();
+    public static TimeServer Instance { get; } = new();
 
     public static float Delta => Instance._delta;
     public static float Elapsed => Instance._elapsed;

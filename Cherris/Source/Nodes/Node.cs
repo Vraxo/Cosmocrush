@@ -31,8 +31,10 @@ public class Node
         }
     } = true;
 
-    public delegate void ActiveChangedEventHandler(Node sender, bool active);
-    public event ActiveChangedEventHandler? ActiveChanged;
+    public delegate void ActiveEvent(Node sender, bool active);
+    public delegate void ChildEvent(Node sender, Node child)
+    public event ActiveEvent? ActiveChanged;
+    public event ChildEvent? ChildAdded;
 
     /// <summary>Gets the absolute Pathetic to this node, starting with "/root/".</summary>
     public string AbsolutePath
@@ -62,9 +64,6 @@ public class Node
     }
 
     private bool started = false;
-
-    public delegate void NodeChildAddedEventHandler(Node sender, Node child);
-    public NodeChildAddedEventHandler? ChildAdded;
 
     /// <summary>Add the node's children to it before starting it.</summary>
     public virtual void Make() { }
@@ -478,16 +477,5 @@ public class Node
         Children.Add(node);
 
         return node;
-    }
-
-    /// <summary>
-    /// Replaces the current scene with a new root node.
-    /// </summary>
-    public static void ChangeScene(Node node)
-    {
-        SceneTree.Instance.RootNode?.Free();
-        SceneTree.Instance.RootNode = node;
-
-        node.Name = node.GetType().Name;
     }
 }

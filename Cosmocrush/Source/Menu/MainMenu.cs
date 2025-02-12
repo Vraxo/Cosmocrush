@@ -35,7 +35,7 @@ public class MainMenu : Node
     {
         PackedScene packedMainScene = new("Res/Scenes/World.yaml");
         var mainScene = packedMainScene.Instantiate<Node>();
-        ChangeScene(mainScene);
+        Tree.ChangeScene(mainScene);
     }
 
     private void OnSettingsButtonLeftClicked(Button sender)

@@ -4,8 +4,7 @@ namespace Cherris;
 
 public sealed class RenderServer
 {
-    private static RenderServer? _instance;
-    public static RenderServer Instance => _instance ??= new();
+    public static RenderServer Instance { get; } = new();
 
     public Camera? Camera;
 
@@ -29,8 +28,7 @@ public sealed class RenderServer
 
     public void Submit(Action drawAction, int layer)
     {
-        // Store the action with its layer in the wrapper
-        drawCommands.Add(new DrawCommand(drawAction, layer));
+        drawCommands.Add(new(drawAction, layer));
     }
 
     public void SetCamera(Camera camera)

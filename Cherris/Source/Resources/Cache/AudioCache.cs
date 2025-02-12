@@ -2,8 +2,7 @@
 
 public class AudioCache
 {
-    private static AudioCache? _instance;
-    public static AudioCache Instance => _instance ??= new AudioCache();
+    public static AudioCache? Instance => field ??= new();
 
     private readonly Dictionary<string, Audio?> _audioStream = [];
 

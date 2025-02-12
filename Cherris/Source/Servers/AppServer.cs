@@ -7,8 +7,7 @@ namespace Cherris;
 
 public sealed class AppServer
 {
-    private static AppServer? _instance;
-    public static AppServer Instance => _instance ??= new();
+    public static AppServer Instance { get; } = new();
 
     private const string configFilePath = "Res/Cherris/Config.yaml";
     private const string logFilePath = "Res/Cherris/Log.txt";
@@ -23,16 +22,6 @@ public sealed class AppServer
         Start();
         Update();
     }
-
-    //public void SetRootNode(Node node, bool packedScene = false)
-    //{
-    //    RootNode = node;
-    //
-    //    if (!packedScene)
-    //    {
-    //        RootNode.Make();
-    //    }
-    //}
 
     private void Start()
     {

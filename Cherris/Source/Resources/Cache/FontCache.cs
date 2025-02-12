@@ -2,8 +2,7 @@
 
 public sealed class FontCache
 {
-    private static FontCache? _instance;
-    public static FontCache Instance => _instance ??= new();
+    public static FontCache? Instance => field ??= new();
 
     private readonly Dictionary<string, Font> fonts = new();
 

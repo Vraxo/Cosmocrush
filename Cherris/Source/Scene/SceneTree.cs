@@ -2,12 +2,12 @@
 
 public sealed class SceneTree
 {
-    private static SceneTree? _instance;
-    public static SceneTree Instance => _instance ??= new();
+    public static SceneTree Instance { get; } = new();
 
     public Node? RootNode { get; set; }
-    private readonly List<SceneTreeTimer> timers = [];
     public bool Paused { get; private set; } = false;
+
+    private readonly List<SceneTreeTimer> timers = [];
 
     // Main
 
@@ -22,18 +22,28 @@ public sealed class SceneTree
 
         RootNode?.Process();
         Render();
-
-        List<SceneTreeTimer> timersToProcess = new(timers);
-     
-        foreach (SceneTreeTimer timer in timersToProcess)
-        {
-            timer.Process();
-        }
+        ProcessTimers();
 
         if (Input.IsKeyPressed(KeyCode.Enter))
         {
             PrintTree();
         }
+    }
+
+    public void ProcessTimers()
+    {
+        foreach (var timer in new List<SceneTreeTimer>(timers))
+        {
+            timer.Process();
+        }
+    }
+
+    public void ChangeScene(Node node)
+    {
+        RootNode?.Free();
+        RootNode = node;
+
+        //node.Name = node.GetType().Name;
     }
 
     public void PrintTree()

@@ -17,7 +17,6 @@ public class AnimationCache
         }
 
         Animation newAnimation = new(animationPath);
-        animations.Add(animationPath, newAnimation);
         return newAnimation;
     }
 

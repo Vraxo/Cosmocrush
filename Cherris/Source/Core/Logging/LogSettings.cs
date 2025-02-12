@@ -2,8 +2,7 @@
 
 public class LogSettings
 {
-    public static LogSettings Instance => instance ??= new();
-    private static LogSettings? instance;
+    public static LogSettings Instance { get; } = new();
 
     public Dictionary<string, bool> Settings { get; private set; }
 

@@ -2,8 +2,7 @@
 
 public class SoundCache
 {
-    private static SoundCache? _instance;
-    public static SoundCache Instance => _instance ??= new SoundCache();
+    public static SoundCache? Instance => field ??= new();
 
     private readonly Dictionary<string, Sound?> soundEffects = [];
 
