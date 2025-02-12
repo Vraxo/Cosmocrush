@@ -6,15 +6,11 @@ sprite: Sprite
 children:
   - name: Sprite
     type: Sprite
-    Texture: Res/Sprites/Astronaut.png
+    Texture: Res/Sprites/Player.png
     Position: [0, -16]
-    Scale: [0.1, 0.1]
-    InheritScale: false
 
   - name: Gun
     type: Gun
     path: Res/Scenes/Gun.yaml
     Texture: Res/Sprites/Gun.png
-    InheritScale: false
     Position: [0, -16]
-    Scale: [0.05, 0.05]

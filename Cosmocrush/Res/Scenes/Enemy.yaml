@@ -13,8 +13,6 @@ children:
     type: EnemySprite
     Position: [0, -24]
     Texture: Res/Sprites/Enemy.png
-    InheritScale: false
-    Scale: [0.1, 0.1]
 
   - name: NavigationAgent
     type: NavigationAgent

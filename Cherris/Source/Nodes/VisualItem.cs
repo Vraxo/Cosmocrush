@@ -1,5 +1,4 @@
-﻿using Cherris.DrawCommands;
-using Raylib_cs;
+﻿using Raylib_cs;
 
 namespace Cherris;
 
@@ -69,85 +68,78 @@ public abstract class VisualItem : Node
 
     protected void DrawCircle(Vector2 position, float radius, Color color)
     {
-        CircleDC circle = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Position = position,
-            Radius = radius,
-            Color = color,
-            Layer = Layer
-        };
-
-        RenderServer.Instance.Submit(circle);
+            Raylib.DrawCircleV(
+                position,
+                radius,
+                color);
+        }, Layer);
     }
 
     protected void DrawCircleOutline(Vector2 position, float radius, Color color)
     {
-        CircleDC circleOutline = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Position = position,
-            Radius = radius,
-            Color = color,
-            Layer = Layer
-        };
-
-        RenderServer.Instance.Submit(circleOutline);
+            Raylib.DrawCircleLinesV(
+                position,
+                radius,
+                color);
+        }, Layer);
     }
 
     // Pixel
 
     protected void DrawPixel(Vector2 position, Color color)
     {
-        PixelDC pixel = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Position = position,
-            Color = color,
-            Layer = Layer
-        };
-
-        RenderServer.Instance.Submit(pixel);
+            Raylib.DrawPixelV(
+                position,
+                color);
+        }, Layer);
     }
 
     // Rectangle
 
     protected void DrawRectangle(Vector2 position, Vector2 size, Color color)
     {
-        RectangleDC rectangle = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Position = position,
-            Size = size,
-            Color = color,
-            Layer = Layer
-        };
-
-        RenderServer.Instance.Submit(rectangle);
+            Raylib.DrawRectangleV(
+                position,
+                size,
+                color);
+        }, Layer);
     }
 
     protected void DrawRectangleOutline(Vector2 position, Vector2 size, Color color)
     {
-        RectangleOutlineDC rectangleOutline = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Position = position,
-            Size = size,
-            Color = color,
-            Layer = Layer
-        };
-
-        RenderServer.Instance.Submit(rectangleOutline);
+            Raylib.DrawRectangleLines(
+                (int)position.X,
+                (int)position.Y,
+                (int)size.X,
+                (int)size.Y,
+                color);
+        }, Layer);
     }
 
     protected void DrawRectangleRounded(Vector2 position, Vector2 size, float roundness, int segments, Color color)
     {
-        RectangleRoundedDC roundedRectangle = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Position = position,
-            Size = size,
-            Roundness = roundness,
-            Segments = segments,
-            Color = color,
-            Layer = Layer
-        };
-
-        RenderServer.Instance.Submit(roundedRectangle);
+            Raylib.DrawRectangleRounded(
+                new()
+                {
+                    Position = position,
+                    Size = size
+                },
+                roundness,
+                segments,
+                color);
+        }, Layer);
     }
 
     protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
@@ -190,18 +182,21 @@ public abstract class VisualItem : Node
 
     protected void DrawRectangleOutlineRounded(Vector2 position, Vector2 size, float roundness, int segments, float thickness, Color color)
     {
-        RectangleOutlineRoundedDC roundedRectangle = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Position = position,
-            Size = size,
-            Roundness = roundness,
-            Segments = segments,
-            Thickness = thickness,
-            Color = color,
-            Layer = Layer
-        };
+            Rectangle rectangle = new()
+            {
+                Position = position,
+                Size = size
+            };
 
-        RenderServer.Instance.Submit(roundedRectangle);
+            Raylib.DrawRectangleRoundedLines(
+                rectangle,
+                roundness,
+                segments,
+                thickness,
+                color);
+        }, Layer);
     }
 
     // Same as V1, except the outline is moved down.
@@ -305,103 +300,120 @@ public abstract class VisualItem : Node
 
     protected void DrawTexture(Texture texture, Vector2 position, float rotation, Vector2 scale, Color tint)
     {
-        TextureDC textureDrawCommand = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Texture = texture,
-            Position = position,
-            Rotation = rotation,
-            Scale = scale,
-            Tint = tint,
-            Layer = Layer
-        };
-
-        RenderServer.Instance.Submit(textureDrawCommand);
+            Raylib.DrawTextureEx(
+                texture,
+                position,
+                rotation,
+                scale.Length(),
+                tint);
+        }, Layer);
     }
 
     protected void DrawTextureScaled(Texture texture, Vector2 position, Vector2 origin, float rotation, Vector2 scale, bool flipH = false, bool flipV = false)
     {
-        TextureScaledDC textureDrawCommand = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Texture = texture,
-            Position = position,
-            Origin = origin,
-            Rotation = rotation,
-            Scale = scale,
-            FlipH = flipH,
-            FlipV = flipV,
-            Layer = Layer,
-            Shader = Shader,
-            UseShader = UseShader
-        };
+            Raylib.DrawTexturePro(
+                texture,
+                new()
+                {
+                    Position = new(0, 0),
+                    Width = texture.Size.X * (flipH ? -1 : 1),
+                    Height = texture.Size.Y * (flipV ? -1 : 1),
+                },
+                new()
+                {
+                    Position = position,
+                    Size = texture.Size * scale
+                },
+                origin,
+                rotation,
+                Color.White);
 
-        RenderServer.Instance.Submit(textureDrawCommand);
+        }, Layer);
     }
 
     protected void DrawTexturedRectangle(Texture texture, Rectangle source, Rectangle target, Vector2 origin, float rotation)
     {
-        TexturedRectangleDC texturedRectangle = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Texture = texture,
-            Source = source,
-            Target = target,
-            Origin = origin,
-            Rotation = rotation,
-            Layer = Layer
-        };
+            Raylib.DrawTexturePro(
+                texture,
+                source,
+                target,
+                origin,
+                rotation,
+                Color.White);
 
-        RenderServer.Instance.Submit(texturedRectangle);
+        }, Layer);
     }
 
     // Text
 
     protected void DrawText(string text, Vector2 position, Font font, float fontSize, float spacing, Color color)
     {
-        TextDC textDC = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Text = text,
-            Position = position,
-            Font = font,
-            FontSize = fontSize,
-            Spacing = spacing,
-            Color = color,
-            Layer = Layer
-        };
-
-        RenderServer.Instance.Submit(textDC);
+            Raylib.DrawTextEx(
+                font,
+                text,
+                position,
+                fontSize,
+                spacing,
+                color
+            );
+        }, Layer);
     }
 
-    protected void DrawTextOutlined(string text, Vector2 position, Font font, float fontSize, float spacing, Color color, float outlineThickness, Color outlineColor)
+    protected void DrawTextOutlined(string text, Vector2 position, Font font, float fontSize, float spacing, Color color, float outlineSize, Color outlineColor)
     {
-        TextDC textDC = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Text = text,
-            Position = position,
-            Font = font,
-            FontSize = fontSize,
-            Spacing = spacing,
-            Color = color,
-            OutlineSize = outlineThickness,
-            OutlineColor = outlineColor,
-            Layer = Layer
-        };
+            if (outlineSize > 0)
+            {
+                for (int x = (int)-outlineSize; x <= outlineSize; x++)
+                {
+                    for (int y = (int)-outlineSize; y <= outlineSize; y++)
+                    {
+                        if (x == 0 && y == 0) continue;
 
-        RenderServer.Instance.Submit(textDC);
+                        Raylib.DrawTextEx(
+                            font,
+                            text,
+                            position + new Vector2(x, y),
+                            fontSize,
+                            spacing,
+                            outlineColor
+                        );
+                    }
+                }
+            }
+
+            Raylib.DrawTextEx(
+                font,
+                text,
+                position,
+                fontSize,
+                spacing,
+                color
+            );
+        }, Layer);
     }
 
     // Line
 
     protected void DrawLine(Vector2 start, Vector2 end, float thickness, Color color)
     {
-        LineDC lineDC = new()
+        RenderServer.Instance.Submit(() =>
         {
-            Start = start,
-            End = end,
-            Color = color,
-            Thickness = thickness,
-            Layer = Layer
-        };
-
-        RenderServer.Instance.Submit(lineDC);
+            Raylib.DrawLineEx(
+                start,
+                end,
+                thickness,
+                color);
+        }, Layer);
     }
 
     protected void DrawGrid(Vector2 size, float cellSize, Color color)

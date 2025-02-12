@@ -7,25 +7,30 @@ public sealed class RenderServer
     private static RenderServer? _instance;
     public static RenderServer Instance => _instance ??= new();
 
-    public Camera Camera;
-    private readonly List<DrawCommand> drawCommands = [];
+    public Camera? Camera;
+
+    private class DrawCommand(Action drawAction, int layer)
+    {
+        public Action DrawAction { get; } = drawAction;
+        public int Layer { get; } = layer;
+    }
+
+    private readonly List<DrawCommand> drawCommands = new();
 
     private RenderServer() { }
 
     public void Process()
     {
-        //Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.DarkGray);
         BeginCameraMode();
-        //AppServer.Instance.RootNode?.Process();
         ProcessDrawCommands();
         EndCameraMode();
-        //Raylib.EndDrawing();
     }
 
-    public void Submit(DrawCommand drawCommand)
+    public void Submit(Action drawAction, int layer)
     {
-        drawCommands.Add(drawCommand);
+        // Store the action with its layer in the wrapper
+        drawCommands.Add(new DrawCommand(drawAction, layer));
     }
 
     public void SetCamera(Camera camera)
@@ -40,9 +45,10 @@ public sealed class RenderServer
 
     private void ProcessDrawCommands()
     {
-        foreach (DrawCommand command in drawCommands.OrderBy(c => c.Layer))
+        // Order the draw commands by layer before invoking them
+        foreach (var command in drawCommands.OrderBy(c => c.Layer))
         {
-            command.Draw();
+            command.DrawAction.Invoke();
         }
 
         drawCommands.Clear();

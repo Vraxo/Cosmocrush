@@ -51,8 +51,4 @@
     <Folder Include="Res\Cherris\Temporary\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="Source\Core\DrawCommands\TextDC.cs" />
-  </ItemGroup>
-
 </Project>
