@@ -65,7 +65,7 @@ public class SettingsMenu : Node2D
         Free();
     }
 
-    // Update
+    // Process
 
     private void CapturePreviousVolumes()
     {

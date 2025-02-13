@@ -29,29 +29,30 @@ public class Sprite : Node2D
 
         RenderServer.Instance.Submit(() =>
         {
-            Rectangle source = new()
-            {
-                Position = new(0, 0),
-                Width = Texture.Size.X * (FlipH ? -1 : 1),
-                Height = Texture.Size.Y * (FlipV ? -1 : 1),
-            };
-
-            Rectangle destination = new()
-            {
-                Position = GlobalPosition,
-                Size = Texture.Size * Scale
-            };
-
             if (UseShader)
             {
                 UpdateShaderUniforms(Shader);
                 Raylib.BeginShaderMode(Shader);
+
+                if (Parent.Name == "Player")
+                {
+                    Console.WriteLine("using shader: " + Shader.Id);
+                }
             }
 
             Raylib.DrawTexturePro(
                 Texture,
-                source,
-                destination,
+                new()
+                {
+                    Position = new(0, 0),
+                    Width = Texture.Size.X * (FlipH ? -1 : 1),
+                    Height = Texture.Size.Y * (FlipV ? -1 : 1),
+                },
+                new()
+                {
+                    Position = GlobalPosition,
+                    Size = Texture.Size * Scale
+                },
                 Origin,
                 Rotation,
                 Color.White);
@@ -64,5 +65,12 @@ public class Sprite : Node2D
         }, Layer);
     }
 
-    protected virtual void UpdateShaderUniforms(Shader shader) { }
+    protected virtual void UpdateShaderUniforms(Shader shader)
+    {
+        if (Texture != null)
+        {
+            int textureLoc = Raylib.GetShaderLocation(shader, "texture0");
+            Raylib.SetShaderValueTexture(shader, textureLoc, Texture);
+        }
+    }
 }

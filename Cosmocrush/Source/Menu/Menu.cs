@@ -15,5 +15,7 @@ public class Menu : Node
         base.Update();
 
         Raylib_cs.Raylib.DrawFPS(10, 10);
+
+        GetNode<ParticleGenerator>("Particles").SpawnAreaMax = new(0, VisualServer.WindowSize.Y);
     }
 }

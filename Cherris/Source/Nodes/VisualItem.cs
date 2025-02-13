@@ -50,9 +50,9 @@ public abstract class VisualItem : Node
 
     // Main
 
-    //public override void Update()
+    //public override void Process()
     //{
-    //    base.Update();
+    //    base.Process();
     //
     //    if (Visible && ReadyForVisibility)
     //    {

@@ -32,7 +32,7 @@ public class Node
     } = true;
 
     public delegate void ActiveEvent(Node sender, bool active);
-    public delegate void ChildEvent(Node sender, Node child)
+    public delegate void ChildEvent(Node sender, Node child);
     public event ActiveEvent? ActiveChanged;
     public event ChildEvent? ChildAdded;
 

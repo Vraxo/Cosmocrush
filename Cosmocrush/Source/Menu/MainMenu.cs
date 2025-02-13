@@ -52,7 +52,7 @@ public class MainMenu : Node
         Environment.Exit(0);
     }
 
-    // Update
+    // Process
 
     private void UpdateTitle()
     {

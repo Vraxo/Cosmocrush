@@ -15,13 +15,19 @@ public class Player : ColliderRectangle
     private Vector2 knockbackVelocity = Vector2.Zero;
     private const float knockbackRecoverySpeed = 0.1f;
 
+    public override void Ready()
+    {
+        base.Ready();
+
+        sprite!.UseShader = true;
+        sprite!.Shader = Raylib_cs.Raylib.LoadShader(null, "Res/Shaders/Glow.shader");
+    }
+
     public override void Update()
     {
         base.Update();
 
-        // Fixed knockback recovery (removed delta multiplication)
-        knockbackVelocity = Vector2.Lerp(knockbackVelocity, Vector2.Zero, knockbackRecoverySpeed);
-
+        SufferKnockback();
         LookAtMouse();
         HandleMovement();
     }
@@ -37,9 +43,13 @@ public class Player : ColliderRectangle
     public void ApplyKnockback(Vector2 knockback)
     {
         if (knockbackVelocity.Length() < knockback.Length())
+        {
             knockbackVelocity = knockback;
+        }
         else
+        {
             knockbackVelocity += knockback;
+        }
     }
 
     private void LookAtMouse()
@@ -52,6 +62,11 @@ public class Player : ColliderRectangle
         Vector2 direction = Input.GetVector("MoveLeft", "MoveRight", "MoveUp", "MoveDown");
         Vector2 movement = direction * Speed + knockbackVelocity;
         Position += movement * TimeServer.Delta; // Delta applied once to combined forces
+    }
+
+    private void SufferKnockback()
+    {
+        knockbackVelocity = Vector2.Lerp(knockbackVelocity, Vector2.Zero, knockbackRecoverySpeed);
     }
 
     private void Die() => Free();

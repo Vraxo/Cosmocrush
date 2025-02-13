@@ -14,7 +14,7 @@ public sealed class RenderServer
         public int Layer { get; } = layer;
     }
 
-    private readonly List<DrawCommand> drawCommands = new();
+    private readonly List<DrawCommand> drawCommands = [];
 
     private RenderServer() { }
 

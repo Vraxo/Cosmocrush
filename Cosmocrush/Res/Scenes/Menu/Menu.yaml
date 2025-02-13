@@ -3,14 +3,13 @@ type: Menu
 children:
   - name: ThemePlayer
     type: AudioPlayer
-    Audio: Res/Audio/Music/Menu.mp3
+    Audio: Res/Audio/Music/Myenu.mp3
     AutoPlay: true
     Bus: Music
 
   - name: Background
     type: MenuBackground
     Position: [0, 0]
-    Size: [0, 0]
     Texture: Res/Textures/Background.png
 
   - name: Particles

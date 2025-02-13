@@ -85,12 +85,12 @@ public class ItemList : ClickableRectangle
         base.Start();
     }
 
-    public override void Update()
+    public override void Process()
     {
         OnUpdate(this);
         HandleScrolling();
         UpdateList(StartingIndex);
-        base.Update();
+        base.Process();
     }
 
     public void AddItem(Node2D item)

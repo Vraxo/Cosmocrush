@@ -162,7 +162,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
-            Log.Error($"[AudioPlayer] [{Name}] Play: Audio is null.");
+            Log.Error($"[{Name}] Play: Audio is null.");
             return;
         }
 
