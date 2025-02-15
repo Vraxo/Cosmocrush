@@ -5,6 +5,7 @@ sprite: Sprite
 navigationAgent: NavigationAgent
 hitBox: HitBox
 hitFlashAnimationPlayer: HitFlashAnimationPlayer
+damageParticles: DamageParticles
 children:
   - name: HitFlashAnimationPlayer
     type: AnimationPlayer
@@ -13,6 +14,17 @@ children:
     type: EnemySprite
     Position: [0, -24]
     Texture: Res/Sprites/Enemy.png
+
+  - name: DamageParticles
+    type: ParticleEmitter
+    Spread: 180
+    Gravity: [0, 0]
+    Color: [255, 0, 0]
+    StartScaleMin: 4
+    StartScaleMax: 8
+    Explosiveness: 1
+    Amount: 25
+    OneShot: true
 
   - name: NavigationAgent
     type: NavigationAgent

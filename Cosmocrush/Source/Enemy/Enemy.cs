@@ -4,8 +4,7 @@ namespace Cosmocrush;
 
 public class Enemy : ColliderRectangle
 {
-    private int health = 20;
-    private const int maxHealth = 20;
+    private int health = MaxHealth;
     private Vector2 knockback = Vector2.Zero;
     private double lastDamageTime = -0.5f;
     private bool alive = true;
@@ -15,14 +14,18 @@ public class Enemy : ColliderRectangle
     private readonly NavigationAgent? navigationAgent;
     private readonly ColliderRectangle? hitBox;
     private readonly AnimationPlayer? hitFlashAnimationPlayer;
+    private readonly ParticleEmitter? damageParticles;
 
     private readonly Sound damageSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/EnemyDamage.mp3");
-    private readonly int damage = 2;
-    private readonly float speed = 100f;
-    private readonly float proximityThreshold = 10f;
-    private readonly float knockbackRecoverySpeed = 0.1f;
-    private readonly float damageRadius = 100;
-    private readonly float damageCooldown = 0.5f;
+
+    private const int MaxHealth = 2000;
+    private const int Damage = 2;
+    //private const float Speed = 100f;
+    private const float Speed = 0f;
+    private const float ProximityThreshold = 10f;
+    private const float KnockbackRecoverySpeed = 0.1f;
+    private const float DamageRadius = 100;
+    private const float DamageCooldown = 0.5f;
 
     // Main
 
@@ -55,14 +58,14 @@ public class Enemy : ColliderRectangle
     {
         health -= damage;
 
+        CreateDamageIndicator(damage);
+        hitFlashAnimationPlayer!.Play("Res/Animations/HitFlash.anim.yaml");
+        damageParticles!.Emitting = true;
+
         if (health <= 0)
         {
             Die();
         }
-
-        CreateDamageIndicator(damage);
-
-        hitFlashAnimationPlayer!.Play("Res/Animations/HitFlash.anim.yaml");
     }
 
     public void ApplyKnockback(Vector2 force)
@@ -81,7 +84,7 @@ public class Enemy : ColliderRectangle
 
     private void SufferKnockback()
     {
-        knockback = Vector2.Lerp(knockback, Vector2.Zero, knockbackRecoverySpeed);
+        knockback = Vector2.Lerp(knockback, Vector2.Zero, KnockbackRecoverySpeed);
     }
 
     private void CreateDamageIndicator(int damage)
@@ -93,7 +96,7 @@ public class Enemy : ColliderRectangle
 
         damageIndicator.Text = damage.ToString();
         damageIndicator.Health = health;
-        damageIndicator.MaxHealth = maxHealth;
+        damageIndicator.MaxHealth = MaxHealth;
 
         AddChild(damageIndicator);
     }
@@ -132,11 +135,11 @@ public class Enemy : ColliderRectangle
         Vector2 targetPosition = navigationAgent.Path[0];
         Vector2 direction = (targetPosition - GlobalPosition).Normalized();
 
-        Vector2 movement = direction * speed * TimeServer.Delta + knockback;
+        Vector2 movement = direction * Speed * TimeServer.Delta + knockback;
         GlobalPosition += movement;
 
 
-        if (GlobalPosition.DistanceTo(targetPosition) < proximityThreshold)
+        if (GlobalPosition.DistanceTo(targetPosition) < ProximityThreshold)
         {
             navigationAgent.Path.RemoveAt(0);
         }
@@ -144,12 +147,12 @@ public class Enemy : ColliderRectangle
 
     private void AttemptToDamagePlayer()
     {
-        bool isPlayerInRange = GlobalPosition.DistanceTo(player!.GlobalPosition) <= damageRadius;
-        bool canShoot = TimeServer.Elapsed - lastDamageTime >= damageCooldown;
+        bool isPlayerInRange = GlobalPosition.DistanceTo(player!.GlobalPosition) <= DamageRadius;
+        bool canShoot = TimeServer.Elapsed - lastDamageTime >= DamageCooldown;
 
         if (isPlayerInRange && canShoot)
         {
-            player?.TakeDamage(damage);
+            player?.TakeDamage(Damage);
             lastDamageTime = TimeServer.Elapsed;
         }
     }

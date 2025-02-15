@@ -10,7 +10,7 @@ children:
 
   - name: Background
     type: ColorRectangle
-    Color: [32, 32, 32]
+    Color: [0, 0, 0]
     #Color: [64, 64, 64, 255]
     Size: [2000, 2000]
 

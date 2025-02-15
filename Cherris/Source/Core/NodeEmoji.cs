@@ -6,7 +6,7 @@ public static class NodeEmoji
     {
         return node switch
         {
-            ParticleGenerator => "✨",
+            ParticleEmitter => "✨",
             Slider => "🎚️",
             Label => "💬",
             Camera => "🎥",
