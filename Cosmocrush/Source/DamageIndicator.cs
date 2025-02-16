@@ -33,9 +33,9 @@ public class DamageIndicator : Label
         SetOutlineColor();
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         Position = new(
             Position.X,

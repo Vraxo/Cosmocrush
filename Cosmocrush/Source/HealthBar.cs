@@ -14,9 +14,9 @@ public class HealthBar : ProgressBar
         player = GetNode<Player>("/root/Player");
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         UpdatePosition();
         UpdatePercentage();

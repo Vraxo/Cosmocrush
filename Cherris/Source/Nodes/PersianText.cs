@@ -15,9 +15,9 @@ namespace Cherris
         {
         }
 
-        public override void Update()
+        public override void Process()
         {
-            base.Update();
+            base.Process();
         }
 
         public override void Draw()

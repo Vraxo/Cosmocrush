@@ -76,9 +76,9 @@ public class Control : ClickableRectangle
 
     // Main
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         if (Navigable && Focused && wasFocusedLastFrame)
         {

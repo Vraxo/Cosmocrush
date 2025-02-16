@@ -64,9 +64,9 @@ public class Button : Control
         WasDisabled += (button) => Themes.Current = Disabled ? Themes.Disabled : Themes.Normal;
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         if (!Disabled)
         {
@@ -141,6 +141,11 @@ public class Button : Control
 
         if (mouseOver)
         {
+            if (Name == "PlayButton")
+            {
+                Console.WriteLine(onTop);
+            }
+
             if (Input.IsMouseButtonPressed(button) && onTop)
             {
                 pressed = true;
@@ -259,13 +264,13 @@ public class Button : Control
     //
     //    float x = TextAlignment.Horizontal switch
     //    {
-    //        HorizontalAlignment.Center => ScaledSize.X / 2,
-    //        HorizontalAlignment.Right => ScaledSize.X - textSize.X / 2
+    //        HAlignment.Center => ScaledSize.X / 2,
+    //        HAlignment.Right => ScaledSize.X - textSize.X / 2
     //    };
     //
     //    float y = TextAlignment.Vertical switch
     //    {
-    //        VerticalAlignment.Center => ScaledSize.Y / 2
+    //        VAlignment.Center => ScaledSize.Y / 2
     //    };
     //
     //    Vector2 origin = new(x, y);

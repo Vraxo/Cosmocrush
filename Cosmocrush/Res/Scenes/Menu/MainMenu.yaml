@@ -11,7 +11,7 @@ children:
     Position: [500,250]
     Layer: 2
     Text: COSMOCRUSH
-    HorizontalAlignment: Center
+    HAlignment: Center
     ThemeFile: Res/Themes/Title.theme.yaml
 
   - name: ButtonContainer

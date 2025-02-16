@@ -10,9 +10,9 @@ public class Menu : Node
         GameSettings.Instance.Load();
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         Raylib_cs.Raylib.DrawFPS(10, 10);
 

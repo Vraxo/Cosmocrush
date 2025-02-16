@@ -10,6 +10,7 @@ public class MainScene : Node
     {
         base.Ready();
 
+        ProcessingMode = ProcessMode.Always;
         background = GetNode<ColorRectangle>("Background");
 
         //GetNode<NavigationObstacle>("UpperWall").Position = new(Window.WindowSize.X / 2, 0);
@@ -18,10 +19,15 @@ public class MainScene : Node
         //GetNode<NavigationObstacle>("UpperWall").Scale = new(100, 0.1f);
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         background.Position = VisualServer.WindowSize / 2;
+
+        if (Input.IsKeyPressed(KeyCode.Space))
+        {
+            Tree.Paused = !Tree.Paused;
+        }
     }
 }

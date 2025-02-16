@@ -1,6 +1,6 @@
 ﻿name: Gun
 type: Gun
-HorizontalAlignment: Left
+HAlignment: Left
 rayCast: RayCast
 cooldownTimer: CooldownTimer
 reloadTimer: ReloadTimer

@@ -22,7 +22,7 @@ public class AnimationPlayer : Node
         }
     }
 
-    public override void Update()
+    public override void Process()
     {
         if (!playing || currentAnimation == null) return;
 

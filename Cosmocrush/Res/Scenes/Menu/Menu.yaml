@@ -11,7 +11,6 @@ children:
     type: MenuBackground
     Position: [0, 0]
     Texture: Res/Textures/Background.png
-    Visible: false
 
   - name: Particles
     type: ParticleEmitter

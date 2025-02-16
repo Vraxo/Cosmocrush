@@ -13,7 +13,7 @@ children:
     children:
     - name: MasterLabel
       type: Label
-      HorizontalAlignment: Right
+      HAlignment: Right
       Text: Master
       #Theme:
       #    Font: Res/Fonts/RaceSport.ttf:16
@@ -22,13 +22,13 @@ children:
         - name: Slider
           type: HSlider
           path: Res/Scenes/UI/Slider.yaml
-          HorizontalAlignment: Left
+          HAlignment: Left
           FocusNeighborTop: ../../../ReturnButton
           FocusNeighborBottom: ../../MusicLabel/Slider
     
     - name: MusicLabel
       type: Label
-      HorizontalAlignment: Right
+      HAlignment: Right
       Text: Music
       ThemeFile: Res/Themes/Label.theme.yaml
       children:
@@ -40,7 +40,7 @@ children:
     
     - name: SfxLabel
       type: Label
-      HorizontalAlignment: Right
+      HAlignment: Right
       Text: SFX
       ThemeFile: Res/Themes/Label.theme.yaml
       children:

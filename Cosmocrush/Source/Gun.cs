@@ -37,9 +37,9 @@ public class Gun : Sprite
         reloadTimer!.Timeout += OnReloadTimerTimeout;
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
         HandleFiring();
         HandleReloadingInput();
         LookAtMouse();
@@ -161,7 +161,7 @@ public class Gun : Sprite
 
         rayCast!.Rotation = angle * 180 / MathF.PI;
         rayCast.GlobalPosition = GlobalPosition;
-        rayCast.Update();
+        rayCast.Process();
 
         if (rayCast.IsColliding)
         {

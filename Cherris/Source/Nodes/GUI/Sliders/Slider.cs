@@ -38,9 +38,9 @@ public abstract class Slider : Control
         Theme.Grabber.Roundness = 1;
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         if (Input.IsMouseButtonPressed(MouseButtonCode.Left))
         {

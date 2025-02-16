@@ -1,7 +1,7 @@
 name: Slider
 type: HSlider
 Position: [32,-8]
-HorizontalAlignment: Left
+HAlignment: Left
 ThemeFile: Res/Themes/Grabber.theme.yaml
 AudioBus: SFX
 FocusGainedSound: Res/Audio/SFX/Ui.mp3

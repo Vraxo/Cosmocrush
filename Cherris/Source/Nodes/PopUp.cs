@@ -26,7 +26,7 @@ public class PopUp : ClickableRectangle
     {
         Size = new(640, 480);
         InheritPosition = false;
-        VerticalAlignment = VerticalAlignment.Top;
+        VAlignment = VerticalAlignment.Top;
         TitleBarTheme.Roundness = 0;
     }
 
@@ -268,21 +268,21 @@ public class PopUp : ClickableRectangle
         isResizingBottom = false;
         isResizingTop = false;
 
-        if (HorizontalAlignment == HorizontalAlignment.Left)
+        if (HAlignment == HorizontalAlignment.Left)
         {
-            HorizontalAlignment = HorizontalAlignment.Center;
+            HAlignment = HorizontalAlignment.Center;
             GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
             MoveChildrenToRight();
         }
-        else if (HorizontalAlignment == HorizontalAlignment.Right)
+        else if (HAlignment == HorizontalAlignment.Right)
         {
-            HorizontalAlignment = HorizontalAlignment.Center;
+            HAlignment = HorizontalAlignment.Center;
             GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
             MoveChildrenToLeft();
         }
-        else if (VerticalAlignment == VerticalAlignment.Bottom)
+        else if (VAlignment == VerticalAlignment.Bottom)
         {
-            VerticalAlignment= VerticalAlignment.Top;
+            VAlignment= VerticalAlignment.Top;
             GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y - Size.Y);
             MoveChildrenUp();
         }
@@ -293,7 +293,7 @@ public class PopUp : ClickableRectangle
         if (!isResizingRight && IsMouseOnRightEdge() && !isResizingLeft)
         {
             isResizingRight = true;
-            HorizontalAlignment = HorizontalAlignment.Left;
+            HAlignment = HorizontalAlignment.Left;
             GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
             MoveChildrenToLeft();
         }
@@ -301,7 +301,7 @@ public class PopUp : ClickableRectangle
         if (!isResizingLeft && IsMouseOnLeftEdge() && !isResizingRight)
         {
             isResizingLeft = true;
-            HorizontalAlignment = HorizontalAlignment.Right;
+            HAlignment = HorizontalAlignment.Right;
             GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
             MoveChildrenToRight();
         }
@@ -314,7 +314,7 @@ public class PopUp : ClickableRectangle
         if (!isResizingTop && IsMouseOnTopEdge() && !isResizingBottom)
         {
             isResizingTop = true;
-            VerticalAlignment = VerticalAlignment.Bottom;
+            VAlignment = VerticalAlignment.Bottom;
             GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y + Size.Y);
             MoveChildrenDown();
         }

@@ -4,9 +4,9 @@ namespace Cosmocrush;
 
 public class SexBox : VerticalContainer
 {
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         var parent = (Parent as PopUp)!;
 

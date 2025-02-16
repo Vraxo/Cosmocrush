@@ -44,9 +44,9 @@ public partial class ParticleEmitter : Node2D
     private float cycleTimer;
     private bool emitted;
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
         ProcessParticles();
 
         if (Emitting && !(OneShot && emitted))

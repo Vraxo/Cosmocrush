@@ -2,23 +2,23 @@
 
 namespace Cherris;
 
-public class Audio
+public class AudioStream
 {
     public float Length { get; private set; } = 0.1f;
     public string Path { get; private set; }
     
     private Music raylibMusic;
 
-    public static implicit operator Music(Audio audio) => audio.raylibMusic;
+    public static implicit operator Music(AudioStream audio) => audio.raylibMusic;
 
-    private Audio(Music music, float length, string path)
+    private AudioStream(Music music, float length, string path)
     {
         raylibMusic = music;
         Length = length;
         Path = path;
     }
 
-    public static Audio? Load(string filePath)
+    public static AudioStream? Load(string filePath)
     {
         Music music = Raylib.LoadMusicStream(filePath);
         float length = Raylib.GetMusicTimeLength(music);

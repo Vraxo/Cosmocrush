@@ -40,7 +40,7 @@ public partial class OptionButton : Button
         }
     }
 
-    public override void Update()
+    public override void Process()
     {
         if (Open)
         {
@@ -52,7 +52,7 @@ public partial class OptionButton : Button
             }
         }
 
-        base.Update();
+        base.Process();
     }
 
     private void DropDown()

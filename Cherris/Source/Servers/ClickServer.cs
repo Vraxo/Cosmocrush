@@ -26,6 +26,8 @@ public sealed class ClickServer
         if (Input.IsMouseButtonPressed(MouseButtonCode.Left))
         {
             SignalClick(MouseButtonCode.Left);
+
+            Console.WriteLine(clickables.Count);
         }
 
         if (Input.IsMouseButtonPressed(MouseButtonCode.Right))
@@ -38,7 +40,7 @@ public sealed class ClickServer
     {
         int highestLayer = MinLayer;
 
-        foreach (var clickable in clickables)
+        foreach (Clickable clickable in clickables)
         {
             if (clickable.Layer > highestLayer)
             {
@@ -109,7 +111,7 @@ public sealed class ClickServer
         return topClickable;
     }
 
-    private bool IsMouseOverNode2D(Node2D node)
+    private static bool IsMouseOverNode2D(Node2D node)
     {
         Vector2 mousePosition = Input.MousePosition;
 

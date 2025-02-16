@@ -2,7 +2,7 @@
 
 public class AspectRatioContainer : Node2D
 {
-    public override void Update()
+    public override void Process()
     {
         foreach (Node2D child in Children.Cast<Node2D>())
         {
@@ -19,6 +19,6 @@ public class AspectRatioContainer : Node2D
             //child.position = center;
         }
 
-        base.Update();
+        base.Process();
     }
 }

@@ -13,9 +13,9 @@ public class NavigationAgent : Node2D
 
     // Main
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         bool notTooClose = TargetPosition.DistanceTo(lastTargetPosition) > TargetMoveThreshold;
 

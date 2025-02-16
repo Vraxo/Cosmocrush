@@ -7,15 +7,13 @@ public class Node2D : VisualItem
     public bool InheritPosition { get; set; } = true;
     public bool InheritOrigin { get; set; } = false;
     public bool InheritScale { get; set; } = true;
-    public HorizontalAlignment HorizontalAlignment { get; set; } = HorizontalAlignment.Center;
-    public VerticalAlignment VerticalAlignment { get; set; } = VerticalAlignment.Center;
+    public HorizontalAlignment HAlignment { get; set; } = HorizontalAlignment.Center;
+    public VerticalAlignment VAlignment { get; set; } = VerticalAlignment.Center;
     public float Rotation { get; set; } = 0;
-
-    public event EventHandler<Vector2>? SizeChanged;
 
     public virtual Vector2 Size
     {
-        get ;
+        get;
 
         set
         {
@@ -36,10 +34,7 @@ public class Node2D : VisualItem
             return field;
         }
 
-        set
-        {
-            field = value;
-        }
+        set => field = value;
     } = new(1, 1);
 
     public Vector2 ScaledSize => Size * Scale;
@@ -89,17 +84,14 @@ public class Node2D : VisualItem
             return field;
         }
 
-        set
-        {
-            field = value;
-        }
+        set => field = value;
     } = Vector2.Zero;
 
     public Vector2 Origin
     {
         get
         {
-            float x = HorizontalAlignment switch
+            float x = HAlignment switch
             {
                 HorizontalAlignment.Center => Size.X * Scale.X / 2,
                 HorizontalAlignment.Left => 0,
@@ -107,7 +99,7 @@ public class Node2D : VisualItem
                 _ => 0
             };
 
-            float y = VerticalAlignment switch
+            float y = VAlignment switch
             {
                 VerticalAlignment.Top => 0,
                 VerticalAlignment.Center => Size.Y * Scale.Y / 2,
@@ -119,6 +111,9 @@ public class Node2D : VisualItem
             return alignmentOffset + Offset;
         }
     }
+
+    // Events
+    public event EventHandler<Vector2>? SizeChanged;
 
     // Methods
 

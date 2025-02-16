@@ -27,10 +27,10 @@ public partial class NumberLineEdit : LineEdit
         ValidCharacters = CharacterSet.Numbers;
     }
 
-    public override void Update()
+    public override void Process()
     {
         ClampValue();
-        base.Update();
+        base.Process();
     }
 
     private void ClampValue()

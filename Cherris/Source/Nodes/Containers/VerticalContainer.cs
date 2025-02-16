@@ -37,8 +37,8 @@ public class VerticalContainer : ClickableRectangle
         Size = new(250, 150);
         OriginPreset = OriginPreset.TopLeft;
 
-        HorizontalAlignment = HorizontalAlignment.Center;
-        VerticalAlignment = VerticalAlignment.Top;
+        HAlignment = HorizontalAlignment.Center;
+        VAlignment = VerticalAlignment.Top;
     }
 
     public override void Process()

@@ -34,7 +34,7 @@ public abstract class BaseButton : Control
 
     #endregion
 
-    public override void Update()
+    public override void Process()
     {
         if (!Disabled)
         {
@@ -42,7 +42,7 @@ public abstract class BaseButton : Control
             HandleKeyboardInput();
         }
 
-        base.Update();
+        base.Process();
     }
 
     private void HandleKeyboardInput()

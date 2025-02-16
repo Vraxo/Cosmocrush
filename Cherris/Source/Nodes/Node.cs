@@ -2,18 +2,24 @@
 
 namespace Cherris;
 
-/// <summary>
-/// Represents a basic node in a scene tree with support for children, activation, and destruction.
-/// </summary>
 public class Node
 {
-    /// <summary>Gets the root node of the application scene tree.</summary>
+    public enum ProcessMode
+    {
+        Inherit,
+        Pausable,
+        WhenPaused,
+        Disabled,
+        Always
+    }
+
     public static Node RootNode => SceneTree.Instance.RootNode!;
     public static SceneTree Tree => SceneTree.Instance;
 
     public string Name { get; set; } = "";
     public Node? Parent { get; set; } = null;
     public List<Node> Children { get; set; } = [];
+    public ProcessMode ProcessingMode = ProcessMode.Inherit;
 
     public bool Active
     {
@@ -27,16 +33,10 @@ public class Node
             }
 
             field = value;
-            ActiveChanged?.Invoke(this, field);
+            ActiveChanged?.Invoke(this, Active);
         }
     } = true;
 
-    public delegate void ActiveEvent(Node sender, bool active);
-    public delegate void ChildEvent(Node sender, Node child);
-    public event ActiveEvent? ActiveChanged;
-    public event ChildEvent? ChildAdded;
-
-    /// <summary>Gets the absolute Pathetic to this node, starting with "/root/".</summary>
     public string AbsolutePath
     {
         get
@@ -63,23 +63,23 @@ public class Node
         }
     }
 
-    private bool started = false;
+    public bool IsReady = false;
 
-    /// <summary>Add the node's children to it before starting it.</summary>
+    // Events
+
+    public delegate void ActiveEvent(Node sender, bool active);
+    public delegate void ChildEvent(Node sender, Node child);
+    public event ActiveEvent? ActiveChanged;
+    public event ChildEvent? ChildAdded;
+
+    // Other
+
     public virtual void Make() { }
 
-    /// <summary>Initializes the node when added to the scene.</summary>
     public virtual void Start() { }
 
-    /// <summary>Called once when the node becomes active.</summary>
     public virtual void Ready() { }
 
-    /// <summary>Updates the node on each frame while active.</summary>
-    public virtual void Update() { }
-
-    public virtual void Update(float delta) { }
-
-    /// <summary>Recursively destroys this node and its children, removing it from the parent's children.</summary>
     public virtual void Free()
     {
         List<Node> childrenToDestroy = new(Children);
@@ -94,60 +94,9 @@ public class Node
 
     public virtual void ProcessBegin() { }
 
-    /// <summary>Processes the node and its children, handling initialization and updating.</summary>
-    public virtual void Process()
-    {
-        if (!Active)
-        {
-            return;
-        }
-
-        if (!started)
-        {
-            Ready();
-            started = true;
-        }
-
-        ProcessBegin();
-
-        Update();
-
-        for (int i = 0; i < Children.Count; i++)
-        {
-            Children[i].Process();
-        }
-
-        ProcessEnd();
-    }
+    public virtual void Process() { }
 
     public virtual void ProcessEnd() { }
-
-    /// <summary>Prints the node and all its children in a tree structure.</summary>
-    //public void PrintChildren(string indent = "")
-    //{
-    //    Console.WriteLine(indent + "-" + Name);
-    //
-    //    foreach (var child in Children)
-    //    {
-    //        child.PrintChildren(indent + "-");
-    //    }
-    //
-    //    Console.WriteLine(AbsolutePath);
-    //    
-    //    foreach (var child in Children)
-    //    {
-    //        child.PrintChildren();
-    //    }
-    //}
-
-    //public void PrintChildren()
-    //{
-    //    Console.OutputEncoding = System.TextDC.Encoding.UTF8;
-    //
-    //    Tree root = new($"🍎[green]{Name}[/]");
-    //    AddChildrenToTree(this, root);
-    //    AnsiConsole.Write(root);
-    //}
 
     public void PrintChildren()
     {
@@ -179,7 +128,6 @@ public class Node
         }
     }
 
-    /// <summary>Activates the node and recursively activates all its children.</summary>
     public virtual void Activate()
     {
         Active = true;
@@ -190,7 +138,6 @@ public class Node
         }
     }
 
-    /// <summary>Deactivates the node and recursively deactivates all its children.</summary>
     public virtual void Deactivate()
     {
         Active = false;
@@ -201,9 +148,6 @@ public class Node
         }
     }
 
-    /// <summary>
-    /// Returns the parent node cast to type <typeparamref name="T"/> if available, otherwise returns the current node.
-    /// </summary>
     public T GetParent<T>() where T : Node
     {
         if (Parent is not null)
@@ -213,16 +157,7 @@ public class Node
 
         return (T)this;
     }
-
-    /// <summary>
-    /// Retrieves a node of type <typeparamref name="T"/> from the scene tree based on a specified Pathetic.
-    /// Throws an exception if the node is not found.
-    /// </summary>
-    /// <typeparam name="T">The expected type of the node to be returned.</typeparam>
-    /// <param name="path">
-    /// The Pathetic to the target node, which can be either absolute (starting with "/root") or relative.
-    /// Supports ".." for traversing back one level.
-    /// </param>
+    
     public T GetNode<T>(string path) where T : Node
     {
         if (string.IsNullOrEmpty(path))
@@ -289,17 +224,7 @@ public class Node
 
         return currentNode as T ?? throw new InvalidOperationException("Node is not of the expected type.");
     }
-
-    /// <summary>
-    /// Retrieves a node of type <typeparamref name="T"/> from the scene tree based on a specified Pathetic.
-    /// Returns null if the node is not found.
-    /// Supports ".." for traversing back one level.
-    /// </summary>
-    /// <typeparam name="T">The expected type of the node to be returned.</typeparam>
-    /// <param name="path">
-    /// The Pathetic to the target node, which can be either absolute (starting with "/root") or relative.
-    /// Supports ".." for traversing back one level.
-    /// </param>
+    
     public T? GetNodeOrNull<T>(string path) where T : Node
     {
         if (string.IsNullOrEmpty(path))
@@ -367,9 +292,6 @@ public class Node
         return currentNode as T;
     }
 
-    /// <summary>
-    /// Returns a child node by name if it exists, cast to <typeparamref name="T"/>.
-    /// </summary>
     public T? GetChild<T>(string name) where T : Node
     {
         foreach (Node child in Children)
@@ -382,10 +304,7 @@ public class Node
 
         return null;
     }
-
-    /// <summary>
-    /// Returns the first child node matching type <typeparamref name="T"/>, if it exists.
-    /// </summary>
+    
     public T? GetChild<T>() where T : Node
     {
         foreach (Node child in Children)
@@ -399,12 +318,6 @@ public class Node
         return null;
     }
 
-    /// <summary>
-    /// Returns a child node by name. Throws an exception if the child is not found.
-    /// </summary>
-    /// <param name="name">The name of the child node to find.</param>
-    /// <returns>The child node with the specified name.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when no child node with the specified name exists.</exception>
     public Node GetChild(string name)
     {
         foreach (Node child in Children)
@@ -420,11 +333,6 @@ public class Node
         throw new InvalidOperationException($"Child node with name '{name}' not found.");
     }
 
-    /// <summary>
-    /// Returns a child node by name if it exists, or null if it does not.
-    /// </summary>
-    /// <param name="name">The name of the child node to find.</param>
-    /// <returns>The child node with the specified name, or null if no such child exists.</returns>
     public Node? GetChildOrNull(string name)
     {
         foreach (Node child in Children)
@@ -438,43 +346,15 @@ public class Node
         return null;
     }
 
-    /// <summary>
-    /// Adds a child node with a specified name and optionally starts it.
-    /// </summary>
-    public Node AddChild(Node node, string name, bool start = true)
+    public Node AddChild(Node node, string name = "")
     {
         node.Name = name;
         node.Parent = this;
 
         node.Make();
 
-        if (start)
-        {
-            node.Start();
-        }
-
         Children.Add(node);
         ChildAdded?.Invoke(this, node);
-
-        return node;
-    }
-
-    /// <summary>
-    /// Adds a child node using its type name and optionally starts it.
-    /// </summary>
-    public Node AddChild(Node node, bool start = true)
-    {
-        node.Name = node.GetType().Name;
-        node.Parent = this;
-
-        node.Make();
-
-        if (start)
-        {
-            node.Start();
-        }
-
-        Children.Add(node);
 
         return node;
     }

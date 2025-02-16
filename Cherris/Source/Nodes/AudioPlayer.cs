@@ -29,7 +29,7 @@ public class AudioPlayer : Node
         }
     } = "Master";
 
-    public Audio? Audio
+    public AudioStream? Audio
     {
         get;
 
@@ -49,7 +49,7 @@ public class AudioPlayer : Node
         {
             if (Audio is null)
             {
-                Log.Error($"[AudioPlayer] [{Name}] TimePlayed: Audio is null.");
+                Log.Error($"[AudioPlayer] [{Name}] TimePlayed: AudioStream is null.");
                 return 0;
             }
 
@@ -109,12 +109,12 @@ public class AudioPlayer : Node
 
     // Events
 
-    public delegate void EventHandler(AudioPlayer sender);
-    public delegate void BusEventHandler(AudioPlayer sender, string bus);
-    public event EventHandler? Paused;
-    public event EventHandler? Resumed;
-    public event EventHandler? Finished;
-    public event BusEventHandler? BusChanged;
+    public delegate void Event(AudioPlayer sender);
+    public delegate void BusEvent(AudioPlayer sender, string bus);
+    public event Event? Paused;
+    public event Event? Resumed;
+    public event Event? Finished;
+    public event BusEvent? BusChanged;
 
     // Main
 
@@ -131,7 +131,7 @@ public class AudioPlayer : Node
         }
     }
 
-    public override void Update()
+    public override void Process()
     {
         if (Audio is null)
         {
@@ -162,7 +162,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
-            Log.Error($"[{Name}] Play: Audio is null.");
+            Log.Error($"[{Name}] Play: AudioStream is null.");
             return;
         }
 
@@ -185,7 +185,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
-            Log.Error($"[AudioPlayer] [{Name}] Resume: Audio is null.");
+            Log.Error($"[AudioPlayer] [{Name}] Resume: AudioStream is null.");
             return;
         }
 
@@ -197,7 +197,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
-            Log.Error($"[AudioPlayer] [{Name}] Pause: Audio is null.");
+            Log.Error($"[AudioPlayer] [{Name}] Pause: AudioStream is null.");
             return;
         }
 
@@ -209,7 +209,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
-            Log.Error($"[AudioPlayer] [{Name}] Stop: Audio is null.");
+            Log.Error($"[AudioPlayer] [{Name}] Stop: AudioStream is null.");
             return;
         }
 
@@ -223,7 +223,7 @@ public class AudioPlayer : Node
     {
         if (Audio is null)
         {
-            Log.Error($"[AudioPlayer] [{Name}] Seek: Audio is null.");
+            Log.Error($"[AudioPlayer] [{Name}] Seek: AudioStream is null.");
             return;
         }
 

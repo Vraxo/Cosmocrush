@@ -63,7 +63,7 @@ public partial class LineEdit : Button
             HandleInput();
             Draw();
             UpdateAlpha();
-            base.Update();
+            base.Process();
         }
 
         private void Draw()

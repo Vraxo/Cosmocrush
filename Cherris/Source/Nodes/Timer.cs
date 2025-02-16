@@ -28,9 +28,9 @@ public class Timer : Node
         }
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         if (fired)
         {

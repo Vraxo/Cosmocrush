@@ -60,7 +60,7 @@ public class CheckBox : Control
         CheckStyles.FillColor = DefaultTheme.Accent;
     }
 
-    public override void Update()
+    public override void Process()
     {
         if (!Disabled)
         {
@@ -69,7 +69,7 @@ public class CheckBox : Control
         }
 
         Draw();
-        base.Update();
+        base.Process();
     }
 
     public void Toggle()

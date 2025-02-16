@@ -21,9 +21,9 @@ public class MainMenu : Node
         quitButton!.LeftClicked += OnQuitButtonLeftClicked;
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         UpdateTitle();
         UpdateButtonContainer();

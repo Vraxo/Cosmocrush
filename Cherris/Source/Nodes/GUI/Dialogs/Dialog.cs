@@ -9,7 +9,7 @@ public partial class Dialog : Node2D
         GetNode<Button>("CloseButton").LeftClicked += OnCloseButtonLeftClicked;
     }
 
-    public override void Update()
+    public override void Process()
     {
         UpdatePosition();
     }

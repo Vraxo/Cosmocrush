@@ -9,7 +9,7 @@
 //    public ButtonThemePack CheckStyle = new();
 //    public bool Selected = false;
 //    public Action<CheckBox> OnUpdate = (checkBox) => { };
-//    public event EventHandler? Selected;
+//    public event Event? Selected;
 //
 //    public CheckBox()
 //    {

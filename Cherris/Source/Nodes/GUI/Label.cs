@@ -65,12 +65,12 @@ public class Label : Control
 
     }
 
-    public override void Update()
+    public override void Process()
     {
         ClipDisplayedText();
         ApplyCase();
 
-        base.Update();
+        base.Process();
     }
 
     protected override void OnThemeFileChanged(string themeFile)
@@ -226,7 +226,7 @@ public class Label : Control
             float scaledFontSize = Theme.FontSize * Scale.Length();
             Vector2 textSize = Raylib_cs.Raylib.MeasureTextEx(Theme.Font, displayedText, scaledFontSize, Theme.FontSpacing);
 
-            float x = HorizontalAlignment switch
+            float x = HAlignment switch
             {
                 HorizontalAlignment.Center => textSize.X / 2,
                 HorizontalAlignment.Left => 0,
@@ -234,7 +234,7 @@ public class Label : Control
                 _ => 0
             };
 
-            float y = VerticalAlignment switch
+            float y = VAlignment switch
             {
                 VerticalAlignment.Top => 0,
                 VerticalAlignment.Center => textSize.Y / 2,

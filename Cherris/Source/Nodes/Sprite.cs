@@ -36,7 +36,7 @@ public class Sprite : Node2D
 
                 if (Parent.Name == "Player")
                 {
-                    Console.WriteLine("using shader: " + Shader.Id);
+                    //Console.WriteLine("using shader: " + Shader.Id);
                 }
             }
 

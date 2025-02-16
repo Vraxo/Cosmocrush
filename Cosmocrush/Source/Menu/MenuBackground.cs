@@ -17,9 +17,9 @@ public class MenuBackground : TextureRectangle
         Texture = ResourceLoader.Load<Texture>(path);
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         Size = VisualServer.WindowSize * 1.5f;
 

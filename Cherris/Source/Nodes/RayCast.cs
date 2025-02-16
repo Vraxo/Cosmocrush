@@ -18,9 +18,9 @@ public class RayCast : Node2D
         MathF.Sin(Rotation * MathF.PI / 180f)
     ) * Length;
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
         Perform();
     }
 

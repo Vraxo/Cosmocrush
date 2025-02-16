@@ -3,34 +3,97 @@
 public sealed class SceneTree
 {
     public static SceneTree Instance { get; } = new();
-
     public Node? RootNode { get; set; }
-    public bool Paused { get; private set; } = false;
+    public bool Paused { get; set; }
 
     private readonly List<SceneTreeTimer> timers = [];
-
-    // Main
 
     private SceneTree() { }
 
     public void Process()
     {
-        if (Paused)
+        if (RootNode is null)
         {
             return;
         }
 
-        RootNode?.Process();
+        ProcessNode(RootNode);
         Render();
-        ProcessTimers();
-
-        if (Input.IsKeyPressed(KeyCode.Enter))
+        
+        if (!Paused)
         {
-            PrintTree();
+            ProcessTimers();
         }
     }
 
-    public void ProcessTimers()
+    private void ProcessNode(Node node)
+    {
+        if (node is null || !node.Active)
+        {
+            return;
+        }
+
+        Node.ProcessMode effectiveMode = ComputeEffectiveMode(node);
+        bool shouldProcess = ShouldProcess(effectiveMode);
+
+        if (shouldProcess)
+        {
+            if (!node.IsReady)
+            {
+                node.Ready();
+                node.IsReady = true;
+            }
+
+            node.ProcessBegin();
+            node.Process();
+        }
+
+        foreach (Node child in node.Children.ToList())
+        {
+            ProcessNode(child);
+        }
+
+        if (shouldProcess)
+        {
+            node.ProcessEnd();
+        }
+    }
+
+    private static Node.ProcessMode ComputeEffectiveMode(Node node)
+    {
+        if (node.ProcessingMode != Node.ProcessMode.Inherit)
+        {
+            return node.ProcessingMode;
+        }
+
+        Node? current = node.Parent;
+        
+        while (current is not null)
+        {
+            if (current.ProcessingMode != Node.ProcessMode.Inherit)
+            {
+                return current.ProcessingMode;
+            }
+
+            current = current.Parent;
+        }
+
+        return Node.ProcessMode.Pausable;
+    }
+
+    private bool ShouldProcess(Node.ProcessMode effectiveMode)
+    {
+        return effectiveMode switch
+        {
+            Node.ProcessMode.Disabled => false,
+            Node.ProcessMode.Always => true,
+            Node.ProcessMode.Pausable => !Paused,
+            Node.ProcessMode.WhenPaused => Paused,
+            _ => false,
+        };
+    }
+
+    private void ProcessTimers()
     {
         foreach (var timer in new List<SceneTreeTimer>(timers))
         {
@@ -38,43 +101,28 @@ public sealed class SceneTree
         }
     }
 
-    public void ChangeScene(Node node)
+    private void Render()
     {
-        RootNode?.Free();
-        RootNode = node;
-
-        //node.Name = node.GetType().Name;
-    }
-
-    public void PrintTree()
-    {
-        RootNode?.PrintChildren();
-    }
-
-    // Render
-
-    public void Render()
-    {
-        if (RootNode is not null)
+        if (RootNode is null)
         {
-            RenderVisualItems(RootNode);
+            return;
         }
+
+        RenderNode(RootNode);
     }
 
-    private static void RenderVisualItems(Node node)
+    private static void RenderNode(Node node)
     {
-        if (node is VisualItem visualItem && visualItem.Visible)
+        if (node is VisualItem { Visible: true } visualItem)
         {
             visualItem.Draw();
         }
 
-        foreach (Node child in node.Children)
+        foreach (Node child in node?.Children.ToList() ?? [])
         {
-            RenderVisualItems(child);
+            RenderNode(child);
         }
     }
-
-    // Timer
 
     public SceneTreeTimer CreateTimer(float time)
     {
@@ -85,5 +133,11 @@ public sealed class SceneTree
     public void RemoveTimer(SceneTreeTimer timer)
     {
         timers.Remove(timer);
+    }
+
+    public void ChangeScene(Node node)
+    {
+        RootNode?.Free();
+        RootNode = node;
     }
 }

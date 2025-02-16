@@ -7,7 +7,7 @@ public class Player : ColliderRectangle
     public int Health { get; private set; } = 100;
 
     private readonly Sprite? sprite;
-    private readonly Sound? damageSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/PlayerDamage.mp3");
+    private readonly Sound? damageSound = ResourceLoader.Load<Sound>("Res/AudioStream/SFX/PlayerDamage.mp3");
 
     private const float Speed = 200f;
 
@@ -23,9 +23,9 @@ public class Player : ColliderRectangle
         sprite!.Shader = Raylib_cs.Raylib.LoadShader(null, "Res/Shaders/Glow.shader");
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         SufferKnockback();
         LookAtMouse();

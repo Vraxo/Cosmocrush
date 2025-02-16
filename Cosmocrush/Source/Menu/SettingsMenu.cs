@@ -33,7 +33,7 @@ public class SettingsMenu : Node2D
         CapturePreviousVolumes();
     }
 
-    public override void Update()
+    public override void Process()
     {
         UpdateApplyAvailability();
         UpdateButtons();

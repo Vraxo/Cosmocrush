@@ -12,7 +12,7 @@ public class GridContainer : Node2D
 
     public Action<GridContainer> OnUpdate = (button) => { };
 
-    public override void Update()
+    public override void Process()
     {
         OnUpdate(this);
         UpdateCellOrigin();
@@ -22,7 +22,7 @@ public class GridContainer : Node2D
         Size = ItemSize * Cells * Scale;
         Position = new(VisualServer.WindowSize.X / 2, VisualServer.WindowSize.Y * 0.65f);
 
-        base.Update();
+        base.Process();
     }
 
     public override void Draw()

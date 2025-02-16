@@ -1,4 +1,4 @@
-﻿name: Root
+﻿name: World
 type: MainScene
 children:
   - name: CombatThemePlayer

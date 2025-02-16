@@ -18,9 +18,9 @@ public class MainCamera : Camera
         SetAsActive();
     }
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         if (player is not null)
         {

@@ -72,18 +72,18 @@ public partial class LineEdit : Button
         SizeChanged += OnSizeChanged;
     }
 
-    public override void Update()
+    public override void Process()
     {
         HandleInput();
         PasteText();
         HandleUndoRedo();
         UpdateSizeToFitText();
 
-        base.Update();
+        base.Process();
 
         caret?.Update();
-        textDisplayer?.Update();
-        placeholderTextDisplayer?.Update();
+        textDisplayer?.Process();
+        placeholderTextDisplayer?.Process();
     }
 
     protected override void OnEnterPressed()

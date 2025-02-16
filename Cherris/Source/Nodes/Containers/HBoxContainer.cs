@@ -4,9 +4,9 @@ public class HBoxContainer : Node2D
 {
     public float Spacing { get; set; } = 16;
 
-    public override void Update()
+    public override void Process()
     {
-        base.Update();
+        base.Process();
 
         float width = 0;
 

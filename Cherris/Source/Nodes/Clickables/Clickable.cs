@@ -5,7 +5,7 @@ public abstract class Clickable : Node2D
     public bool OnTopLeft = false;
     public bool OnTopRight = false;
 
-    public override void Start()
+    public Clickable()
     {
         ClickServer.Instance.Register(this);
     }
