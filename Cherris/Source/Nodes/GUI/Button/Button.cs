@@ -25,25 +25,27 @@ public class Button : Control
 
     private bool pressedLeft = false;
     private bool pressedRight = false;
+    private bool wasHovered = false;
 
     public Action<Button> OnUpdate = (button) => { };
 
-    public delegate void ButtonEventHandler(Button sender);
-    public event ButtonEventHandler? LeftClicked;
-    public event ButtonEventHandler? RightClicked;
+    public delegate void ButtonEvent(Button sender);
+    public event ButtonEvent? LeftClicked;
+    public event ButtonEvent? RightClicked;
+    public event ButtonEvent? MouseEntered;
+    public event ButtonEvent? MouseExited;
 
     public Sound? ClickSound { get; set; }
 
     private string displayedText = "";
 
-    private string _text = "";
     public string Text
     {
-        get => _text;
+        get;
 
         set
         {
-            _text = value;
+            field = value;
             displayedText = value;
 
             if (AutoWidth)
@@ -51,7 +53,7 @@ public class Button : Control
                 ResizeToFitText();
             }
         }
-    }
+    } = "";
 
     #endregion
 
@@ -130,7 +132,7 @@ public class Button : Control
         UpdateTheme(isMouseOver, isAnyPressed);
     }
 
-    private void HandleClick(ref bool pressed, ref bool onTop, MouseButtonCode button, ActionMode actionMode, ButtonEventHandler? clickHandler)
+    private void HandleClick(ref bool pressed, ref bool onTop, MouseButtonCode button, ActionMode actionMode, ButtonEvent? clickHandler)
     {
         if (Disabled)
         {
@@ -141,11 +143,12 @@ public class Button : Control
 
         if (mouseOver)
         {
-            if (Name == "PlayButton")
+            if (!wasHovered)
             {
-                Console.WriteLine(onTop);
+                MouseEntered?.Invoke(this);
+                wasHovered = true;
             }
-
+            
             if (Input.IsMouseButtonPressed(button) && onTop)
             {
                 pressed = true;
@@ -157,6 +160,14 @@ public class Button : Control
                     onTop = false;
                     ClickSound?.Play(AudioBus);
                 }
+            }
+        }
+        else
+        {
+            if (wasHovered)
+            {
+                wasHovered = false;
+                MouseExited?.Invoke(this);
             }
         }
 

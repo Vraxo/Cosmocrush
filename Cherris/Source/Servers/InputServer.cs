@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http.Headers;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -105,6 +106,11 @@ public sealed class InputServer
     {
         get
         {
+            if (RenderServer.Instance.Camera is null)
+            {
+                return MousePosition;
+            }
+
             Camera2D camera = (Camera2D)RenderServer.Instance.Camera;
             return Raylib.GetScreenToWorld2D(MousePosition, camera);
         }

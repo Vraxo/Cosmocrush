@@ -1,17 +1,13 @@
 ﻿name: World
-type: MainScene
+type: World
 children:
   - name: CombatThemePlayer
     type: CombatThemePlayer
     Bus: Music
 
-  - name: MainCamera
-    type: MainCamera
-
   - name: Background
     type: ColorRectangle
     Color: [0, 0, 0]
-    #Color: [64, 64, 64, 255]
     Size: [2000, 2000]
 
   - name: NavigationRegion
@@ -37,6 +33,14 @@ children:
   - name: Player
     type: Player
     path: Res/Scenes/Player.yaml
+    children:
+      - name: MainCamera
+        type: MainCamera
+        children:
+        - name: HealthBar
+          type: HealthBar
+          path: Res/Scenes/HealthBar.yaml
+          Position: [25, 500]
 
   - name: Enemy1
     type: Enemy
@@ -46,10 +50,6 @@ children:
   - name: HudLayer
     type: IndependantLayer
     children:
-      - name: HealthBar
-        type: HealthBar
-        path: Res/Scenes/HealthBar.yaml
-
       - name: Score
         type: Label
         Text: Score

@@ -3,7 +3,7 @@ type: HealthBar
 Size: [250, 20]
 ForegroundTheme:
   Roundness: 0
-  FillColor: [34, 139, 34, 255]
+  FillColor: [0, 228, 48]
   BorderColor: [0, 128, 0, 255]
 BackgroundTheme:
   FillColor: [50, 50, 50, 255]

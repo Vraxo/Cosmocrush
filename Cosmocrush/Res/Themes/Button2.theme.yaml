@@ -1,0 +1,24 @@
+﻿Font: "Res/Fonts/RaceSport.ttf:32"
+Roundness: 0
+BorderLength: 1
+FillColor: [0, 0, 0, 0]
+BorderColor: [0, 0, 0, 0]
+#Normal:
+#  FillColor: [13, 27, 42, 128]
+#  FontColor: [255, 255, 255, 255]
+#  BorderColor: [0, 168, 232, 255]
+#Hover:
+#  FillColor: [27, 38, 59, 255]
+#  BorderColor: [0, 204, 255, 255]
+#Pressed:
+#  FillColor: [0, 168, 232, 255]
+#  BorderColor: [0, 140, 192, 255]
+#  FontColor: [0, 255, 255, 255]
+#Focused:
+#  FillColor: [0, 168, 232, 128]
+#  BorderColor: [0, 140, 192, 255]
+#  FontColor: [255, 255, 255, 255]
+#Disabled:
+#  FillColor: [74, 74, 74, 128]
+#  BorderColor: [44, 44, 44, 255]
+#  FontColor: [176, 176, 176, 176]

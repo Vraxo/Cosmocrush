@@ -50,6 +50,8 @@ public sealed class ButtonThemePack
 
     public float FontSize
     {
+        get;
+
         set
         {
             Normal.FontSize = value;
@@ -59,7 +61,7 @@ public sealed class ButtonThemePack
             Current.FontSize = value;
             Disabled.FontSize = value;
         }
-    }
+    } = 0;
 
     public Font Font
     {

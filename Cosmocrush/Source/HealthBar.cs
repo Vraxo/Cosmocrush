@@ -4,13 +4,12 @@ namespace Cosmocrush;
 
 public class HealthBar : ProgressBar
 {
-    private Player player = new();
+    private Player? player;
 
     public override void Ready()
     {
         base.Ready();
 
-        ForegroundTheme.FillColor = Color.Green;
         player = GetNode<Player>("/root/Player");
     }
 
@@ -24,7 +23,7 @@ public class HealthBar : ProgressBar
 
     private void UpdatePercentage()
     {
-        Percentage = ((float)player.Health / 100);
+        Percentage = (float)player!.Health / 100;
     }
 
     private void UpdatePosition()
@@ -32,7 +31,16 @@ public class HealthBar : ProgressBar
         float x = Size.X / 1.5f;
         float y = VisualServer.WindowSize.Y - Size.Y * 4;
 
-        Position = new(x, y);
-        Position = Raylib_cs.Raylib.GetScreenToWorld2D(GlobalPosition, RenderServer.Instance.Camera);
+        //Position = new(x, y);
+
+        Layer = 100;
+
+        //DrawLine(
+        //    GlobalPosition,
+        //    player!.GlobalPosition,
+        //    10,
+        //    Color.Red);
+
+        //Position = Raylib_cs.Raylib.GetScreenToWorld2D(GlobalPosition, RenderServer.Instance.Camera);
     }
 }

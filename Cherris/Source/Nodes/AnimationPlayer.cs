@@ -29,7 +29,7 @@ public class AnimationPlayer : Node
         animationTime += TimeServer.Delta;
         var (prev, next) = GetKeyframes(animationTime);
 
-        if (prev == null || next == null)
+        if (prev is null || next is null)
         {
             Stop();
             return;

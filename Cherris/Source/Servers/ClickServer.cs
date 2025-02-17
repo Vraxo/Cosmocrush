@@ -26,8 +26,6 @@ public sealed class ClickServer
         if (Input.IsMouseButtonPressed(MouseButtonCode.Left))
         {
             SignalClick(MouseButtonCode.Left);
-
-            Console.WriteLine(clickables.Count);
         }
 
         if (Input.IsMouseButtonPressed(MouseButtonCode.Right))
@@ -113,7 +111,7 @@ public sealed class ClickServer
 
     private static bool IsMouseOverNode2D(Node2D node)
     {
-        Vector2 mousePosition = Input.MousePosition;
+        Vector2 mousePosition = Input.WorldMousePosition;
 
         bool isMouseOver =
             mousePosition.X > node.GlobalPosition.X - node.Origin.X &&

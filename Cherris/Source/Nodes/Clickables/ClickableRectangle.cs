@@ -4,7 +4,7 @@ public abstract class ClickableRectangle : Clickable
 {
     public override bool IsMouseOver()
     {
-        Vector2 mousePosition = Input.MousePosition;
+        Vector2 mousePosition = Input.WorldMousePosition;
 
         bool isMouseOver =
             mousePosition.X > GlobalPosition.X - Origin.X &&

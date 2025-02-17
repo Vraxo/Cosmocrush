@@ -1,0 +1,17 @@
+﻿name: PauseMenu
+type: PauseMenu
+ProcessingMode: Always
+Color: [0, 0, 0, 128]
+children:
+  - name: Container
+    type: VBoxContainer
+    children:
+      - name: ResumeButton
+        type: CustomButton
+        Text: Resume
+        ThemeFile: Res/Themes/Button2.theme.yaml
+
+      - name: QuitButton
+        type: CustomButton
+        Text: Quit
+        ThemeFile: Res/Themes/Button2.theme.yaml

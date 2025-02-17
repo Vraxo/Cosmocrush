@@ -11,14 +11,13 @@ public class DamageIndicator : Label
     private const float speed = 100;
     private readonly Timer? destructionTimer;
 
-    private float _animatedAlpha = 1.0f;
     public float AnimatedAlpha
     {
-        get => _animatedAlpha;
+        get => field;
 
         set
         {
-            _animatedAlpha = float.Clamp(value, 0f, 1f);
+            field = float.Clamp(value, 0f, 1f);
             UpdateAlpha();
         }
     }

@@ -14,7 +14,7 @@ public class ItemList : ClickableRectangle
     public Action<ItemList> OnUpdate = (list) => { };
     public Action<ItemList> OnItemCountChanged = (list) => { };
 
-    public event Event<int>? StartingIndexChanged;
+    public event ButtonEvent<int>? StartingIndexChanged;
 
     private int maxItemsShownAtOnce = 0;
     private int updateCount = 0;

@@ -24,10 +24,10 @@ public partial class LineEdit : Button
     public char SecretCharacter { get; set; } = '*';
     public int TextStartIndex { get; private set; } = 0;
 
-    public event Event? FirstCharacterEntered;
-    public event Event? Cleared;
-    public event Event<string>? TextChanged;
-    public event Event<string>? Confirmed;
+    public event ButtonEvent? FirstCharacterEntered;
+    public event ButtonEvent? Cleared;
+    public event ButtonEvent<string>? TextChanged;
+    public event ButtonEvent<string>? Confirmed;
 
     protected Caret caret;
     private readonly TextDisplayer textDisplayer;

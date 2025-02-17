@@ -2,11 +2,11 @@
 
 Info: false
 Warning: true
-Error: true
+Error: false
 
 # Nodes
 
-ClickManager: true
+ClickServer: true
 RayCast: true
 AudioPlayer: true
 AnimationPlayer: true

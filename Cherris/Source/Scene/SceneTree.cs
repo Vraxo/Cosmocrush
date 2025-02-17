@@ -1,4 +1,6 @@
-﻿namespace Cherris;
+﻿using static Cherris.Node;
+
+namespace Cherris;
 
 public sealed class SceneTree
 {
@@ -7,19 +9,23 @@ public sealed class SceneTree
     public bool Paused { get; set; }
 
     private readonly List<SceneTreeTimer> timers = [];
+    private readonly List<Tween> activeTweens = [];
 
     private SceneTree() { }
 
     public void Process()
     {
         if (RootNode is null)
-        {
             return;
-        }
 
         ProcessNode(RootNode);
         Render();
-        
+
+        if (Input.IsKeyPressed(KeyCode.Enter))
+            RootNode.PrintChildren();
+
+        ProcessTweens();
+
         if (!Paused)
         {
             ProcessTimers();
@@ -139,5 +145,27 @@ public sealed class SceneTree
     {
         RootNode?.Free();
         RootNode = node;
+    }
+
+    public Tween CreateTween(Node creatorNode, ProcessMode processMode = ProcessMode.Inherit)
+    {
+        var tween = new Tween(creatorNode, processMode);
+        activeTweens.Add(tween);
+        return tween;
+    }
+
+    // Updated tween processing
+    private void ProcessTweens()
+    {
+        foreach (var tween in activeTweens.ToList())
+        {
+            if (tween.ShouldProcess(Paused))
+            {
+                tween.Update(TimeServer.Delta);
+            }
+
+            if (!tween.IsActive())
+                activeTweens.Remove(tween);
+        }
     }
 }
