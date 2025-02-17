@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Cherris;
+﻿namespace Cherris;
 
 public sealed class ButtonThemePack
 {

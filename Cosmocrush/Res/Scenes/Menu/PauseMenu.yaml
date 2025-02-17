@@ -2,13 +2,15 @@
 type: PauseMenu
 ProcessingMode: Always
 Color: [0, 0, 0, 128]
+continueButton: Container/ContinueButton
+quitButton: Container/QuitButton
 children:
   - name: Container
     type: VBoxContainer
     children:
-      - name: ResumeButton
+      - name: ContinueButton
         type: CustomButton
-        Text: Resume
+        Text: Continue
         ThemeFile: Res/Themes/Button2.theme.yaml
 
       - name: QuitButton
