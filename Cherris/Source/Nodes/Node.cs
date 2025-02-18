@@ -72,7 +72,7 @@ public class Node
     public event ActiveEvent? ActiveChanged;
     public event ChildEvent? ChildAdded;
 
-    // Other
+    // Main
 
     public virtual void Make() { }
 
@@ -92,41 +92,39 @@ public class Node
         Parent?.Children.Remove(this);
     }
 
+    // Process
+
     public virtual void ProcessBegin() { }
 
     public virtual void Process() { }
 
     public virtual void ProcessEnd() { }
 
+    // Print children
+
     public void PrintChildren()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-        // Create root tree node with emoji based on root node type
         string rootEmoji = NodeEmoji.GetEmojiForNodeType(this);
         Tree root = new($"{rootEmoji}[green]{Name}[/]");
 
-        // Add children nodes recursively, each with its own emoji
         AddChildrenToTree(this, root);
 
-        // Print the tree structure using Spectre.Console
         AnsiConsole.Write(root);
     }
 
     private static void AddChildrenToTree(Node node, IHasTreeNodes parentNode)
     {
-        foreach (var child in node.Children)
+        foreach (Node child in node.Children)
         {
-            // Get emoji for each child node based on its type
             string childEmoji = NodeEmoji.GetEmojiForNodeType(child);
-
-            // Add the child node to the tree with the emoji
             TreeNode childNode = parentNode.AddNode($"{childEmoji} [blue]{child.Name}[/]");
-
-            // Recursively add children to this child node
             AddChildrenToTree(child, childNode);
         }
     }
+
+    // Activation
 
     public virtual void Activate()
     {
@@ -147,6 +145,8 @@ public class Node
             child.Deactivate();
         }
     }
+
+    // Get node
 
     public T GetParent<T>() where T : Node
     {
@@ -292,6 +292,8 @@ public class Node
         return currentNode as T;
     }
 
+    // Get child
+
     public T? GetChild<T>(string name) where T : Node
     {
         foreach (Node child in Children)
@@ -346,9 +348,8 @@ public class Node
         return null;
     }
 
-    public Node AddChild(Node node, string name = "")
+    public Node AddChild(Node node)
     {
-        node.Name = name;
         node.Parent = this;
 
         node.Make();

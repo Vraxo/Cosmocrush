@@ -35,7 +35,17 @@ public class Button : Control
     public event ButtonEvent? MouseEntered;
     public event ButtonEvent? MouseExited;
 
+    public Sound Sound
+    {
+        set
+        {
+            ClickSound = value;
+            HoverSound = value;
+        }
+    }
+
     public Sound? ClickSound { get; set; }
+    public Sound? HoverSound { get; set; }
 
     private string displayedText = "";
 
@@ -84,19 +94,21 @@ public class Button : Control
 
     private void HandleKeyboardInput()
     {
-        if (Focused && Input.IsKeyPressed(KeyCode.Enter))
+        if (!Focused || !Input.IsKeyPressed(KeyCode.Enter))
         {
-            if (Behavior == ClickBehavior.Left || Behavior == ClickBehavior.Both)
-            {
-                LeftClicked?.Invoke(this);
-                OnEnterPressed();
-            }
+            return;
+        }
 
-            if (Behavior == ClickBehavior.Right || Behavior == ClickBehavior.Both)
-            {
-                RightClicked?.Invoke(this);
-                OnEnterPressed();
-            }
+        if (Behavior == ClickBehavior.Left || Behavior == ClickBehavior.Both)
+        {
+            LeftClicked?.Invoke(this);
+            OnEnterPressed();
+        }
+
+        if (Behavior == ClickBehavior.Right || Behavior == ClickBehavior.Both)
+        {
+            RightClicked?.Invoke(this);
+            OnEnterPressed();
         }
     }
 
@@ -146,6 +158,7 @@ public class Button : Control
             if (!wasHovered)
             {
                 MouseEntered?.Invoke(this);
+                HoverSound?.Play(AudioBus);
                 wasHovered = true;
             }
             
