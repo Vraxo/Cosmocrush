@@ -31,6 +31,18 @@ public class Log
         File.AppendAllText("Res/Log.txt", Environment.NewLine + fullMessage);
     }
 
+    public static void Info(string message, bool condition, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string filePath = "")
+    {
+        if (!condition)
+        {
+            return;
+        }
+
+        Console.ForegroundColor = infoColor;
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [INFO] {Path.GetFileName(filePath)}:{lineNumber} {message}");
+        Console.ResetColor();
+    }
+
     public static void Warning(string message, string condition, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string filePath = "")
     {
         if (LogSettings.Instance.GetLogCondition("Warning") && LogSettings.Instance.GetLogCondition(condition))

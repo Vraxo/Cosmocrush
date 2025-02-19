@@ -2,21 +2,14 @@
 
 public partial class LineEdit : Button
 {
-    private class Shape : VisualItem
+    private class Shape(LineEdit parent) : VisualItem
     {
-        private LineEdit parent;
-
-        public Shape(LineEdit parent)
-        {
-            this.parent = parent;
-        }
-
         public void Update()
         {
             Draw();
         }
 
-        private void Draw()
+        public override void Draw()
         {
             if (!(parent.Visible && parent.ReadyForVisibility))
             {

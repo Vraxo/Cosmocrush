@@ -4,7 +4,7 @@ namespace Cherris;
 
 public partial class LineEdit : Button
 {
-    protected class Caret : VisualItem
+    protected class Caret : Node2D
     {
         #region [ - - - Properties & Fields - - - ]
 
@@ -20,21 +20,19 @@ public partial class LineEdit : Button
         private float arrowKeyTimer = 0f;
         private const float arrowKeyDelay = 0.5f;
         private const float arrowKeySpeed = 0.05f;
-        private bool arrowKeyHeld = false;
+        // bool arrowKeyHeld = false;
         private bool movingRight = false;
 
-        private int _x = 0;
         public int X
         {
-            get => _x;
+            get;
             set
             {
-                int maxVisibleChars = Math.Max(0, Math.Min(parent.GetDisplayableCharactersCount(), parent.Text.Length - parent.TextStartIndex));
-                _x = Math.Clamp(value, 0, maxVisibleChars);
+                var maxVisibleChars = (int)float.Max(0, float.Min(parent.GetDisplayableCharactersCount(), parent.Text.Length - parent.TextStartIndex));
+                field = (int)float.Clamp(value, 0, maxVisibleChars);
                 alpha = maxAlpha;
             }
-        }
-
+        } = 0;
 
         //private int _x = 0;
         //public int X
@@ -46,8 +44,6 @@ public partial class LineEdit : Button
         //        alpha = maxAlpha;
         //    }
         //}
-
-        private Vector2 GlobalPosition => parent.GlobalPosition + position;
 
         #endregion
 
@@ -66,7 +62,7 @@ public partial class LineEdit : Button
             base.Process();
         }
 
-        private void Draw()
+        public override void Draw()
         {
             DrawText(
                 "|",
@@ -125,7 +121,7 @@ public partial class LineEdit : Button
             {
                 float x = mouseX - (parent.GlobalPosition.X - parent.Origin.X) - parent.TextOrigin.X;
                 float characterWidth = parent.Themes.Current.Font.Dimensions.X;
-                X = Math.Clamp((int)MathF.Floor(x / characterWidth), 0, Math.Min(parent.GetDisplayableCharactersCount(), parent.Text.Length));
+                X = (int)float.Clamp((int)float.Floor(x / characterWidth), 0, float.Min(parent.GetDisplayableCharactersCount(), parent.Text.Length));
             }
         }
 

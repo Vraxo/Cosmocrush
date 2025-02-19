@@ -1,32 +1,27 @@
-﻿using Raylib_cs;
-using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
+﻿/*
+namespace Cherris;
 
-namespace Cherris
+public class PersianText : Node2D, IDisposable
 {
-    public class PersianText : Node2D, IDisposable
+    private Texture2D texture;
+    public string Text { get; set; } = "سلام";
+
+    public override void Ready()
     {
-        private Texture2D texture;
-        public string Text { get; set; } = "سلام";
+    }
 
-        public override void Ready()
-        {
-        }
+    public override void Process()
+    {
+        base.Process();
+    }
 
-        public override void Process()
-        {
-            base.Process();
-        }
+    public override void Draw()
+    {
+        base.Draw();
+    }
 
-        public override void Draw()
-        {
-            base.Draw();
-        }
-
-        public void Dispose()
-        {
-        }
+    public void Dispose()
+    {
     }
 }
+*/

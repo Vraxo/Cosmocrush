@@ -22,29 +22,6 @@ public class CheckBox : Control
     public bool PressedLeft = false;
     public bool PressedRight = false;
 
-    private bool _disabled = false;
-    public bool Disabled
-    {
-        get => _disabled;
-        set
-        {
-            _disabled = value;
-            BackgroundStyles.Current = BackgroundStyles.Disabled;
-        }
-    }
-
-    private string _themeFile = "";
-    public string ThemeFile
-    {
-        get => _themeFile;
-
-        set
-        {
-            _themeFile = value;
-            BackgroundStyles = PropertyLoader.Load<ButtonThemePack>(value);
-        }
-    }
-
     public event EventHandler<bool>? Toggled;
 
     #endregion

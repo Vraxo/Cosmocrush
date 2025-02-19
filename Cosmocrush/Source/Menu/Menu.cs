@@ -1,4 +1,6 @@
-﻿using Cherris;
+﻿#pragma warning disable 0649
+
+using Cherris;
 
 namespace Cosmocrush;
 

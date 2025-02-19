@@ -63,8 +63,6 @@ public class Node
         }
     }
 
-    public bool IsReady = false;
-
     // Events
 
     public delegate void ActiveEvent(Node sender, bool active);
@@ -348,9 +346,24 @@ public class Node
         return null;
     }
 
+    // Add child
+
     public Node AddChild(Node node)
     {
         node.Parent = this;
+
+        node.Make();
+
+        Children.Add(node);
+        ChildAdded?.Invoke(this, node);
+
+        return node;
+    }
+
+    public Node AddChild(Node node, string name)
+    {
+        node.Parent = this;
+        node.Name = name;
 
         node.Make();
 

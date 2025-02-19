@@ -2,10 +2,6 @@
 
 public class ColliderRectangle : Collider
 {
-    public Vector2 Size { get; set; } = Vector2.One * 10;
-    public Vector2 ScaledSize => Size * Scale;
-    public Vector2 Origin => ScaledSize / 2;
-
     public override void Draw()
     {
         DrawRectangleOutline(
@@ -29,7 +25,7 @@ public class ColliderRectangle : Collider
         return closestT;
     }
 
-    private void CheckEdge(Vector2 rayStart, Vector2 rayEnd, Vector2 edgeA, Vector2 edgeB, ref float? closestT)
+    private static void CheckEdge(Vector2 rayStart, Vector2 rayEnd, Vector2 edgeA, Vector2 edgeB, ref float? closestT)
     {
         Vector2 rayDir = rayEnd - rayStart;
         Vector2 edgeDir = edgeB - edgeA;
@@ -47,6 +43,13 @@ public class ColliderRectangle : Collider
         }
     }
 
-    protected override void Register() => CollisionServer.Instance.RegisterRectangle(this);
-    protected override void Unregister() => CollisionServer.Instance.UnregisterRectangle(this);
+    protected override void Register()
+    {
+        CollisionServer.Instance.RegisterRectangle(this);
+    }
+
+    protected override void Unregister()
+    {
+        CollisionServer.Instance.UnregisterRectangle(this);
+    }
 }

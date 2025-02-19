@@ -12,7 +12,7 @@ public class Animation
         [YamlMember(Alias = "T")]
         public float Time { get; set; }
 
-        public Dictionary<string, Dictionary<string, float>> Nodes { get; set; } = new();
+        public Dictionary<string, Dictionary<string, float>> Nodes { get; set; } = [];
     }
 
     public Animation() { }

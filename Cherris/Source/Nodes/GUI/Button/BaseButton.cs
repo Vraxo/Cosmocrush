@@ -19,17 +19,6 @@ public abstract class BaseButton : Control
     public bool PressedLeft = false;
     public bool PressedRight = false;
 
-    private bool _disabled = false;
-    public bool Disabled
-    {
-        get => _disabled;
-        set
-        {
-            _disabled = value;
-            OnDisable();
-        }
-    }
-
     protected virtual void OnDisable() { }
 
     #endregion
@@ -60,18 +49,15 @@ public abstract class BaseButton : Control
         if (Disabled) return;
 
         bool mouseOver = IsMouseOver();
-        bool anyPressed = false;
 
         if (Behavior == ClickBehavior.Left || Behavior == ClickBehavior.Both)
         {
             HandleClick(ref PressedLeft, MouseButtonCode.Left, LeftClickActionMode);
-            if (PressedLeft) anyPressed = true;
         }
 
         if (Behavior == ClickBehavior.Right || Behavior == ClickBehavior.Both)
         {
             HandleClick(ref PressedRight, MouseButtonCode.Right, RightClickActionMode);
-            if (PressedRight) anyPressed = true;
         }
     }
 
