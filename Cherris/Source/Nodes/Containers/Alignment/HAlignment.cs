@@ -14,7 +14,7 @@ public enum OriginPreset
     BottomRight,
 }
 
-public enum HorizontalAlignment
+public enum HAlignment
 {
     Left,
     Center,

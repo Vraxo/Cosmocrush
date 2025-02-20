@@ -6,7 +6,7 @@ public class AudioPlayer : Node
 {
     public bool AutoPlay { get; set; } = false;
     public bool Loop { get; set; } = false;
-    public bool Playing = false;
+    public bool Playing { get; private set; } = false;
 
     public string Bus
     {
@@ -18,7 +18,7 @@ public class AudioPlayer : Node
                 return;
             }
 
-            if (!AudioServerCore.Instance.BusExists(value))
+            if (!AudioServer.Instance.BusExists(value))
             {
                 Log.Error($"[AudioPlayer] [{Name}] Bus: '{value}' does not exist.");
                 return;
@@ -37,7 +37,7 @@ public class AudioPlayer : Node
         {
             field = value;
             Volume = Volume;
-            Volume = AudioServer.GetBusVolume(Bus);
+            Volume = AudioServer.Instance.GetBusVolume(Bus);
             Pitch = Pitch;
             Pan = Pan;
         }
@@ -120,7 +120,7 @@ public class AudioPlayer : Node
 
     public AudioPlayer()
     {
-        AudioServerCore.Instance.VolumeChanged += OnBusVolumeChanged;
+        AudioServer.Instance.VolumeChanged += OnBusVolumeChanged;
     }
 
     public override void Ready()
@@ -138,7 +138,7 @@ public class AudioPlayer : Node
             return;
         }
 
-        Volume = AudioServer.GetBusVolume(Bus);
+        Volume = AudioServer.Instance.GetBusVolume(Bus);
 
         Raylib.UpdateMusicStream(Audio);
 

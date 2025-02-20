@@ -36,6 +36,20 @@ public sealed class RenderServer
         Camera = camera;
     }
 
+    public static void BeginScissorMode(Vector2 position, Vector2 size)
+    {
+        Raylib.BeginScissorMode(
+            (int)position.X,
+            (int)position.Y,
+            (int)size.X,
+            (int)size.Y);
+    }
+
+    public static void EndScissorMode()
+    {
+        Raylib.EndScissorMode();
+    }
+
     public Vector2 GetScreenToWorld(Vector2 position)
     {
         return Raylib.GetScreenToWorld2D(position, Camera);

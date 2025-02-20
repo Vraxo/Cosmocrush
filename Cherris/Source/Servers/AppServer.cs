@@ -36,7 +36,7 @@ public sealed class AppServer
         SceneTree.Instance.RootNode = packedScene.Instantiate<Node>();
     }
 
-    private void Update()
+    private static void Update()
     {
         while (!Raylib.WindowShouldClose())
         {

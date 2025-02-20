@@ -7,9 +7,11 @@ public class Node2D : VisualItem
     public bool InheritPosition { get; set; } = true;
     public bool InheritOrigin { get; set; } = false;
     public bool InheritScale { get; set; } = true;
-    public HorizontalAlignment HAlignment { get; set; } = HorizontalAlignment.Center;
-    public VerticalAlignment VAlignment { get; set; } = VerticalAlignment.Center;
+    public HAlignment HAlignment { get; set; } = HAlignment.Center;
+    public VAlignment VAlignment { get; set; } = VAlignment.Center;
     public float Rotation { get; set; } = 0;
+
+    public Vector2 ScaledSize => Size * Scale;
 
     public virtual Vector2 Size
     {
@@ -34,10 +36,8 @@ public class Node2D : VisualItem
             return field;
         }
 
-        set => field = value;
+        set;
     } = new(1, 1);
-
-    public Vector2 ScaledSize => Size * Scale;
 
     public Vector2 GlobalPosition
     {
@@ -84,7 +84,7 @@ public class Node2D : VisualItem
             return field;
         }
 
-        set => field = value;
+        set;
     } = Vector2.Zero;
 
     public Vector2 Origin
@@ -93,17 +93,17 @@ public class Node2D : VisualItem
         {
             float x = HAlignment switch
             {
-                HorizontalAlignment.Center => Size.X * Scale.X / 2,
-                HorizontalAlignment.Left => 0,
-                HorizontalAlignment.Right => Size.X,
+                HAlignment.Center => Size.X * Scale.X / 2,
+                HAlignment.Left => 0,
+                HAlignment.Right => Size.X,
                 _ => 0
             };
 
             float y = VAlignment switch
             {
-                VerticalAlignment.Top => 0,
-                VerticalAlignment.Center => Size.Y * Scale.Y / 2,
-                VerticalAlignment.Bottom => Size.Y * Scale.Y,
+                VAlignment.Top => 0,
+                VAlignment.Center => Size.Y * Scale.Y / 2,
+                VAlignment.Bottom => Size.Y * Scale.Y,
                 _ => 0
             };
 
@@ -113,6 +113,7 @@ public class Node2D : VisualItem
     }
 
     // Events
+
     public event EventHandler<Vector2>? SizeChanged;
 
     // Methods

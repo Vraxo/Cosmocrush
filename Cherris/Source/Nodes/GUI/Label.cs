@@ -228,17 +228,17 @@ public class Label : Control
 
             float x = HAlignment switch
             {
-                HorizontalAlignment.Center => textSize.X / 2,
-                HorizontalAlignment.Left => 0,
-                HorizontalAlignment.Right => textSize.X,
+                HAlignment.Center => textSize.X / 2,
+                HAlignment.Left => 0,
+                HAlignment.Right => textSize.X,
                 _ => 0
             };
 
             float y = VAlignment switch
             {
-                VerticalAlignment.Top => 0,
-                VerticalAlignment.Center => textSize.Y / 2,
-                VerticalAlignment.Bottom => textSize.Y,
+                VAlignment.Top => 0,
+                VAlignment.Center => textSize.Y / 2,
+                VAlignment.Bottom => textSize.Y,
                 _ => 0
             };
 

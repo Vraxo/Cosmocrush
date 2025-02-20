@@ -6,8 +6,7 @@ namespace Cosmocrush;
 
 public sealed class GameSettings
 {
-    private static GameSettings? _instance;
-    public static GameSettings Instance => _instance ??= new();
+    public static GameSettings Instance { get; } = new();
 
     public SettingsData SettingsData { get; set; } = new();
 
@@ -17,7 +16,7 @@ public sealed class GameSettings
         .WithNamingConvention(CamelCaseNamingConvention.Instance)
         .Build();
 
-    private static readonly IDeserializer _deserializer = new DeserializerBuilder()
+    private static readonly IDeserializer deserializer = new DeserializerBuilder()
         .WithNamingConvention(CamelCaseNamingConvention.Instance)
         .Build();
 
@@ -44,7 +43,7 @@ public sealed class GameSettings
             if (File.Exists(path))
             {
                 string yaml = File.ReadAllText(path);
-                SettingsData = _deserializer.Deserialize<SettingsData>(yaml);
+                SettingsData = deserializer.Deserialize<SettingsData>(yaml);
             }
         }
         catch (Exception ex)
@@ -58,8 +57,8 @@ public sealed class GameSettings
 
     private void UpdateAudioBusVolumes()
     {
-        AudioServerCore.Instance.SetBusVolume("Master", SettingsData.MasterVolume);
-        AudioServerCore.Instance.SetBusVolume("Music", SettingsData.MusicVolume);
-        AudioServerCore.Instance.SetBusVolume("SFX", SettingsData.SfxVolume);
+        AudioServer.Instance.SetBusVolume("Master", SettingsData.MasterVolume);
+        AudioServer.Instance.SetBusVolume("Music", SettingsData.MusicVolume);
+        AudioServer.Instance.SetBusVolume("SFX", SettingsData.SfxVolume);
     }
 }

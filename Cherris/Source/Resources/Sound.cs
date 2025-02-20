@@ -1,10 +1,9 @@
-﻿using Raylib_cs;
-
-namespace Cherris;
+﻿namespace Cherris;
 
 public class Sound
 {
-    public string Path { get; private set; }
+    public string Path { get; private set; } = "";
+
     private Raylib_cs.Sound raylibSound;
 
     public static implicit operator Raylib_cs.Sound(Sound sound) => sound.raylibSound;
@@ -17,9 +16,9 @@ public class Sound
 
     public static Sound? Load(string filePath)
     {
-        Raylib_cs.Sound sound = Raylib.LoadSound(filePath);
+        Raylib_cs.Sound sound = Raylib_cs.Raylib.LoadSound(filePath);
 
-        if (sound.FrameCount == 0) // If loading failed
+        if (sound.FrameCount == 0)
         {
             return null;
         }
@@ -29,6 +28,6 @@ public class Sound
 
     public void Play(string bus = "Master")
     {
-        AudioServer.PlaySound(this, bus);
+        AudioServer.Instance.PlaySound(this, bus);
     }
 }

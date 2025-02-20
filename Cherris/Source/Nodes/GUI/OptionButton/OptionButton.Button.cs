@@ -18,7 +18,7 @@ public partial class OptionButton : Button
 
         public override void Start()
         {
-            TextAlignment.Horizontal = HorizontalAlignment.Right;
+            TextAlignment.Horizontal = HAlignment.Right;
             TextOffset = new(-4, 0);
 
             parent = GetParent<OptionButton>();

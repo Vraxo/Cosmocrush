@@ -114,7 +114,10 @@ public sealed class SceneTree
 
     private void Render()
     {
-        if (RootNode is null) return;
+        if (RootNode is null)
+        {
+            return;
+        }
 
         RenderNode(RootNode);
     }
@@ -126,7 +129,7 @@ public sealed class SceneTree
             visualItem.Draw();
         }
 
-        foreach (var child in node.Children.ToList())
+        foreach (Node child in node.Children.ToList())
         {
             RenderNode(child);
         }
@@ -148,7 +151,7 @@ public sealed class SceneTree
 
     private void ProcessTimers()
     {
-        foreach (var timer in timers.ToList())
+        foreach (SceneTreeTimer timer in timers.ToList())
         {
             timer.Process();
         }

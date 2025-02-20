@@ -2,12 +2,12 @@
 
 public class Alignment
 {
-    public HorizontalAlignment Horizontal { get; set; } = HorizontalAlignment.Center;
-    public VerticalAlignment Vertical { get; set; } = VerticalAlignment.Center;
+    public HAlignment Horizontal { get; set; } = HAlignment.Center;
+    public VAlignment Vertical { get; set; } = VAlignment.Center;
 
     public Alignment() { }
 
-    public Alignment(HorizontalAlignment horizontal, VerticalAlignment vertical)
+    public Alignment(HAlignment horizontal, VAlignment vertical)
     {
         Horizontal = horizontal;
         Vertical = vertical;

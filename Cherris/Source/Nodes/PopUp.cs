@@ -1,4 +1,7 @@
-﻿namespace Cherris;
+﻿using Microsoft.VisualBasic;
+using Spectre.Console;
+
+namespace Cherris;
 
 public class PopUp : ClickableRectangle
 {
@@ -8,10 +11,8 @@ public class PopUp : ClickableRectangle
     public Alignment TitleAlignment = new();
     public Vector2 MinSize { get; set; } = new(640, 480);
     public Vector2 MaxSize { get; set; } = new(960, 720);
-
-    public BoxTheme TitleBarTheme { get; set; } = new();
-
     public bool ClipChildren { get; set; } = false;
+    public BoxTheme TitleBarTheme { get; set; } = new();
 
     private bool isDragging = false;
     private bool isResizingRight = false;
@@ -26,7 +27,7 @@ public class PopUp : ClickableRectangle
     {
         Size = new(640, 480);
         InheritPosition = false;
-        VAlignment = VerticalAlignment.Top;
+        VAlignment = VAlignment.Top;
         TitleBarTheme.Roundness = 0;
     }
 
@@ -34,12 +35,7 @@ public class PopUp : ClickableRectangle
     {
         if (ClipChildren)
         {
-            int x = (int)(GlobalPosition.X - Origin.X);
-            int y = (int)(GlobalPosition.Y - Origin.Y);
-            int width = (int)Size.X;
-            int height = (int)Size.Y;
-
-            Raylib_cs.Raylib.BeginScissorMode(x, y, width, height);
+            RenderServer.BeginScissorMode(GlobalPosition - Origin, Size);
         }
 
         base.Process();
@@ -50,7 +46,7 @@ public class PopUp : ClickableRectangle
 
         if (ClipChildren)
         {
-            Raylib_cs.Raylib.EndScissorMode();
+            RenderServer.EndScissorMode();
         }
     }
 
@@ -72,7 +68,7 @@ public class PopUp : ClickableRectangle
             Size,
             0,
             0,
-            Color.DarkGray);
+            Color.White);
     }
 
     private void DrawTitleBar()
@@ -88,7 +84,7 @@ public class PopUp : ClickableRectangle
         DrawText(
             Title,
             GetTitlePosition(),
-            FontCache.Instance.Get("Res/Cherris/Fonts/RobotoMono.ttf:32"),
+            ResourceLoader.Load<Font>("Res/Cherris/Fonts/RobotoMono.ttf:32"),
             16,
             0,
             Color.White);
@@ -107,17 +103,17 @@ public class PopUp : ClickableRectangle
 
         float x = TitleAlignment.Horizontal switch
         {
-            HorizontalAlignment.Center => topBarPosition.X + (topBarSize.X - titleSize.X) / 2,
-            HorizontalAlignment.Left => topBarPosition.X + 8,
-            HorizontalAlignment.Right => topBarPosition.X + topBarSize.X - titleSize.X - 8,
+            HAlignment.Center => topBarPosition.X + (topBarSize.X - titleSize.X) / 2,
+            HAlignment.Left => topBarPosition.X + 8,
+            HAlignment.Right => topBarPosition.X + topBarSize.X - titleSize.X - 8,
             _ => topBarPosition.X
         };
 
         float y = TitleAlignment.Vertical switch
         {
-            VerticalAlignment.Center => topBarPosition.Y + (topBarSize.Y - titleSize.Y) / 2,
-            VerticalAlignment.Top => topBarPosition.Y + 4,
-            VerticalAlignment.Bottom => topBarPosition.Y + topBarSize.Y - titleSize.Y - 4,
+            VAlignment.Center => topBarPosition.Y + (topBarSize.Y - titleSize.Y) / 2,
+            VAlignment.Top => topBarPosition.Y + 4,
+            VAlignment.Bottom => topBarPosition.Y + topBarSize.Y - titleSize.Y - 4,
             _ => topBarPosition.Y
         };
 
@@ -268,21 +264,21 @@ public class PopUp : ClickableRectangle
         isResizingBottom = false;
         isResizingTop = false;
 
-        if (HAlignment == HorizontalAlignment.Left)
+        if (HAlignment == HAlignment.Left)
         {
-            HAlignment = HorizontalAlignment.Center;
+            HAlignment = HAlignment.Center;
             GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
             MoveChildrenToRight();
         }
-        else if (HAlignment == HorizontalAlignment.Right)
+        else if (HAlignment == HAlignment.Right)
         {
-            HAlignment = HorizontalAlignment.Center;
+            HAlignment = HAlignment.Center;
             GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
             MoveChildrenToLeft();
         }
-        else if (VAlignment == VerticalAlignment.Bottom)
+        else if (VAlignment == VAlignment.Bottom)
         {
-            VAlignment= VerticalAlignment.Top;
+            VAlignment = VAlignment.Top;
             GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y - Size.Y);
             MoveChildrenUp();
         }
@@ -293,7 +289,7 @@ public class PopUp : ClickableRectangle
         if (!isResizingRight && IsMouseOnRightEdge() && !isResizingLeft)
         {
             isResizingRight = true;
-            HAlignment = HorizontalAlignment.Left;
+            HAlignment = HAlignment.Left;
             GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
             MoveChildrenToLeft();
         }
@@ -301,7 +297,7 @@ public class PopUp : ClickableRectangle
         if (!isResizingLeft && IsMouseOnLeftEdge() && !isResizingRight)
         {
             isResizingLeft = true;
-            HAlignment = HorizontalAlignment.Right;
+            HAlignment = HAlignment.Right;
             GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
             MoveChildrenToRight();
         }
@@ -314,12 +310,12 @@ public class PopUp : ClickableRectangle
         if (!isResizingTop && IsMouseOnTopEdge() && !isResizingBottom)
         {
             isResizingTop = true;
-            VAlignment = VerticalAlignment.Bottom;
+            VAlignment = VAlignment.Bottom;
             GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y + Size.Y);
             MoveChildrenDown();
         }
     }
-    
+
     private void ResizeRight(Vector2 mousePosition)
     {
         float difference = mousePosition.X - (GlobalPosition.X + Size.X);

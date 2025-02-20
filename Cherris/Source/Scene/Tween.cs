@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Cherris;
 
@@ -11,7 +13,7 @@ public class Tween(Node creatorNode, Node.ProcessMode processMode = Node.Process
     private readonly Node.ProcessMode processMode = processMode;
 
     private static readonly bool debug = false;
-    
+
     public bool Stopped { get; private set; }
 
     public void Stop()
@@ -24,11 +26,20 @@ public class Tween(Node creatorNode, Node.ProcessMode processMode = Node.Process
     {
         try
         {
+            ArgumentNullException.ThrowIfNull(node);
+
+            if (string.IsNullOrEmpty(propertyPath))
+            {
+                throw new ArgumentException("Property path cannot be null or empty.", nameof(propertyPath));
+            }
+
             Log.Info($"[Tween] Starting tween on {node.Name} for {propertyPath}", debug);
+            
             float startValue = GetFloatValue(node, propertyPath);
+            
             Log.Info($"[Tween] Start value: {startValue} ➔ Target: {targetValue} ({duration}s)", debug);
 
-            steps.Add(new(node, propertyPath, startValue, targetValue, duration));
+            steps.Add(new TweenStep(node, propertyPath, startValue, targetValue, duration));
         }
         catch (Exception ex)
         {
@@ -47,10 +58,10 @@ public class Tween(Node creatorNode, Node.ProcessMode processMode = Node.Process
         foreach (TweenStep step in steps.ToList())
         {
             step.Elapsed += delta;
-            var t = float.Clamp(step.Elapsed / step.Duration, 0, 1);
+            float t = Math.Clamp(step.Elapsed / step.Duration, 0, 1);
             float currentValue = step.StartValue + (step.EndValue - step.StartValue) * t;
 
-           Log.Info($"[Tween] Updating {step.Node.Name}.{step.PropertyPath} {currentValue:0.00} ({t:P0})", debug);
+            Log.Info($"[Tween] Updating {step.Node.Name}.{step.PropertyPath} {currentValue:0.00} ({t:P0})", debug);
 
             SetFloatValueDirect(step.Node, step.PropertyPath, currentValue);
 
@@ -107,43 +118,75 @@ public class Tween(Node creatorNode, Node.ProcessMode processMode = Node.Process
 
         foreach (string part in propertyPath.Split('/'))
         {
-            var member = ((MemberInfo?)current?.GetType().GetProperty(part)
-                              ?? current?.GetType().GetField(part)) ?? throw new ArgumentException($"Property or field '{part}' not found in {current.GetType().Name}");
+            if (current is null)
+            {
+                throw new InvalidOperationException(
+                    $"Intermediate value is null in path '{propertyPath}' on node {node.Name}");
+            }
 
-            current = member.MemberType == MemberTypes.Property
-                ? ((PropertyInfo)member).GetValue(current)
+            Type type = current.GetType();
+            PropertyInfo? property = type.GetProperty(part);
+            FieldInfo? field = type.GetField(part);
+
+            MemberInfo? member = property ?? (MemberInfo?)field
+                ?? throw new ArgumentException($"Property or field '{part}' not found in {type.Name}");
+
+            current = member is PropertyInfo prop
+                ? prop.GetValue(current)
                 : ((FieldInfo)member).GetValue(current);
         }
-        return (float)current;
+
+        return current is not null
+            ? (float)current
+            : throw new InvalidOperationException($"Value for path '{propertyPath}' is null on node {node.Name}");
     }
 
-    private void SetFloatValueDirect(Node node, string propertyPath, float value)
+    private static void SetFloatValueDirect(Node node, string propertyPath, float value)
     {
         string[] parts = propertyPath.Split('/');
-        object current = node;
+        object? current = node;
 
-        // Traverse to parent object (but don't modify parents)
         for (int i = 0; i < parts.Length - 1; i++)
         {
-            MemberInfo member = ((MemberInfo)current.GetType().GetProperty(parts[i])
-                               ?? current.GetType().GetField(parts[i])) ?? throw new ArgumentException($"Property or field '{parts[i]}' not found in {current.GetType().Name}");
+            if (current is null)
+            {
+                throw new InvalidOperationException(
+                    $"Intermediate value is null in path '{propertyPath}' on node {node.Name}");
+            }
 
-            current = member.MemberType == MemberTypes.Property
-                ? ((PropertyInfo)member).GetValue(current)
+            Type type = current.GetType();
+            PropertyInfo? property = type.GetProperty(parts[i]);
+            FieldInfo? field = type.GetField(parts[i]);
+
+            MemberInfo? member = property ?? (MemberInfo?)field
+                ?? throw new ArgumentException($"Property or field '{parts[i]}' not found in {type.Name}");
+
+            current = member is PropertyInfo prop
+                ? prop.GetValue(current)
                 : ((FieldInfo)member).GetValue(current);
         }
 
-        // Set final value directly
-        var finalMember = ((MemberInfo)current.GetType().GetProperty(parts[^1])
-                                ?? current.GetType().GetField(parts[^1])) ?? throw new ArgumentException($"Property or field '{parts[^1]}' not found in {current.GetType().Name}");
-
-        if (finalMember.MemberType == MemberTypes.Property)
+        if (current is null)
         {
-            ((PropertyInfo)finalMember).SetValue(current, value);
+            throw new InvalidOperationException(
+                $"Final target is null in path '{propertyPath}' on node {node.Name}");
         }
-        else
+
+        Type finalType = current.GetType();
+        string finalPart = parts[^1];
+        PropertyInfo? finalProperty = finalType.GetProperty(finalPart);
+        FieldInfo? finalField = finalType.GetField(finalPart);
+
+        MemberInfo finalMember = finalProperty ?? (MemberInfo?)finalField
+            ?? throw new ArgumentException($"Property or field '{finalPart}' not found in {finalType.Name}");
+
+        if (finalMember is PropertyInfo targetProp)
         {
-            ((FieldInfo)finalMember).SetValue(current, value);
+            targetProp.SetValue(current, value);
+        }
+        else if (finalMember is FieldInfo targetField)
+        {
+            targetField.SetValue(current, value);
         }
     }
 

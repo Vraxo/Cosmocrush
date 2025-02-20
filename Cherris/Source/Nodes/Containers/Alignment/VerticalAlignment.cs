@@ -1,6 +1,6 @@
 ﻿namespace Cherris;
 
-public enum VerticalAlignment
+public enum VAlignment
 {
     Top,
     Center,

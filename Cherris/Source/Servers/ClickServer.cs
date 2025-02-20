@@ -2,12 +2,12 @@
 
 public sealed class ClickServer
 {
-    private static ClickServer? _instance;
-    public static ClickServer Instance => _instance ??= new();
+    public static ClickServer Instance { get; } = new();
 
     public int MinLayer = -1;
 
     private readonly List<Clickable> clickables = [];
+    private const bool debug = false;
 
     private ClickServer() { }
 

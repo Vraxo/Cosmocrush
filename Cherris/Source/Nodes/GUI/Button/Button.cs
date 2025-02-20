@@ -315,18 +315,18 @@ public class Button : Control
         // Horizontal alignment calculation
         float x = TextAlignment.Horizontal switch
         {
-            HorizontalAlignment.Center => ScaledSize.X / 2 - textSize.X / 2, // Center text horizontally
-            HorizontalAlignment.Right => ScaledSize.X - textSize.X, // Align right
-            HorizontalAlignment.Left => 0, // Align left
+            HAlignment.Center => ScaledSize.X / 2 - textSize.X / 2, // Center text horizontally
+            HAlignment.Right => ScaledSize.X - textSize.X, // Align right
+            HAlignment.Left => 0, // Align left
             _ => 0
         };
 
         // Vertical alignment calculation
         float y = TextAlignment.Vertical switch
         {
-            VerticalAlignment.Center => ScaledSize.Y / 2 - textSize.Y / 2, // Center text vertically
-            VerticalAlignment.Bottom => ScaledSize.Y - textSize.Y, // Align bottom
-            VerticalAlignment.Top => 0, // Align top
+            VAlignment.Center => ScaledSize.Y / 2 - textSize.Y / 2, // Center text vertically
+            VAlignment.Bottom => ScaledSize.Y - textSize.Y, // Align bottom
+            VAlignment.Top => 0, // Align top
             _ => 0
         };
 
