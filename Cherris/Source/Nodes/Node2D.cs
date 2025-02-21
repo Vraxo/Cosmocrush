@@ -3,13 +3,13 @@
 public class Node2D : VisualItem
 {
     public Vector2 Position { get; set; } = Vector2.Zero;
+    public float Rotation { get; set; } = 0;
     public OriginPreset OriginPreset { get; set; } = OriginPreset.Center;
     public bool InheritPosition { get; set; } = true;
     public bool InheritOrigin { get; set; } = false;
     public bool InheritScale { get; set; } = true;
     public HAlignment HAlignment { get; set; } = HAlignment.Center;
     public VAlignment VAlignment { get; set; } = VAlignment.Center;
-    public float Rotation { get; set; } = 0;
 
     public Vector2 ScaledSize => Size * Scale;
 
@@ -19,6 +19,11 @@ public class Node2D : VisualItem
 
         set
         {
+            if (value == field)
+            {
+                return;
+            }
+
             field = value;
             SizeChanged?.Invoke(this, Size);
         }
@@ -28,12 +33,9 @@ public class Node2D : VisualItem
     {
         get
         {
-            if (InheritScale && Parent is Node2D node2DParent)
-            {
-                return node2DParent.Scale;
-            }
-
-            return field;
+            return InheritScale && Parent is Node2D node2DParent 
+                ? node2DParent.Scale 
+                : (field);
         }
 
         set;
@@ -45,12 +47,9 @@ public class Node2D : VisualItem
         {
             if (Parent is Node2D parentNode)
             {
-                if (InheritPosition)
-                {
-                    return parentNode.GlobalPosition + Position;
-                }
-
-                return field;
+                return InheritPosition 
+                    ? parentNode.GlobalPosition + Position 
+                    : (field);
             }
             else
             {
@@ -73,12 +72,9 @@ public class Node2D : VisualItem
     {
         get
         {
-            if (InheritOrigin)
+            if (InheritOrigin && Parent is Node2D parentNode)
             {
-                if (Parent is Node2D parentNode)
-                {
-                    return parentNode.Offset;
-                }
+                return parentNode.Offset;
             }
 
             return field;
@@ -121,7 +117,7 @@ public class Node2D : VisualItem
     public void LookAt(Vector2 targetPosition)
     {
         Vector2 direction = targetPosition - GlobalPosition;
-        float angle = MathF.Atan2(direction.Y, direction.X) * 57.29578f;
+        var angle = float.Atan2(direction.Y, direction.X) * 57.29578f;
         Rotation = angle;
     }
 }

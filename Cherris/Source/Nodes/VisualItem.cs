@@ -50,23 +50,11 @@ public abstract class VisualItem : Node
 
     // Main
 
-    //public override void Process()
-    //{
-    //    base.Process();
-    //
-    //    if (Visible && ReadyForVisibility)
-    //    {
-    //        Draw();
-    //    }
-    //
-    //    ReadyForVisibility = true;
-    //}
-
     public virtual void Draw() { }
 
     // Circle
 
-    protected void DrawCircle(Vector2 position, float radius, Color color)
+    public void DrawCircle(Vector2 position, float radius, Color color)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -77,7 +65,7 @@ public abstract class VisualItem : Node
         }, Layer);
     }
 
-    protected void DrawCircleOutline(Vector2 position, float radius, Color color)
+    public void DrawCircleOutline(Vector2 position, float radius, Color color)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -90,7 +78,7 @@ public abstract class VisualItem : Node
 
     // Pixel
 
-    protected void DrawPixel(Vector2 position, Color color)
+    public void DrawPixel(Vector2 position, Color color)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -102,7 +90,7 @@ public abstract class VisualItem : Node
 
     // Rectangle
 
-    protected void DrawRectangle(Vector2 position, Vector2 size, Color color)
+    public void DrawRectangle(Vector2 position, Vector2 size, Color color)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -113,7 +101,7 @@ public abstract class VisualItem : Node
         }, Layer);
     }
 
-    protected void DrawRectangleOutline(Vector2 position, Vector2 size, Color color)
+    public void DrawRectangleOutline(Vector2 position, Vector2 size, Color color)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -126,7 +114,7 @@ public abstract class VisualItem : Node
         }, Layer);
     }
 
-    protected void DrawRectangleRounded(Vector2 position, Vector2 size, float roundness, int segments, Color color)
+    public void DrawRectangleRounded(Vector2 position, Vector2 size, float roundness, int segments, Color color)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -142,7 +130,7 @@ public abstract class VisualItem : Node
         }, Layer);
     }
 
-    protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
+    public void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
     {
         // Border lengths for each side
         float top = theme.BorderLengthTop;
@@ -180,7 +168,7 @@ public abstract class VisualItem : Node
             theme.FillColor);
     }
 
-    protected void DrawRectangleOutlineRounded(Vector2 position, Vector2 size, float roundness, int segments, float thickness, Color color)
+    public void DrawRectangleOutlineRounded(Vector2 position, Vector2 size, float roundness, int segments, float thickness, Color color)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -201,7 +189,7 @@ public abstract class VisualItem : Node
 
     // Same as V1, except the outline is moved down.
 
-    /*protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
+    /*public void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
     //{
     //    float top = theme.BorderLengthTop;
     //    float right = theme.BorderLengthRight;
@@ -230,7 +218,7 @@ public abstract class VisualItem : Node
     //}
 
     // V1 - Has artifacts.
-    //protected void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
+    //public void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
     //{
     //    float top = theme.BorderLengthTop;
     //    float right = theme.BorderLengthRight;
@@ -298,7 +286,7 @@ public abstract class VisualItem : Node
 
     // Texture
 
-    protected void DrawTexture(Texture texture, Vector2 position, float rotation, Vector2 scale, Color tint)
+    public void DrawTexture(Texture texture, Vector2 position, float rotation, Vector2 scale, Color tint)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -311,7 +299,7 @@ public abstract class VisualItem : Node
         }, Layer);
     }
 
-    protected void DrawTextureScaled(Texture texture, Vector2 position, Vector2 origin, float rotation, Vector2 scale, bool flipH = false, bool flipV = false)
+    public void DrawTextureScaled(Texture texture, Vector2 position, Vector2 origin, float rotation, Vector2 scale, bool flipH = false, bool flipV = false)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -335,7 +323,7 @@ public abstract class VisualItem : Node
         }, Layer);
     }
 
-    protected void DrawTexturedRectangle(Texture texture, Rectangle source, Rectangle target, Vector2 origin, float rotation)
+    public void DrawTexturedRectangle(Texture texture, Rectangle source, Rectangle target, Vector2 origin, float rotation)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -352,7 +340,7 @@ public abstract class VisualItem : Node
 
     // Text
 
-    protected void DrawText(string text, Vector2 position, Font font, float fontSize, float spacing, Color color)
+    public void DrawText(string text, Vector2 position, Font font, float fontSize, float spacing, Color color)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -367,7 +355,7 @@ public abstract class VisualItem : Node
         }, Layer);
     }
 
-    protected void DrawTextOutlined(string text, Vector2 position, Font font, float fontSize, float spacing, Color color, float outlineSize, Color outlineColor)
+    public void DrawTextOutlined(string text, Vector2 position, Font font, float fontSize, float spacing, Color color, float outlineSize, Color outlineColor)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -404,7 +392,7 @@ public abstract class VisualItem : Node
 
     // Line
 
-    protected void DrawLine(Vector2 start, Vector2 end, float thickness, Color color)
+    public void DrawLine(Vector2 start, Vector2 end, float thickness, Color color)
     {
         RenderServer.Instance.Submit(() =>
         {
@@ -416,7 +404,7 @@ public abstract class VisualItem : Node
         }, Layer);
     }
 
-    protected void DrawGrid(Vector2 size, float cellSize, Color color)
+    public void DrawGrid(Vector2 size, float cellSize, Color color)
     {
         for (float x = 0; x < size.X; x += cellSize)
         {
