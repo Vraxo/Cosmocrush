@@ -8,12 +8,6 @@ public sealed class RenderServer
 
     public Camera? Camera;
 
-    private class DrawCommand(Action drawAction, int layer)
-    {
-        public Action DrawAction { get; } = drawAction;
-        public int Layer { get; } = layer;
-    }
-
     private readonly List<DrawCommand> drawCommands = [];
 
     private RenderServer() { }
@@ -31,10 +25,7 @@ public sealed class RenderServer
         drawCommands.Add(new(drawAction, layer));
     }
 
-    public void SetCamera(Camera camera)
-    {
-        Camera = camera;
-    }
+    // Scissor mode
 
     public static void BeginScissorMode(Vector2 position, Vector2 size)
     {
@@ -50,20 +41,11 @@ public sealed class RenderServer
         Raylib.EndScissorMode();
     }
 
-    public Vector2 GetScreenToWorld(Vector2 position)
-    {
-        return Raylib.GetScreenToWorld2D(position, Camera);
-    }
+    // Camera
 
-    private void ProcessDrawCommands()
+    public void SetCamera(Camera camera)
     {
-        // Order the draw commands by layer before invoking them
-        foreach (var command in drawCommands.OrderBy(c => c.Layer))
-        {
-            command.DrawAction.Invoke();
-        }
-
-        drawCommands.Clear();
+        Camera = camera;
     }
 
     private void BeginCameraMode()
@@ -87,5 +69,39 @@ public sealed class RenderServer
         {
             Raylib.EndMode2D();
         }
+    }
+
+    // Shader mode
+
+    public static void BeginShaderMode(Shader shader)
+    {
+        Raylib.BeginShaderMode(shader);
+    }
+
+    public static void EndShaderMode()
+    {
+        Raylib.EndShaderMode();
+    }
+
+    public Vector2 GetScreenToWorld(Vector2 position)
+    {
+        return Raylib.GetScreenToWorld2D(position, Camera);
+    }
+
+    private void ProcessDrawCommands()
+    {
+        // Order the draw commands by layer before invoking them
+        foreach (var command in drawCommands.OrderBy(c => c.Layer))
+        {
+            command.DrawAction.Invoke();
+        }
+
+        drawCommands.Clear();
+    }
+
+    private class DrawCommand(Action drawAction, int layer)
+    {
+        public Action DrawAction { get; } = drawAction;
+        public int Layer { get; } = layer;
     }
 }

@@ -4,8 +4,7 @@ namespace Cherris;
 
 public abstract class VisualItem : Node
 {
-    public Shader Shader { get; set; }
-    public bool UseShader { get; set; } = false;
+    public Shader? Shader { get; set; }
     public bool ReadyForVisibility { get; set; } = false;
 
     public bool Visible 

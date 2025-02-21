@@ -15,16 +15,13 @@ public class EnemySprite : Sprite
     {
         base.Ready();
 
-        UseShader = true;
-        Shader = Raylib.LoadShader(null, "Res/Shaders/HitFlash.shader");
-
-        Console.WriteLine("Enemy shader: " + Raylib.IsShaderReady(Shader));
+        Shader = Cherris.Shader.Load(null, "Res/Shaders/HitFlash.shader");
 
         flashColorLoc = Raylib.GetShaderLocation(Shader, "flash_color");
         flashValueLoc = Raylib.GetShaderLocation(Shader, "flash_value");
     }
 
-    protected override void UpdateShaderUniforms(Shader shader)
+    protected override void UpdateShaderUniforms(Cherris.Shader shader)
     {
         float[] flashColorData =
         [

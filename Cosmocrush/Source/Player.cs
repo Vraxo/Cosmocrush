@@ -19,8 +19,7 @@ public class Player : ColliderRectangle
     {
         base.Ready();
 
-        sprite!.UseShader = true;
-        sprite!.Shader = Raylib_cs.Raylib.LoadShader(null, "Res/Shaders/Glow.shader");
+        sprite!.Shader = Shader.Load(null, "Res/Shaders/Glow.shader");
     }
 
     public override void Process()

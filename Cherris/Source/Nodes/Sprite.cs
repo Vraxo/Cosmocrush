@@ -29,15 +29,10 @@ public class Sprite : Node2D
 
         RenderServer.Instance.Submit(() =>
         {
-            if (UseShader)
+            if (Shader is not null)
             {
                 UpdateShaderUniforms(Shader);
-                Raylib.BeginShaderMode(Shader);
-
-                if (Parent.Name == "Player")
-                {
-                    //Console.WriteLine("using shader: " + Shader.Id);
-                }
+                RenderServer.BeginShaderMode(Shader);
             }
 
             Raylib.DrawTexturePro(
@@ -57,9 +52,9 @@ public class Sprite : Node2D
                 Rotation,
                 Color.White);
 
-            if (UseShader)
+            if (Shader is not null)
             {
-                Raylib.EndShaderMode();
+                RenderServer.EndShaderMode();
             }
 
         }, Layer);
@@ -67,10 +62,12 @@ public class Sprite : Node2D
 
     protected virtual void UpdateShaderUniforms(Shader shader)
     {
-        if (Texture != null)
+        if (Texture is null)
         {
-            int textureLoc = Raylib.GetShaderLocation(shader, "texture0");
-            Raylib.SetShaderValueTexture(shader, textureLoc, Texture);
+            return;
         }
+
+        int textureLoc = Raylib.GetShaderLocation(shader, "texture0");
+        Raylib.SetShaderValueTexture(shader, textureLoc, Texture);
     }
 }
