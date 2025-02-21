@@ -1,3 +1,7 @@
 name: VisualItem
 type: PopUp
 Title: Project Settings
+children:
+  - name: Button
+    type: Button
+    Text: Click Me!

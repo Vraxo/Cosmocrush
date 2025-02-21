@@ -1,24 +1,24 @@
-﻿using Microsoft.VisualBasic;
-using Spectre.Console;
-
-namespace Cherris;
+﻿namespace Cherris;
 
 public class PopUp : ClickableRectangle
 {
     public string Title { get; set; } = "";
     public float TitleBarHeight { get; set; } = 32;
     public Color TitleBarColor { get; set; } = DefaultTheme.Accent;
-    public Alignment TitleAlignment = new();
+    public Alignment TitleAlignment { get; set; } = new();
     public Vector2 MinSize { get; set; } = new(640, 480);
     public Vector2 MaxSize { get; set; } = new(960, 720);
     public bool ClipChildren { get; set; } = false;
     public BoxTheme TitleBarTheme { get; set; } = new();
 
-    private bool isDragging = false;
-    private bool isResizingRight = false;
-    private bool isResizingLeft = false;
-    private bool isResizingBottom = false;
-    private bool isResizingTop = false;
+    private const float EdgeWidth = 8f;
+    private const float EdgeHeight = 8f;
+
+    private bool dragging = false;
+    private bool resizingRight = false;
+    private bool resizingLeft = false;
+    private bool resizingBottom = false;
+    private bool resizingTop = false;
     private Vector2 dragOffset;
 
     // Main
@@ -120,32 +120,33 @@ public class PopUp : ClickableRectangle
         return new(x, y);
     }
 
-    // Dragging & resizing
+    // Dragging
 
     private void HandleDragging()
     {
         Vector2 mousePosition = Input.MousePosition;
+        bool isMouseDown = Input.IsMouseButtonDown(MouseButtonCode.Left);
 
-        if (Input.IsMouseButtonDown(MouseButtonCode.Left))
+        if (isMouseDown)
         {
-            if (!isDragging && !IsResizing() && IsMouseOnTitleBar())
+            bool canStartDragging = !dragging && !IsResizing() && IsMouseOnTitleBar();
+
+            if (canStartDragging)
             {
-                isDragging = true;
+                dragging = true;
                 dragOffset = mousePosition - GlobalPosition;
             }
 
-            if (isDragging)
+            bool shouldUpdatePosition = dragging && IsMouseInWindow(mousePosition);
+
+            if (shouldUpdatePosition)
             {
-                // Check boundaries: Mouse position should be within the window size
-                if (mousePosition.X >= 0 && mousePosition.X <= VisualServer.WindowSize.X && mousePosition.Y >= 0 && mousePosition.Y <= VisualServer.WindowSize.Y)
-                {
-                    GlobalPosition = mousePosition - dragOffset;
-                }
+                GlobalPosition = mousePosition - dragOffset;
             }
         }
         else
         {
-            isDragging = false;
+            dragging = false;
         }
     }
 
@@ -153,67 +154,41 @@ public class PopUp : ClickableRectangle
 
     private void UpdateResizingCursor()
     {
-        if (isResizingRight)
+        bool right;
+        bool left;
+        bool top;
+        bool bottom;
+
+        bool anyResizing = resizingRight || resizingLeft || resizingTop || resizingBottom;
+
+        if (anyResizing)
+        {
+            right = resizingRight;
+            left = resizingLeft;
+            top = resizingTop;
+            bottom = resizingBottom;
+        }
+        else
+        {
+            right = IsMouseOnEdge(EdgeType.Right);
+            left = IsMouseOnEdge(EdgeType.Left);
+            top = IsMouseOnEdge(EdgeType.Top);
+            bottom = IsMouseOnEdge(EdgeType.Bottom);
+        }
+
+        if ((right && bottom) || (left && top))
+        {
+            Input.Cursor = MouseCursorCode.ResizeBottomLeftToTopRight;
+        }
+        else if ((right && top) || (left && bottom))
+        {
+            Input.Cursor = MouseCursorCode.ResizeTopLeftToBottomRight;
+        }
+        else if (right || left)
         {
             Input.Cursor = MouseCursorCode.ResizeHorizontal;
-
-            if (isResizingBottom)
-            {
-                Input.Cursor = MouseCursorCode.ResizeBottomLeftToTopRight;
-            }
-
-            if (isResizingTop)
-            {
-                Input.Cursor = MouseCursorCode.ResizeTopLeftToBottomRight;
-            }
         }
-        else if (isResizingLeft)
-        {
-            Input.Cursor = MouseCursorCode.ResizeHorizontal;
-
-            if (isResizingBottom)
-            {
-                Input.Cursor = MouseCursorCode.ResizeTopLeftToBottomRight;
-            }
-
-            if (isResizingTop)
-            {
-                Input.Cursor = MouseCursorCode.ResizeBottomLeftToTopRight;
-            }
-        }
-        else if (isResizingTop || isResizingBottom)
-        {
-            Input.Cursor = MouseCursorCode.ResizeVertical;
-        }
-        else if (IsMouseOnRightEdge())
-        {
-            Input.Cursor = MouseCursorCode.ResizeHorizontal;
-
-            if (IsMouseOnTopEdge())
-            {
-                Input.Cursor = MouseCursorCode.ResizeTopLeftToBottomRight;
-            }
-
-            if (IsMouseOnBottomEdge())
-            {
-                Input.Cursor = MouseCursorCode.ResizeBottomLeftToTopRight;
-            }
-        }
-        else if (IsMouseOnLeftEdge())
-        {
-            Input.Cursor = MouseCursorCode.ResizeHorizontal;
-
-            if (IsMouseOnTopEdge())
-            {
-                Input.Cursor = MouseCursorCode.ResizeBottomLeftToTopRight;
-            }
-
-            if (IsMouseOnBottomEdge())
-            {
-                Input.Cursor = MouseCursorCode.ResizeTopLeftToBottomRight;
-            }
-        }
-        else if (IsMouseOnTopEdge() || IsMouseOnRightEdge())
+        else if (top || bottom)
         {
             Input.Cursor = MouseCursorCode.ResizeVertical;
         }
@@ -225,285 +200,240 @@ public class PopUp : ClickableRectangle
 
     private void HandleResizing()
     {
-        if (Input.IsMouseButtonDown(MouseButtonCode.Left) && !isDragging)
-        {
-            CheckForResizeStart();
-
-            Vector2 mousePosition = Input.MousePosition;
-
-            if (isResizingRight)
-            {
-                ResizeRight(mousePosition);
-            }
-
-            if (isResizingLeft)
-            {
-                ResizeLeft(mousePosition);
-            }
-
-            if (isResizingBottom)
-            {
-                ResizeDown(mousePosition);
-            }
-
-            if (isResizingTop)
-            {
-                ResizeUp(mousePosition);
-            }
-        }
-        else
+        if (!Input.IsMouseButtonDown(MouseButtonCode.Left) || dragging)
         {
             ResetAfterResize();
+            return;
+        }
+
+        CheckForResizeStart();
+
+        Vector2 mousePosition = Input.MousePosition;
+
+        if (resizingRight)
+        {
+            ResizeHorizontal(mousePosition, true);
+        }
+        
+        if (resizingLeft)
+        {
+            ResizeHorizontal(mousePosition, false);
+        }
+
+        if (resizingBottom)
+        {
+            ResizeDown(mousePosition);
+        }
+
+        if (resizingTop)
+        {
+            ResizeUp(mousePosition);
         }
     }
 
     private void ResetAfterResize()
     {
-        isResizingRight = false;
-        isResizingLeft = false;
-        isResizingBottom = false;
-        isResizingTop = false;
+        resizingRight = false;
+        resizingLeft = false;
+        resizingBottom = false;
+        resizingTop = false;
 
         if (HAlignment == HAlignment.Left)
         {
             HAlignment = HAlignment.Center;
             GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
-            MoveChildrenToRight();
+            MoveChildrenTo(Direction.Right);
         }
         else if (HAlignment == HAlignment.Right)
         {
             HAlignment = HAlignment.Center;
             GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
-            MoveChildrenToLeft();
+            MoveChildrenTo(Direction.Left);
         }
         else if (VAlignment == VAlignment.Bottom)
         {
             VAlignment = VAlignment.Top;
             GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y - Size.Y);
-            MoveChildrenUp();
+            MoveChildrenTo(Direction.Up);
         }
     }
 
     private void CheckForResizeStart()
     {
-        if (!isResizingRight && IsMouseOnRightEdge() && !isResizingLeft)
+        if (!resizingRight && IsMouseOnEdge(EdgeType.Right) && !resizingLeft)
         {
-            isResizingRight = true;
+            resizingRight = true;
             HAlignment = HAlignment.Left;
             GlobalPosition = new(GlobalPosition.X - Size.X / 2, GlobalPosition.Y);
-            MoveChildrenToLeft();
+            MoveChildrenTo(Direction.Left);
         }
 
-        if (!isResizingLeft && IsMouseOnLeftEdge() && !isResizingRight)
+        if (!resizingLeft && IsMouseOnEdge(EdgeType.Left) && !resizingRight)
         {
-            isResizingLeft = true;
+            resizingLeft = true;
             HAlignment = HAlignment.Right;
             GlobalPosition = new(GlobalPosition.X + Size.X / 2, GlobalPosition.Y);
-            MoveChildrenToRight();
+            MoveChildrenTo(Direction.Right);
         }
 
-        if (!isResizingBottom && IsMouseOnBottomEdge() && !isResizingTop)
+        if (!resizingBottom && IsMouseOnEdge(EdgeType.Bottom) && !resizingTop)
         {
-            isResizingBottom = true;
+            resizingBottom = true;
         }
 
-        if (!isResizingTop && IsMouseOnTopEdge() && !isResizingBottom)
+        if (!resizingTop && IsMouseOnEdge(EdgeType.Top) && !resizingBottom)
         {
-            isResizingTop = true;
+            resizingTop = true;
             VAlignment = VAlignment.Bottom;
             GlobalPosition = new(GlobalPosition.X, GlobalPosition.Y + Size.Y);
-            MoveChildrenDown();
+            MoveChildrenTo(Direction.Down);
         }
     }
 
-    private void ResizeRight(Vector2 mousePosition)
+    private void AdjustChildrenPositions(float deltaX, float deltaY)
     {
-        float difference = mousePosition.X - (GlobalPosition.X + Size.X);
-
-        float previousX = Size.X;
-
-        if (mousePosition.X >= 0 && mousePosition.X <= VisualServer.WindowSize.X)
+        foreach (Node node in Children)
         {
-            float width = Math.Clamp(Size.X + difference, MinSize.X, MaxSize.X);
-            Size = new(width, Size.Y);
-
-            foreach (Node node in Children)
+            if (node is not Node2D child)
             {
-                if (node is Node2D child)
-                {
-                    child.Position = new(child.Position.X + (Size.X - previousX) / 2, child.Position.Y);
-                }
+                continue;
             }
+
+            child.Position += new Vector2(deltaX, deltaY);
         }
     }
 
-    private void ResizeLeft(Vector2 mousePosition)
+    // Resize
+
+    private void ResizeHorizontal(Vector2 mousePosition, bool isRightEdge)
     {
-        float difference = GlobalPosition.X - Size.X - mousePosition.X;
+        float previousWidth = Size.X;
+        float difference = isRightEdge
+            ? mousePosition.X - (GlobalPosition.X + previousWidth)
+            : (GlobalPosition.X - previousWidth) - mousePosition.X;
 
-        float previousX = Size.X;
-
-        if (mousePosition.X >= 0 && mousePosition.X <= VisualServer.WindowSize.X)
+        if (mousePosition.X < 0 || mousePosition.X > VisualServer.WindowSize.X)
         {
-            float width = Math.Clamp(Size.X + difference, MinSize.X, MaxSize.X);
-            Size = new(width, Size.Y);
-
-            foreach (Node node in Children)
-            {
-                if (node is Node2D child)
-                {
-                    child.Position = new(child.Position.X - (Size.X - previousX) / 2, child.Position.Y);
-                }
-            }
+            return;
         }
-    }
 
-    private void ResizeDown(Vector2 mousePosition)
-    {
-        float newHeight = mousePosition.Y - (GlobalPosition.Y - Origin.Y) - Size.Y;
+        var newWidth = float.Clamp(previousWidth + difference, MinSize.X, MaxSize.X);
+        Size = new Vector2(newWidth, Size.Y);
 
-        if (mousePosition.Y >= 0 && mousePosition.Y <= VisualServer.WindowSize.Y)
-        {
-            Size = new(Size.X, MathF.Max(Size.Y + newHeight, MinSize.Y));
-        }
+        float deltaX = (newWidth - previousWidth) / 2 * (isRightEdge ? 1 : -1);
+        AdjustChildrenPositions(deltaX, 0);
     }
 
     private void ResizeUp(Vector2 mousePosition)
     {
+        float previousY = Size.Y;
         float difference = mousePosition.Y - (GlobalPosition.Y - Origin.Y);
 
-        float previousY = Size.Y;
-
-        if (mousePosition.Y >= 0 && mousePosition.Y <= VisualServer.WindowSize.Y)
+        if (mousePosition.Y < 0 || mousePosition.Y > VisualServer.WindowSize.Y)
         {
-            float height = Math.Clamp(Size.Y - difference, MinSize.Y, MaxSize.Y);
-            Size = new(Size.X, height);
-
-            foreach (Node node in Children)
-            {
-                if (node is Node2D child)
-                {
-                    child.Position = new(child.Position.X, child.Position.Y - (Size.Y - previousY));
-                }
-            }
+            return;
         }
+
+        var newHeight = float.Clamp(Size.Y - difference, MinSize.Y, MaxSize.Y);
+        Size = new Vector2(Size.X, newHeight);
+        AdjustChildrenPositions(0, -(newHeight - previousY));
+    }
+
+    private void ResizeDown(Vector2 mousePosition)
+    {
+        if (mousePosition.Y < 0 || mousePosition.Y > VisualServer.WindowSize.Y)
+        {
+            return;
+        }
+
+        float heightDelta = mousePosition.Y - (GlobalPosition.Y - Origin.Y + Size.Y);
+        var newHeight = float.Max(Size.Y + heightDelta, MinSize.Y);
+        Size = new(Size.X, newHeight);
     }
 
     // Checks
 
-    private bool IsMouseOnRightEdge()
+    private static bool IsMouseInArea(Vector2 position, Vector2 size)
     {
-        float edgeWidth = 8;
-        Vector2 mousePosition = Input.MousePosition;
-        Vector2 rightEdgePosition = GlobalPosition - Origin + new Vector2(Size.X - edgeWidth / 2, 0);
+        Vector2 mouse = Input.MousePosition;
 
-        return mousePosition.X >= rightEdgePosition.X &&
-               mousePosition.X <= rightEdgePosition.X + edgeWidth &&
-               mousePosition.Y >= rightEdgePosition.Y && // Remove TitleBarHeight condition
-               mousePosition.Y <= rightEdgePosition.Y + Size.Y;
+        return mouse.X >= position.X &&
+               mouse.X <= position.X + size.X &&
+               mouse.Y >= position.Y &&
+               mouse.Y <= position.Y + size.Y;
     }
 
-    private bool IsMouseOnLeftEdge()
+    private bool IsMouseOnEdge(EdgeType edge)
     {
-        float edgeWidth = 8;
-        Vector2 mousePosition = Input.MousePosition;
-        Vector2 leftEdgePosition = GlobalPosition - Origin + new Vector2(-edgeWidth / 2, 0);
+        Vector2 basePosition = GlobalPosition - Origin;
 
-        return mousePosition.X >= leftEdgePosition.X &&
-               mousePosition.X <= leftEdgePosition.X + edgeWidth &&
-               mousePosition.Y >= leftEdgePosition.Y && // Remove TitleBarHeight condition
-               mousePosition.Y <= leftEdgePosition.Y + Size.Y;
-    }
+        (Vector2 position, Vector2 size) = edge switch
+        {
+            EdgeType.Right => (
+                basePosition + new Vector2(Size.X - EdgeWidth / 2, 0),
+                new(EdgeWidth, Size.Y)
+            ),
+            EdgeType.Left => (
+                basePosition - new Vector2(EdgeWidth / 2, 0),
+                new(EdgeWidth, Size.Y)
+            ),
+            EdgeType.Bottom => (
+                basePosition + new Vector2(0, Size.Y - EdgeHeight / 2),
+                new(Size.X, EdgeHeight)
+            ),
+            EdgeType.Top => (
+                basePosition,
+                new(Size.X, TitleBarHeight / 8)
+            ),
+            _ => (Vector2.Zero, Vector2.Zero)
+        };
 
-    private bool IsMouseOnBottomEdge()
-    {
-        float edgeHeight = 8;
-        Vector2 mousePosition = Input.MousePosition;
-        Vector2 bottomEdgePosition = GlobalPosition - Origin + new Vector2(0, Size.Y - edgeHeight / 2);
-
-        DrawCircle(GlobalPosition - Origin + new Vector2(0, Size.Y - 4), 1, Color.Red);
-
-        return mousePosition.X >= bottomEdgePosition.X &&
-               mousePosition.X <= bottomEdgePosition.X + Size.X &&
-               mousePosition.Y >= bottomEdgePosition.Y &&
-               mousePosition.Y <= bottomEdgePosition.Y + edgeHeight;
-    }
-
-    private bool IsMouseOnTopEdge()
-    {
-        float edgeHeight = TitleBarHeight / 8; // Top third
-        Vector2 mousePosition = Input.MousePosition;
-        Vector2 titleBarPosition = GlobalPosition - Origin; // Top-left corner of the title bar
-
-        // Check if the mouse is within the top third of the title bar
-        return mousePosition.X >= titleBarPosition.X &&
-               mousePosition.X <= titleBarPosition.X + Size.X &&
-               mousePosition.Y >= titleBarPosition.Y &&
-               mousePosition.Y <= titleBarPosition.Y + edgeHeight;
+        return IsMouseInArea(position, size);
     }
 
     private bool IsMouseOnTitleBar()
     {
-        Vector2 mousePosition = Input.MousePosition;
-        Vector2 titleBarPosition = GlobalPosition - Origin; // Top-left corner of the title bar
-        float topEdgeHeight = TitleBarHeight / 8;          // Top third
-        float bottomAreaHeight = TitleBarHeight - topEdgeHeight; // Bottom two-thirds
+        float topEdgeHeight = TitleBarHeight / 8;
+        Vector2 areaPos = GlobalPosition - Origin + new Vector2(0, topEdgeHeight);
+        Vector2 areaSize = new(Size.X, TitleBarHeight - topEdgeHeight);
+        return IsMouseInArea(areaPos, areaSize);
+    }
 
-        // Check if the mouse is within the bottom two-thirds of the title bar
-        return mousePosition.X >= titleBarPosition.X &&
-               mousePosition.X <= titleBarPosition.X + Size.X &&
-               mousePosition.Y >= titleBarPosition.Y + topEdgeHeight &&
-               mousePosition.Y <= titleBarPosition.Y + TitleBarHeight;
+    private static bool IsMouseInWindow(Vector2 position)
+    {
+        return position.X >= 0 &&
+               position.X <= VisualServer.WindowSize.X &&
+               position.Y >= 0 &&
+               position.Y <= VisualServer.WindowSize.Y;
     }
 
     private bool IsResizing()
     {
-        return isResizingRight || isResizingBottom || isResizingLeft || isResizingTop;
+        return resizingRight || resizingBottom || resizingLeft || resizingTop;
     }
 
     // Move children
 
-    private void MoveChildrenToRight()
+    private void MoveChildrenTo(Direction direction)
     {
         foreach (Node node in Children)
         {
-            if (node is Node2D child)
+            if (node is not Node2D child)
             {
-                child.Position = new(child.Position.X - Size.X / 2, child.Position.Y);
+                continue;
             }
+
+            child.Position = direction switch
+            {
+                Direction.Left => new(child.Position.X + Size.X / 2, child.Position.Y),
+                Direction.Up => new(child.Position.X, child.Position.Y + Size.Y),
+                Direction.Right => new(child.Position.X - Size.X / 2, child.Position.Y),
+                Direction.Down => new(child.Position.X, child.Position.Y - Size.Y),
+                _ => new(child.Position.X, child.Position.Y)
+            };
         }
     }
 
-    private void MoveChildrenToLeft()
-    {
-        foreach (Node node in Children)
-        {
-            if (node is Node2D child)
-            {
-                child.Position = new(child.Position.X + Size.X / 2, child.Position.Y);
-            }
-        }
-    }
-
-    private void MoveChildrenDown()
-    {
-        foreach (Node node in Children)
-        {
-            if (node is Node2D child)
-            {
-                child.Position = new(child.Position.X, child.Position.Y - Size.Y);
-            }
-        }
-    }
-
-    private void MoveChildrenUp()
-    {
-        foreach (Node node in Children)
-        {
-            if (node is Node2D child)
-            {
-                child.Position = new(child.Position.X, child.Position.Y + Size.Y);
-            }
-        }
-    }
+    private enum Direction { Left, Up, Right, Down }
+    private enum EdgeType { Right, Left, Bottom, Top }
 }

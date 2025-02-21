@@ -6,6 +6,22 @@ namespace Cherris;
 
 public partial class ParticleEmitter : Node2D
 {
+    public bool OneShot { get; set; } = false;
+    public int Amount { get; set; } = 50;
+    public Vector2 Gravity { get; set; } = new(980, 0);
+    public Vector2 SpawnAreaMin { get; set; } = Vector2.Zero;
+    public Vector2 SpawnAreaMax { get; set; } = Vector2.Zero;
+    public Vector2 StartVelocityMin { get; set; } = new(100, 0);
+    public Vector2 StartVelocityMax { get; set; } = new(200, 0);
+    public float StartScaleMin { get; set; } = 1.0f;
+    public float StartScaleMax { get; set; } = 1.0f;
+    public float EndScaleMin { get; set; } = 0.0f;
+    public float EndScaleMax { get; set; } = 0.0f;
+    public float Spread { get; set; } = 45.0f;
+    public float Explosiveness { get; set; } = 0.0f;
+    public float Lifetime { get; set; } = 1f;
+    public Color Color { get; set; } = Color.White;
+
     public bool Emitting
     {
         get;
@@ -22,22 +38,6 @@ public partial class ParticleEmitter : Node2D
             }
         }
     } = true;
-
-    public bool OneShot { get; set; } = false;
-    public int Amount { get; set; } = 50;
-    public Vector2 Gravity { get; set; } = new(980, 0);
-    public Vector2 SpawnAreaMin { get; set; } = Vector2.Zero;
-    public Vector2 SpawnAreaMax { get; set; } = Vector2.Zero;
-    public Vector2 StartVelocityMin { get; set; } = new(100, 0);
-    public Vector2 StartVelocityMax { get; set; } = new(200, 0);
-    public float StartScaleMin { get; set; } = 1.0f;
-    public float StartScaleMax { get; set; } = 1.0f;
-    public float EndScaleMin { get; set; } = 0.0f;
-    public float EndScaleMax { get; set; } = 0.0f;
-    public float Spread { get; set; } = 45.0f;
-    public float Explosiveness { get; set; } = 0.0f;
-    public float Lifetime { get; set; } = 1f;
-    public Color Color { get; set; } = Color.White;
 
     private readonly List<Particle> particles = new();
     private readonly Random random = new();
@@ -100,7 +100,7 @@ public partial class ParticleEmitter : Node2D
             int particlesToEmit = (int)(cycleTimer / emissionInterval);
 
             // Cap the emission to remaining amount
-            particlesToEmit = Math.Min(particlesToEmit, Amount - particles.Count);
+            particlesToEmit = (int)float.Min(particlesToEmit, Amount - particles.Count);
 
             for (int i = 0; i < particlesToEmit; i++)
             {
@@ -123,12 +123,12 @@ public partial class ParticleEmitter : Node2D
 
     private Particle CreateParticle()
     {
-        Vector2 randomPosition = new Vector2(
+        Vector2 randomPosition = new(
             NextFloat(SpawnAreaMin.X, SpawnAreaMax.X),
             NextFloat(SpawnAreaMin.Y, SpawnAreaMax.Y)
         );
 
-        Vector2 initialVelocity = new Vector2(
+        Vector2 initialVelocity = new(
             NextFloat(StartVelocityMin.X, StartVelocityMax.X),
             NextFloat(StartVelocityMin.Y, StartVelocityMax.Y)
         );
@@ -153,18 +153,25 @@ public partial class ParticleEmitter : Node2D
 
     private void ApplySpread(ref Vector2 velocity)
     {
-        if (Spread <= 0) return;
-
+        if (Spread <= 0)
+        {
+            return;
+        }
+        
         float speed = velocity.Length();
-        if (speed <= 0) return;
 
-        float originalAngle = MathF.Atan2(velocity.Y, velocity.X);
+        if (speed <= 0)
+        {
+            return;
+        }
+
+        var originalAngle = float.Atan2(velocity.Y, velocity.X);
         float spreadRad = MathF.PI * Spread / 180f;
         float angleOffset = NextFloat(-spreadRad, spreadRad);
 
         float newAngle = originalAngle + angleOffset;
-        velocity.X = MathF.Cos(newAngle) * speed;
-        velocity.Y = MathF.Sin(newAngle) * speed;
+        velocity.X = float.Cos(newAngle) * speed;
+        velocity.Y = float.Sin(newAngle) * speed;
     }
 
     private void SubmitDrawCalls()
