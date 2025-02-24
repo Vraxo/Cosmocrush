@@ -19,7 +19,8 @@ public class Player : ColliderRectangle
     {
         base.Ready();
 
-        sprite!.Shader = Shader.Load(null, "Res/Shaders/Glow.shader");
+        //sprite!.Shader = Shader.Load(null, "Res/Shaders/Glow.shader");
+        //sprite!.Shader = Shader.Load(null, "Res/Shaders/Bloom.fs");
     }
 
     public override void Process()
@@ -36,7 +37,10 @@ public class Player : ColliderRectangle
         Health -= damage;
         damageSound?.Play("SFX");
 
-        if (Health <= 0) Die();
+        if (Health <= 0) 
+        { 
+            Die();
+        }
     }
 
     public void ApplyKnockback(Vector2 knockback)
@@ -65,8 +69,14 @@ public class Player : ColliderRectangle
 
     private void SufferKnockback()
     {
-        knockbackVelocity = Vector2.Lerp(knockbackVelocity, Vector2.Zero, knockbackRecoverySpeed);
+        knockbackVelocity = Vector2.Lerp(
+            knockbackVelocity,
+            Vector2.Zero,
+            knockbackRecoverySpeed);
     }
 
-    private void Die() => Free();
+    private void Die() 
+    {
+        Free();
+    }
 }

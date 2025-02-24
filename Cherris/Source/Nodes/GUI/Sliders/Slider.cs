@@ -118,7 +118,7 @@ public abstract class Slider : Control
     {
         Vector2 grabberPos = CalculateGrabberPosition();
 
-        BoxTheme themeState = Focused ? Theme.Grabber.Focused :
+        BoxStyle themeState = Focused ? Theme.Grabber.Focused :
             grabberPressed ? Theme.Grabber.Pressed :
             grabberHovered ? Theme.Grabber.Hover :
             Theme.Grabber.Hover;

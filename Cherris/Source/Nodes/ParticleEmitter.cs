@@ -1,6 +1,4 @@
 ﻿using Raylib_cs;
-using System;
-using System.Collections.Generic;
 
 namespace Cherris;
 
@@ -27,19 +25,24 @@ public partial class ParticleEmitter : Node2D
         get;
         set
         {
-            if (field == value) return;
+            if (field == value)
+            {
+                return;
+            }
+
             field = value;
 
-            // Reset emission state when starting a new one-shot emission
-            if (field && OneShot)
+            if (!(field) || !OneShot)
             {
-                emitted = false;
-                cycleTimer = 0; // Reset timer for new emission
+                return;
             }
+
+            emitted = false;
+            cycleTimer = 0;
         }
     } = true;
 
-    private readonly List<Particle> particles = new();
+    private readonly List<Particle> particles = [];
     private readonly Random random = new();
     private float cycleTimer;
     private bool emitted;

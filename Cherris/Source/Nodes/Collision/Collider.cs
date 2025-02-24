@@ -5,11 +5,12 @@ public abstract class Collider : Node2D
     public bool IsStatic { get; set; } = false;
     public bool Enabled { get; set; } = true;
     public List<int> CollisionLayers { get; set; } = [0];
-    public Color Color { get; set; } = new(0, 0, 128, 128);
+    public Color Color { get; set; } = Color.SkyBlue;
 
     public Collider()
     {
         Visible = true;
+        Layer = 1000;
         ActiveChanged += OnActiveChanged;
     }
 
@@ -20,8 +21,14 @@ public abstract class Collider : Node2D
 
     private void OnActiveChanged(Node sender, bool active)
     {
-        if (active) Register();
-        else Unregister();
+        if (active)
+        {
+            Register();
+        }
+        else
+        {
+            Unregister();
+        }
     }
 
     public override void Free()

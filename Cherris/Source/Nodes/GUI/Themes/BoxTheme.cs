@@ -1,6 +1,6 @@
 ﻿namespace Cherris;
 
-public class BoxTheme
+public class BoxStyle
 {
     public float Roundness { get; set; } = 0.2f;
     public Color FillColor { get; set; } = DefaultTheme.NormalFill;

@@ -11,7 +11,7 @@ public class CheckBox : Control
     #region [ - - - Properties & Fields - - - ]
 
     public ButtonThemePack BackgroundStyles { get; set; } = new();
-    public BoxTheme CheckStyles { get; set; } = new();
+    public BoxStyle CheckStyles { get; set; } = new();
     public Vector2 CheckSize { get; set; } = new();
     public ActionMode LeftClickActionMode { get; set; } = ActionMode.Release;
     public ActionMode RightClickActionMode { get; set; } = ActionMode.Release;

@@ -2,7 +2,7 @@
 
 public class ThemedRectangle : Node2D
 {
-    public BoxTheme Style = new();
+    public BoxStyle Style = new();
 
     public ThemedRectangle()
     {

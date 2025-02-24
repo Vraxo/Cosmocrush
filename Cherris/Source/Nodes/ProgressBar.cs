@@ -3,8 +3,8 @@
 public class ProgressBar : Node2D
 {
     public bool ShowPercentage { get; set; } = true;
-    public BoxTheme BackgroundTheme { get; set; } = new();
-    public BoxTheme ForegroundTheme { get; set; } = new();
+    public BoxStyle BackgroundTheme { get; set; } = new();
+    public BoxStyle ForegroundTheme { get; set; } = new();
 
     public float Percentage
     {

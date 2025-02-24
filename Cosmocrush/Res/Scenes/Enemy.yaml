@@ -25,6 +25,8 @@ children:
     Explosiveness: 1
     Amount: 25
     OneShot: true
+    Emitting: false
+    Lifetime: 0.25
 
   - name: NavigationAgent
     type: NavigationAgent

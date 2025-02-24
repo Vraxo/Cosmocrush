@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Cherris;
 
@@ -8,23 +6,27 @@ public class AnimationPlayer : Node
 {
     public Animation? DefaultAnimation { get; set; }
     public bool AutoPlay { get; set; }
-    public bool IsPlaying => playing;
+    public bool Playing { get; private set; }
 
     private Animation? currentAnimation;
     private float animationTime;
-    private bool playing;
 
     public override void Ready()
     {
-        if (AutoPlay && DefaultAnimation != null)
+        if (!AutoPlay || DefaultAnimation is null)
         {
-            Play(DefaultAnimation);
+            return;
         }
+
+        Play(DefaultAnimation);
     }
 
     public override void Process()
     {
-        if (!playing || currentAnimation == null) return;
+        if (!Playing || currentAnimation == null)
+        {
+            return;
+        }
 
         animationTime += TimeServer.Delta;
         var (prev, next) = GetKeyframes(animationTime);
@@ -35,23 +37,26 @@ public class AnimationPlayer : Node
             return;
         }
 
-        float t = float.Clamp((animationTime - prev.Time) / (next.Time - prev.Time), 0, 1);
+        var t = float.Clamp((animationTime - prev.Time) / (next.Time - prev.Time), 0, 1);
         AnimateBetweenKeyframes(prev, next, t);
     }
 
-    public void Play(string name) => Play(ResourceLoader.Load<Animation>(name));
+    public void Play(string name)
+    {
+        Play(ResourceLoader.Load<Animation>(name));
+    }
 
     public void Play(Animation animation)
     {
         currentAnimation = animation;
         animationTime = 0f;
-        playing = true;
+        Playing = true;
         Log.Info($"[AnimationPlayer] Started animation: {animation}");
     }
 
     public void Stop()
     {
-        playing = false;
+        Playing = false;
         currentAnimation = null;
         animationTime = 0f;
         Log.Info("[AnimationPlayer] Animation stopped");
@@ -61,14 +66,25 @@ public class AnimationPlayer : Node
     {
         foreach (var (nodePath, prevProps) in prev.Nodes)
         {
-            if (!next.Nodes.TryGetValue(nodePath, out var nextProps)) continue;
+            if (!next.Nodes.TryGetValue(nodePath, out var nextProps))
+            {
+                continue;
+            }
 
-            Node? node = GetNode<Node>(nodePath);
-            if (node == null) continue;
+            var node = GetNode<Node>(nodePath);
+            
+            if (node is null)
+            {
+                continue;
+            }
 
             foreach (var (propertyPath, prevValue) in prevProps)
             {
-                if (!nextProps.TryGetValue(propertyPath, out float nextValue)) continue;
+                if (!nextProps.TryGetValue(propertyPath, out float nextValue))
+                {
+                    continue;
+                }
+
                 SetAnimatedProperty(node, propertyPath, prevValue, nextValue, t);
             }
         }
@@ -109,19 +125,18 @@ public class AnimationPlayer : Node
         }
         catch (Exception ex)
         {
-            Log.Info($"[AnimationPlayer] Error: {ex}");
+            Log.Error($"[AnimationPlayer]: {ex}");
             Stop();
         }
     }
 
-    private object CreateInterpolatedValue(Type type, string component, float prev, float next, float t)
+    private static object CreateInterpolatedValue(Type type, string component, float prev, float next, float t)
     {
         if (type == typeof(float)) return float.Lerp(prev, next, t);
 
         object instance = Activator.CreateInstance(type)!;
         float value = float.Lerp(prev, next, t);
 
-        // Try to set component
         FieldInfo? field = type.GetField(component) ?? TryFindComponentField(type);
         PropertyInfo? prop = type.GetProperty(component) ?? TryFindComponentProperty(type);
 
@@ -137,12 +152,12 @@ public class AnimationPlayer : Node
         return instance;
     }
 
-    private FieldInfo? TryFindComponentField(Type type)
+    private static FieldInfo? TryFindComponentField(Type type)
     {
         return type.GetField("X") ?? type.GetField("Y") ?? type.GetField("Z") ?? type.GetField("W");
     }
 
-    private PropertyInfo? TryFindComponentProperty(Type type)
+    private static PropertyInfo? TryFindComponentProperty(Type type)
     {
         return type.GetProperty("X") ?? type.GetProperty("Y") ?? type.GetProperty("Z") ?? type.GetProperty("W");
     }
@@ -192,9 +207,11 @@ public class AnimationPlayer : Node
             case MemberTypes.Property:
                 ((PropertyInfo)member).SetValue(target, value);
                 break;
+
             case MemberTypes.Field:
                 ((FieldInfo)member).SetValue(target, value);
                 break;
+
             default:
                 throw new InvalidOperationException("Unsupported member type");
         }

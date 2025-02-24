@@ -2,13 +2,16 @@
 
 public class NavigationObstacle : Node2D
 {
+    public NavigationObstacle()
+    {
+        Visible = false;
+    }
+
     public override void Ready()
     {
         base.Ready();
 
         NavigationServer.Instance.RegisterObstacle(this);
-
-        Visible = true;
     }
 
     public override void Free()

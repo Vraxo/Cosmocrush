@@ -404,11 +404,11 @@
       <FileName>Source\Nodes\GUI\BoxStyle.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="CheckBoxThemePack" Collapsed="true">
+  <Class Name="CheckBoxStylePack" Collapsed="true">
     <Position X="95.25" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAgAAAAACAAAACCAAIQAAACQAAAAgEAAA=</HashCode>
-      <FileName>Source\Nodes\GUI\CheckBox\CheckBoxThemePack.cs</FileName>
+      <FileName>Source\Nodes\GUI\CheckBox\CheckBoxStylePack.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ButtonThemePack" Collapsed="true">

@@ -7,6 +7,6 @@ public class EntryPoint
     [STAThread]
     public static void Main(string[] args)
     {
-        AppServer.Instance.Run();
+        AppServer.Run();
     }
 }

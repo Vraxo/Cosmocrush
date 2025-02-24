@@ -9,21 +9,21 @@ public sealed class AppServer
 {
     public static AppServer Instance { get; } = new();
 
-    private const string configFilePath = "Res/Cherris/Config.yaml";
-    private const string logFilePath = "Res/Cherris/Log.txt";
+    private const string ConfigFilePath = "Res/Cherris/Config.yaml";
+    private const string LogFilePath = "Res/Cherris/Log.txt";
 
     private AppServer()
     {
         AppServer.LoadConfig();
     }
 
-    public void Run()
+    public static void Run()
     {
         Start();
         Update();
     }
 
-    private void Start()
+    private static void Start()
     {
         CreateLogFile();
         SetCurrentDirectory();
@@ -57,11 +57,13 @@ public sealed class AppServer
 
     private static void CreateLogFile()
     {
-        if (File.Exists(logFilePath))
+        if (!File.Exists(LogFilePath))
         {
-            File.Delete(logFilePath);
-            File.Create(logFilePath);
+            return;
         }
+
+        File.Delete(LogFilePath);
+        File.Create(LogFilePath);
     }
 
     private static void SetCurrentDirectory()
@@ -80,17 +82,17 @@ public sealed class AppServer
     private static Configuration LoadConfig()
     {
         var deserializer = new DeserializerBuilder().Build();
-        string yaml = File.ReadAllText(configFilePath);
+        string yaml = File.ReadAllText(ConfigFilePath);
         return deserializer.Deserialize<Configuration>(yaml);
     }
 
-    private void ApplyConfig()
+    private static void ApplyConfig()
     {
         Configuration config = LoadConfig() ?? throw new Exception("Config file is invalid.");
 
         VisualServer.OriginalWindowSize = new(config.Width, config.Height);
 
-        ConfigFlags flags = ConfigFlags.VSyncHint | ConfigFlags.HighDpiWindow | ConfigFlags.AlwaysRunWindow;
+        var flags = ConfigFlags.VSyncHint | ConfigFlags.HighDpiWindow | ConfigFlags.AlwaysRunWindow;
 
         if (config.ResizableWindow)
         {

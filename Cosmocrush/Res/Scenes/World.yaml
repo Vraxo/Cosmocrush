@@ -9,6 +9,7 @@ children:
     type: ColorRectangle
     Color: [0, 0, 0]
     Size: [2000, 2000]
+    #Visible: false
 
   - name: NavigationRegion
     type: NavigationRegion

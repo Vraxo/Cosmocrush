@@ -16,7 +16,7 @@ public class Enemy : ColliderRectangle
     private readonly AnimationPlayer? hitFlashAnimationPlayer;
     private readonly ParticleEmitter? damageParticles;
 
-    private readonly Sound damageSound = ResourceLoader.Load<Sound>("Res/AudioStream/SFX/EnemyDamage.mp3");
+    private readonly Sound damageSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/EnemyDamage.mp3");
 
     private const int MaxHealth = 2000;
     private const int Damage = 2;
@@ -33,7 +33,7 @@ public class Enemy : ColliderRectangle
     {
         base.Ready();
 
-        ProcessingMode = ProcessMode.Disabled;
+        //ProcessingMode = ProcessMode.Disabled;
         navigationAgent!.Region = GetNode<NavigationRegion>("/root/NavigationRegion");
         player = GetNode<Player>("/root/Player");
     }
@@ -138,7 +138,6 @@ public class Enemy : ColliderRectangle
 
         Vector2 movement = direction * Speed * TimeServer.Delta + knockback;
         GlobalPosition += movement;
-
 
         if (GlobalPosition.DistanceTo(targetPosition) < ProximityThreshold)
         {

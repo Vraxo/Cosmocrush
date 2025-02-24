@@ -1,6 +1,6 @@
 ﻿namespace Cherris;
 
-public class ButtonTheme : BoxTheme
+public class ButtonTheme : BoxStyle
 {
     public float FontSpacing { get; set; } = 0;
     public float FontSize { get; set; } = 16;

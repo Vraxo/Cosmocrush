@@ -9,7 +9,7 @@ public class PopUp : ClickableRectangle
     public Vector2 MinSize { get; set; } = new(640, 480);
     public Vector2 MaxSize { get; set; } = new(960, 720);
     public bool ClipChildren { get; set; } = false;
-    public BoxTheme TitleBarTheme { get; set; } = new();
+    public BoxStyle TitleBarTheme { get; set; } = new();
 
     private const float EdgeWidth = 8f;
     private const float EdgeHeight = 8f;
@@ -170,10 +170,10 @@ public class PopUp : ClickableRectangle
         }
         else
         {
-            right = IsMouseOnEdge(EdgeType.Right);
-            left = IsMouseOnEdge(EdgeType.Left);
-            top = IsMouseOnEdge(EdgeType.Top);
-            bottom = IsMouseOnEdge(EdgeType.Bottom);
+            right = IsMouseOnEdge(Direction.Right);
+            left = IsMouseOnEdge(Direction.Left);
+            top = IsMouseOnEdge(Direction.Up);
+            bottom = IsMouseOnEdge(Direction.Down);
         }
 
         if ((right && bottom) || (left && top))
@@ -260,7 +260,7 @@ public class PopUp : ClickableRectangle
 
     private void CheckForResizeStart()
     {
-        if (!resizingRight && IsMouseOnEdge(EdgeType.Right) && !resizingLeft)
+        if (!resizingRight && IsMouseOnEdge(Direction.Right) && !resizingLeft)
         {
             resizingRight = true;
             HAlignment = HAlignment.Left;
@@ -268,7 +268,7 @@ public class PopUp : ClickableRectangle
             MoveChildrenTo(Direction.Left);
         }
 
-        if (!resizingLeft && IsMouseOnEdge(EdgeType.Left) && !resizingRight)
+        if (!resizingLeft && IsMouseOnEdge(Direction.Left) && !resizingRight)
         {
             resizingLeft = true;
             HAlignment = HAlignment.Right;
@@ -276,12 +276,12 @@ public class PopUp : ClickableRectangle
             MoveChildrenTo(Direction.Right);
         }
 
-        if (!resizingBottom && IsMouseOnEdge(EdgeType.Bottom) && !resizingTop)
+        if (!resizingBottom && IsMouseOnEdge(Direction.Down) && !resizingTop)
         {
             resizingBottom = true;
         }
 
-        if (!resizingTop && IsMouseOnEdge(EdgeType.Top) && !resizingBottom)
+        if (!resizingTop && IsMouseOnEdge(Direction.Up) && !resizingBottom)
         {
             resizingTop = true;
             VAlignment = VAlignment.Bottom;
@@ -363,25 +363,25 @@ public class PopUp : ClickableRectangle
                mouse.Y <= position.Y + size.Y;
     }
 
-    private bool IsMouseOnEdge(EdgeType edge)
+    private bool IsMouseOnEdge(Direction edge)
     {
         Vector2 basePosition = GlobalPosition - Origin;
 
         (Vector2 position, Vector2 size) = edge switch
         {
-            EdgeType.Right => (
+            Direction.Right => (
                 basePosition + new Vector2(Size.X - EdgeWidth / 2, 0),
                 new(EdgeWidth, Size.Y)
             ),
-            EdgeType.Left => (
+            Direction.Left => (
                 basePosition - new Vector2(EdgeWidth / 2, 0),
                 new(EdgeWidth, Size.Y)
             ),
-            EdgeType.Bottom => (
+            Direction.Down => (
                 basePosition + new Vector2(0, Size.Y - EdgeHeight / 2),
                 new(Size.X, EdgeHeight)
             ),
-            EdgeType.Top => (
+            Direction.Up => (
                 basePosition,
                 new(Size.X, TitleBarHeight / 8)
             ),
@@ -435,5 +435,4 @@ public class PopUp : ClickableRectangle
     }
 
     private enum Direction { Left, Up, Right, Down }
-    private enum EdgeType { Right, Left, Bottom, Top }
 }

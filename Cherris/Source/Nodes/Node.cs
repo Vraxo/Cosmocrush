@@ -105,7 +105,7 @@ public class Node
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
         string rootEmoji = NodeEmoji.GetEmojiForNodeType(this);
-        Tree root = new($"{rootEmoji}[green]{Name}[/]");
+        Tree root = new($"{rootEmoji} [green]{Name}[/]");
 
         AddChildrenToTree(this, root);
 

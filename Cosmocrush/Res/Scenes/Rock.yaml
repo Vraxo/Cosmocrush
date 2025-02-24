@@ -1,11 +1,10 @@
 name: Rock
 type: NavigationObstacle
-Size: [1440, 1440]
-Scale: [0.1, 0.1]
+Size: [64, 64]
 children:
   - name: Collider
     type: ColliderRectangle
-    Size: [960, 960]
+    Size: [32, 32]
     IsStatic: true
     CollisionLayers:
       - Default  

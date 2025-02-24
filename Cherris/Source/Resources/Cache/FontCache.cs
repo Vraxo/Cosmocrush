@@ -4,11 +4,10 @@ public sealed class FontCache
 {
     public static FontCache? Instance => field ??= new();
 
-    private readonly Dictionary<string, Font> fonts = new();
+    private readonly Dictionary<string, Font> fonts = [];
 
     private FontCache() { }
 
-    // Get the font by the full string (e.g., "Res/Fonts/FontName.ttf:32")
     public Font Get(string fontKey)
     {
         if (fonts.TryGetValue(fontKey, out Font? font))
@@ -25,7 +24,6 @@ public sealed class FontCache
         return newFont;
     }
 
-    // Parses the font key string to extract the font Pathetic and size
     private static (string fontPath, int fontSize) ParseFontKey(string fontKey)
     {
         int colonIndex = fontKey.LastIndexOf(':');

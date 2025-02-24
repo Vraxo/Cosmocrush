@@ -6,3 +6,4 @@ ThemeFile: Res/Themes/Grabber.theme.yaml
 AudioBus: SFX
 FocusGainedSound: Res/Audio/SFX/Ui.mp3
 MoveSound: Res/Audio/SFX/Ui.mp3
+Step: 0.1

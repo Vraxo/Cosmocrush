@@ -1,16 +1,14 @@
 name: Player
 type: Player
 Position: [500, 500]
-Size: [32, 48]
+Size: [32, 32]
 sprite: Sprite
 children:
   - name: Sprite
     type: Sprite
     Texture: Res/Sprites/Player.png
-    Position: [0, -16]
 
   - name: Gun
     type: Gun
     path: Res/Scenes/Gun.yaml
     Texture: Res/Sprites/Gun.png
-    Position: [0, -16]

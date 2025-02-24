@@ -1,5 +1,4 @@
 ﻿using Cherris;
-using Raylib_cs;
 
 namespace Cosmocrush;
 
@@ -8,17 +7,17 @@ public class EnemySprite : Sprite
     private int flashColorLoc;
     private int flashValueLoc;
 
-    public Color flashColor { get; set; } = Color.White;
-    public float flashValue { get; set; } = 0f;
-
+    private Color flashColor = Color.White;
+    public float flashValue = 0f;
+    
     public override void Ready()
     {
         base.Ready();
 
         Shader = Cherris.Shader.Load(null, "Res/Shaders/HitFlash.shader");
 
-        flashColorLoc = Raylib.GetShaderLocation(Shader, "flash_color");
-        flashValueLoc = Raylib.GetShaderLocation(Shader, "flash_value");
+        flashColorLoc = GetShaderLocation("flash_color");
+        flashValueLoc = GetShaderLocation("flash_value");
     }
 
     protected override void UpdateShaderUniforms(Cherris.Shader shader)
@@ -31,7 +30,7 @@ public class EnemySprite : Sprite
             flashColor.A / 255.0f
         ];
 
-        Raylib.SetShaderValue(shader, flashValueLoc, new[] { flashValue }, ShaderUniformDataType.Float);
-        Raylib.SetShaderValue(shader, flashColorLoc, flashColorData, ShaderUniformDataType.Vec4);
+        SetShaderValue(flashValueLoc, [flashValue], ShaderUniformDataType.Float);
+        SetShaderValue(flashColorLoc, flashColorData, ShaderUniformDataType.Vec4);
     }
 }

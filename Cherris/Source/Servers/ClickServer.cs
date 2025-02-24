@@ -7,7 +7,7 @@ public sealed class ClickServer
     public int MinLayer = -1;
 
     private readonly List<Clickable> clickables = [];
-    private const bool debug = false;
+    private const bool Debug = true;
 
     private ClickServer() { }
 
@@ -40,10 +40,12 @@ public sealed class ClickServer
 
         foreach (Clickable clickable in clickables)
         {
-            if (clickable.Layer > highestLayer)
+            if (clickable.Layer <= highestLayer)
             {
-                highestLayer = clickable.Layer;
+                continue;
             }
+
+            highestLayer = clickable.Layer;
         }
 
         return highestLayer;
@@ -53,23 +55,27 @@ public sealed class ClickServer
     {
         List<Clickable> viableClickables = GetViableClickables();
 
-        if (viableClickables.Count > 0)
+        if (viableClickables.Count <= 0)
         {
-            Clickable? topClickable = GetTopClickable(viableClickables);
+            return;
+        }
 
-            if (topClickable != null)
-            {
-                if (mouseButton == MouseButtonCode.Left)
-                {
-                    topClickable.OnTopLeft = true;
-                    Log.Info($"[ClickServer] '{topClickable}' has been left clicked.", "ClickServer");
-                }
-                else
-                {
-                    topClickable.OnTopRight = true;
-                    Log.Info($"[ClickServer] '{topClickable}' has been right clicked.", "ClickServer");
-                }
-            }
+        Clickable? topClickable = GetTopClickable(viableClickables);
+
+        if (topClickable is null)
+        {
+            return;
+        }
+
+        if (mouseButton == MouseButtonCode.Left)
+        {
+            topClickable.OnTopLeft = true;
+            Log.Info($"'{topClickable.Name}' has been left clicked.", Debug);
+        }
+        else
+        {
+            topClickable.OnTopRight = true;
+            Log.Info($"'{topClickable.Name}' has been right clicked.", Debug);
         }
     }
 
@@ -79,13 +85,15 @@ public sealed class ClickServer
 
         foreach (Clickable clickable in clickables)
         {
-            if (IsMouseOverNode2D(clickable))
+            if (!IsMouseOverNode2D(clickable))
             {
-                viableClickables.Add(clickable);
+                continue;
             }
+
+            viableClickables.Add(clickable);
         }
 
-        Log.Info($"[ClickServer] {viableClickables.Count} viable clickables.", "ClickServer");
+        Log.Info($"{viableClickables.Count} viable clickables.", Debug);
 
         return viableClickables;
     }
@@ -97,14 +105,16 @@ public sealed class ClickServer
 
         foreach (Clickable clickable in viableClickables)
         {
-            if (clickable.Layer >= highestLayer)
+            if (clickable.Layer < highestLayer)
             {
-                highestLayer = clickable.Layer;
-                topClickable = clickable;
+                continue;
             }
+
+            highestLayer = clickable.Layer;
+            topClickable = clickable;
         }
 
-        Log.Info($"[ClickServer] The highest layer is {viableClickables.Count}.", "ClickServer");
+        Log.Info($"The highest layer is {viableClickables.Count}.", Debug);
 
         return topClickable;
     }

@@ -19,7 +19,7 @@ public class SoundCache
 
         if (newSound is null)
         {
-            Log.Error($"[SoundCache] Could not load sound: {soundKey}");
+            Log.Error($"Could not load sound: {soundKey}");
         }
 
         soundEffects[soundKey] = newSound;

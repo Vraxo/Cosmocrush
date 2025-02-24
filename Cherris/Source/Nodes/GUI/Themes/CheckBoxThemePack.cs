@@ -1,30 +1,30 @@
 ﻿using Cherris;
 
-public class CheckBoxThemePack
+public class CheckBoxStylePack
 {
     // States
 
-    public BoxTheme Current { get; set; } = new();
+    public BoxStyle Current { get; set; } = new();
 
-    public BoxTheme Normal { get; set; } = new();
+    public BoxStyle Normal { get; set; } = new();
 
-    public BoxTheme Hover { get; set; } = new()
+    public BoxStyle Hover { get; set; } = new()
     {
         FillColor = DefaultTheme.HoverFill
     };
 
-    public BoxTheme Pressed { get; set; } = new()
+    public BoxStyle Pressed { get; set; } = new()
     {
         FillColor = DefaultTheme.Accent
     };
 
-    public BoxTheme Disabled { get; set; } = new()
+    public BoxStyle Disabled { get; set; } = new()
     {
         FillColor = DefaultTheme.DisabledFill,
         BorderColor = DefaultTheme.DisabledBorder,
     };
 
-    public BoxTheme Focused { get; set; } = new()
+    public BoxStyle Focused { get; set; } = new()
     {
         BorderColor = DefaultTheme.FocusBorder,
         BorderLength = 1

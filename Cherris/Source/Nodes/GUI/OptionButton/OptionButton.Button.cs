@@ -6,7 +6,7 @@ public partial class OptionButton : Button
     {
         public int Index = 0;
         public bool Selected = false;
-        public BoxTheme CheckTheme = new();
+        public BoxStyle CheckTheme = new();
 
         private OptionButton parent;
 

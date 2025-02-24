@@ -104,16 +104,7 @@ public sealed class InputServer
 
     internal static Vector2 WorldMousePosition
     {
-        get
-        {
-            if (RenderServer.Instance.Camera is null)
-            {
-                return MousePosition;
-            }
-
-            Camera2D camera = (Camera2D)RenderServer.Instance.Camera;
-            return Raylib.GetScreenToWorld2D(MousePosition, camera);
-        }
+        get => RenderServer.Instance.GetScreenToWorld(MousePosition);
     }
 
     internal static MouseCursorCode Cursor

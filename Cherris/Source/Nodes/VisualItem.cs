@@ -129,7 +129,7 @@ public abstract class VisualItem : Node
         }, Layer);
     }
 
-    public void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
+    public void DrawRectangleThemed(Vector2 position, Vector2 size, BoxStyle theme)
     {
         // Border lengths for each side
         float top = theme.BorderLengthTop;
@@ -188,7 +188,7 @@ public abstract class VisualItem : Node
 
     // Same as V1, except the outline is moved down.
 
-    /*public void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
+    /*public void DrawRectangleThemed(Vector2 position, Vector2 size, BoxStyle theme)
     //{
     //    float top = theme.BorderLengthTop;
     //    float right = theme.BorderLengthRight;
@@ -217,7 +217,7 @@ public abstract class VisualItem : Node
     //}
 
     // V1 - Has artifacts.
-    //public void DrawRectangleThemed(Vector2 position, Vector2 size, BoxTheme theme)
+    //public void DrawRectangleThemed(Vector2 position, Vector2 size, BoxStyle theme)
     //{
     //    float top = theme.BorderLengthTop;
     //    float right = theme.BorderLengthRight;
@@ -364,7 +364,10 @@ public abstract class VisualItem : Node
                 {
                     for (int y = (int)-outlineSize; y <= outlineSize; y++)
                     {
-                        if (x == 0 && y == 0) continue;
+                        if (x == 0 && y == 0)
+                        {
+                            continue;
+                        }
 
                         Raylib.DrawTextEx(
                             font,
@@ -414,5 +417,29 @@ public abstract class VisualItem : Node
         {
             DrawLine(new(0, y), new(size.X, y), 1, color);
         }
+    }
+
+    // Shader
+
+    public void SetShaderValue(int loc, float[] values, ShaderUniformDataType uniformType)
+    {
+        if (Shader is null)
+        {
+            Log.Error("Shader is null.");
+            return;
+        }
+
+        Shader.SetValue(loc, values, uniformType);
+    }
+
+    public int GetShaderLocation(string uniformName)
+    {
+        if (Shader is null)
+        {
+            Log.Error("Shader is null.");
+            return 0;
+        }
+
+        return Shader.GetLocation(uniformName);
     }
 }

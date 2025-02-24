@@ -26,4 +26,18 @@ public class Shader
     {
         return shader.raylibShader;
     }
+
+    public void SetValue(int loc, float[] values, ShaderUniformDataType uniformType)
+    {
+        Raylib_cs.Raylib.SetShaderValue(
+            this,
+            loc,
+            values,
+            (Raylib_cs.ShaderUniformDataType)uniformType);
+    }
+
+    public int GetLocation(string uniformName)
+    {
+        return Raylib_cs.Raylib.GetShaderLocation(this, uniformName);
+    }
 }
