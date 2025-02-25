@@ -201,21 +201,24 @@ public static class PackedSceneUtils
             ?? throw new InvalidOperationException("Value cannot be null");
 
         if (targetType.IsEnum)
+        {
             return Enum.Parse(targetType, stringValue);
+        }
 
         return targetType switch
         {
-            _ when targetType == typeof(int) => int.Parse(stringValue),
-            _ when targetType == typeof(uint) => uint.Parse(stringValue),
-            _ when targetType == typeof(float) => float.Parse(stringValue),
-            _ when targetType == typeof(double) => double.Parse(stringValue),
-            _ when targetType == typeof(bool) => bool.Parse(stringValue),
-            _ when targetType == typeof(string) => stringValue,
-            _ when targetType == typeof(AudioStream) => AudioStream.Load(stringValue)!,
-            _ when targetType == typeof(Sound) => ResourceLoader.Load<Sound>(stringValue),
-            _ when targetType == typeof(Animation) => ResourceLoader.Load<Animation>(stringValue),
-            _ when targetType == typeof(Texture) => ResourceLoader.Load<Texture>(stringValue),
-            _ when targetType == typeof(Font) => ResourceLoader.Load<Font>(stringValue),
+            _ when targetType == typeof(int)         => int.Parse(stringValue),
+            _ when targetType == typeof(uint)        => uint.Parse(stringValue),
+            _ when targetType == typeof(float)       => float.Parse(stringValue),
+            _ when targetType == typeof(double)      => double.Parse(stringValue),
+            _ when targetType == typeof(bool)        => bool.Parse(stringValue),
+            _ when targetType == typeof(string)      => stringValue,
+            //_ when targetType == typeof(AudioStream) => AudioStream.Load(stringValue)!,
+            _ when targetType == typeof(AudioStream) => ResourceLoader.Load<AudioStream>(stringValue)!,
+            _ when targetType == typeof(Sound)       => ResourceLoader.Load<Sound>(stringValue),
+            _ when targetType == typeof(Animation)   => ResourceLoader.Load<Animation>(stringValue),
+            _ when targetType == typeof(Texture)     => ResourceLoader.Load<Texture>(stringValue),
+            _ when targetType == typeof(Font)        => ResourceLoader.Load<Font>(stringValue),
             _ => throw new NotSupportedException($"Unsupported type: {targetType.Name}")
         };
     }

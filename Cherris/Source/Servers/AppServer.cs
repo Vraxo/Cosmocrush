@@ -52,6 +52,7 @@ public sealed class AppServer
         TimeServer.Instance.Process();
         ClickServer.Instance.Process();
         CollisionServer.Instance.Process();
+        PhysicsServer.Instance.Process();
         RenderServer.Instance.Process();
     }
 

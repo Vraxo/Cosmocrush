@@ -4,26 +4,26 @@ public class AudioStreamCache
 {
     public static AudioStreamCache? Instance => field ??= new();
 
-    private readonly Dictionary<string, AudioStream?> _audioStream = [];
+    private readonly Dictionary<string, AudioStream?> audioStreams = [];
 
     private AudioStreamCache() { }
 
     public AudioStream? Get(string filePath)
     {
-        if (_audioStream.TryGetValue(filePath, out AudioStream? audio))
+        if (audioStreams.TryGetValue(filePath, out AudioStream? audio))
         {
             return audio;
         }
 
         AudioStream? newAudio = AudioStream.Load(filePath);
 
-        if (newAudio == null)
+        if (newAudio is null)
         {
-            Log.Error($"[AudioStreamCache] Could not load music: {filePath}");
+            Log.Error($"Could not load audio stream: {filePath}");
             return null;
         }
 
-        _audioStream[filePath] = newAudio;
+        audioStreams[filePath] = newAudio;
         return newAudio;
     }
 }

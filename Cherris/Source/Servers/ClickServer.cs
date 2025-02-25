@@ -7,7 +7,7 @@ public sealed class ClickServer
     public int MinLayer = -1;
 
     private readonly List<Clickable> clickables = [];
-    private const bool Debug = true;
+    private const bool Debug = false;
 
     private ClickServer() { }
 

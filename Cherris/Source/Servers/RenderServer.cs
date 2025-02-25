@@ -20,7 +20,7 @@ public sealed class RenderServer
         Vector2 windowSize = VisualServer.OriginalWindowSize;
         renderTexture = Raylib.LoadRenderTexture((int)windowSize.X, (int)windowSize.Y);
 
-        PostProcessingShader = Shader.Load(null, "Res/Shaders/Bloom.fs");
+        //PostProcessingShader = Shader.Load(null, "Res/Shaders/Bloom.fs");
     }
 
     public void Process()
@@ -32,12 +32,10 @@ public sealed class RenderServer
             EndCameraMode();
         Raylib.EndTextureMode();
     
-        //Raylib.BeginDrawing();
-            BeginShaderMode(PostProcessingShader);
-                Rectangle source = new(0, 0, renderTexture.Texture.Width, -renderTexture.Texture.Height);
-                Raylib.DrawTextureRec(renderTexture.Texture, source, Vector2.Zero, Color.White);
-            EndShaderMode();
-        //Raylib.EndDrawing();
+        BeginShaderMode(PostProcessingShader);
+            Rectangle source = new(0, 0, renderTexture.Texture.Width, -renderTexture.Texture.Height);
+            Raylib.DrawTextureRec(renderTexture.Texture, source, Vector2.Zero, Color.White);
+        EndShaderMode();
     }
 
     public void Process2()

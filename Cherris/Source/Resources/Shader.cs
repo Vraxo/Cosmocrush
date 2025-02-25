@@ -13,7 +13,7 @@ public class Shader
     {
         Raylib_cs.Shader shader = Raylib_cs.Raylib.LoadShader(vertexShaderPath, fragmentShaderPath);
 
-        if (!Raylib_cs.Raylib.IsShaderReady(shader))
+        if (!Raylib_cs.Raylib.IsShaderValid(shader))
         {
             Log.Error($"Failed to load shader: {vertexShaderPath},{fragmentShaderPath}");
             return null;

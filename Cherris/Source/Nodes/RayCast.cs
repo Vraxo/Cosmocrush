@@ -1,32 +1,29 @@
-﻿namespace Cherris;
-
-using System.Collections.Generic;
-using System.Linq;
+﻿using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.Fixtures;
+using Box2D.NetStandard.Dynamics.World;
 using System.Numerics;
+
+namespace Cherris;
 
 public class RayCast : Node2D
 {
-    public List<int> CollisionLayers { get; set; } = new() { 0 };
+    public List<int> CollisionLayers { get; set; } = [0];
     public float Length { get; set; } = 100f;
     public bool IgnoreFirst { get; set; } = false;
     public bool IsColliding { get; private set; }
     public Vector2 CollisionPoint { get; private set; }
-    public Collider? Collider { get; private set; }
+    public RigidBody? Collider { get; private set; }
 
     public Vector2 TargetPosition => new Vector2(
-        MathF.Cos(Rotation * MathF.PI / 180f),
-        MathF.Sin(Rotation * MathF.PI / 180f)
+        float.Cos(Rotation * MathF.PI / 180f),
+        float.Sin(Rotation * MathF.PI / 180f)
     ) * Length;
 
     public override void Process()
     {
         base.Process();
-        Perform();
-    }
 
-    public override void Draw()
-    {
-        //DrawLine(GlobalPosition, GlobalPosition + TargetPosition, 2, Color.Red);
+        Perform();
     }
 
     private void Perform()
@@ -37,19 +34,31 @@ public class RayCast : Node2D
 
         Vector2 rayStart = GlobalPosition;
         Vector2 rayEnd = rayStart + TargetPosition;
-        var hits = new List<(Collider collider, float t)>();
 
-        foreach (var collider in CollisionServer.Instance.Colliders)
+        RayCastCallbackHandler callbackHandler = new();
+
+        World.RayCastCallback callback = callbackHandler.ReportFixture;
+
+        PhysicsServer.Instance.world.RayCast(callback, rayStart, rayEnd);
+
+        foreach (var hit in callbackHandler.Hits.OrderBy(h => h.Fraction))
         {
-            if (!collider.Enabled || !CollisionLayers.Intersect(collider.CollisionLayers).Any())
+            Fixture fixture = hit.Fixture;
+            Body? body = fixture.Body;
+
+            var rigidBody = PhysicsServer.Instance.Bodies
+                .FirstOrDefault(kvp => kvp.Value == body).Key;
+
+            if (rigidBody is null || !rigidBody.Collider.Enabled)
+            {
                 continue;
+            }
 
-            float? t = collider.GetIntersection(rayStart, rayEnd);
-            if (t.HasValue) hits.Add((collider, t.Value));
-        }
+            if (!CollisionLayers.Intersect(rigidBody.Collider.CollisionLayers).Any())
+            {
+                continue;
+            }
 
-        foreach (var hit in hits.OrderBy(h => h.t))
-        {
             if (IgnoreFirst)
             {
                 IgnoreFirst = false;
@@ -57,10 +66,32 @@ public class RayCast : Node2D
             }
 
             IsColliding = true;
-            Collider = hit.collider;
-            Console.WriteLine("Hit " + Collider.AbsolutePath);
-            CollisionPoint = Vector2.Lerp(rayStart, rayEnd, hit.t);
+            Collider = rigidBody;
+            CollisionPoint = hit.Point;
+            Log.Info("Hit: " + Collider.Name);
             return;
         }
+    }
+
+    private class RayCastCallbackHandler
+    {
+        public List<RayCastHit> Hits { get; } = [];
+
+        public void ReportFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
+        {
+            Hits.Add(new()
+            {
+                Fixture = fixture,
+                Point = point,
+                Fraction = fraction
+            });
+        }
+    }
+
+    private struct RayCastHit
+    {
+        public Fixture Fixture { get; set; }
+        public Vector2 Point { get; set; }
+        public float Fraction { get; set; }
     }
 }

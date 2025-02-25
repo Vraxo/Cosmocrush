@@ -181,7 +181,6 @@ public abstract class VisualItem : Node
                 rectangle,
                 roundness,
                 segments,
-                thickness,
                 color);
         }, Layer);
     }

@@ -1,9 +1,9 @@
 name: Enemy
 type: Enemy
-Size: [32, 48]
+Size: [32, 32]
+GravityScale: 0
 sprite: Sprite
 navigationAgent: NavigationAgent
-hitBox: HitBox
 hitFlashAnimationPlayer: HitFlashAnimationPlayer
 damageParticles: DamageParticles
 children:
@@ -12,7 +12,6 @@ children:
 
   - name: Sprite
     type: EnemySprite
-    Position: [0, -24]
     Texture: Res/Sprites/Enemy.png
 
   - name: DamageParticles
@@ -30,11 +29,3 @@ children:
 
   - name: NavigationAgent
     type: NavigationAgent
-
-  - name: HitBox
-    type: ColliderRectangle
-    Position: [0,-8]
-    Size: [32, 64]
-    Color: [255, 255, 255, 128]
-    CollisionLayers:
-      - 1

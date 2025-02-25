@@ -70,7 +70,7 @@ public class Log
 
     public static void Error(string message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string filePath = "")
     {
-        string fullMessage = $"[{DateTime.Now:HH:mm:ss}] [ERROR] {Path.GetFileName(filePath)}:{lineNumber} {message}";
+        string fullMessage = $"[{DateTime.Now:HH:mm:ss}] [ERROR] - {Path.GetFileName(filePath)}:{lineNumber} - {message}";
 
         Console.ForegroundColor = errorColor;
         Console.WriteLine(fullMessage);

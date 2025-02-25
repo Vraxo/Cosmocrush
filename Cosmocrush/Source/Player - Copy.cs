@@ -1,8 +1,8 @@
-﻿using Cherris;
+﻿/*using Cherris;
 
 namespace Cosmocrush;
 
-public class Player : RigidBody
+public class Player : ColliderRectangle
 {
     public int Health { get; private set; } = 100;
 
@@ -20,6 +20,7 @@ public class Player : RigidBody
         base.Ready();
 
         //sprite!.Shader = Shader.Load(null, "Res/Shaders/Glow.shader");
+        //sprite!.Shader = Shader.Load(null, "Res/Shaders/Bloom.fs");
     }
 
     public override void Process()
@@ -36,8 +37,8 @@ public class Player : RigidBody
         Health -= damage;
         damageSound?.Play("SFX");
 
-        if (Health <= 0)
-        {
+        if (Health <= 0) 
+        { 
             Die();
         }
     }
@@ -62,7 +63,8 @@ public class Player : RigidBody
     private void HandleMovement()
     {
         Vector2 direction = Input.GetVector("MoveLeft", "MoveRight", "MoveUp", "MoveDown");
-        Velocity = direction * Speed + knockbackVelocity;
+        Vector2 movement = direction * Speed + knockbackVelocity;
+        Position += movement * TimeServer.Delta; // Delta applied once to combined forces
     }
 
     private void SufferKnockback()
@@ -73,8 +75,9 @@ public class Player : RigidBody
             knockbackRecoverySpeed);
     }
 
-    private void Die()
+    private void Die() 
     {
         Free();
     }
 }
+*/

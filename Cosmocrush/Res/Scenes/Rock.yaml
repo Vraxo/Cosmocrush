@@ -1,14 +1,11 @@
 name: Rock
-type: NavigationObstacle
-Size: [64, 64]
+type: RigidBody
+Size: [32, 32]
+Type: Static
 children:
-  - name: Collider
-    type: ColliderRectangle
-    Size: [32, 32]
-    IsStatic: true
-    CollisionLayers:
-      - Default  
-      - RayCastToRock
+  - name: NavigationObstacle
+    type: NavigationObstacle
+    Size: [64, 64]
 
   - name: Sprite
     type: Sprite

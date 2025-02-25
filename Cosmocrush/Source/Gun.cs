@@ -4,8 +4,8 @@ namespace Cosmocrush;
 
 public class Gun : Sprite
 {
-    private readonly Sound gunshotSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Gunshot.mp3");
-    private readonly Sound reloadSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Reload.mp3");
+    private readonly Sound? gunshotSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Gunshot.mp3");
+    private readonly Sound? reloadSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/Reload.mp3");
     private readonly PackedScene reloadProgressBarScene = new("Res/Scenes/ReloadProgressBar.yaml");
 
     private readonly RayCast? rayCast;
@@ -21,8 +21,9 @@ public class Gun : Sprite
 
     private const int Damage = 5;
     private const int MagazineSize = 100;
-    private const float KnockbackForce = 3f; // Knockback applied to enemies
-    private const float PlayerKnockbackForce = 300f; // Knockback applied to the player
+    private const float EnemyKnockbackForce = 3000000f;
+    //private const float PlayerKnockbackForce = 300f;
+    private const float PlayerKnockbackForce = 0f;
     private const float MaxBloom = 0.0f;
     private const float BloomIncrease = 0.02f;
     private const float BloomResetSpeed = 0.05f;
@@ -74,16 +75,18 @@ public class Gun : Sprite
 
     private void HandleReloadingInput()
     {
-        if (Input.IsActionPressed("Reload") && !reloading && bulletsInMagazine < MagazineSize)
+        if (!Input.IsActionPressed("Reload") || reloading || bulletsInMagazine >= MagazineSize)
         {
-            StartReloading();
+            return;
         }
+
+        StartReloading();
     }
 
     private void StartReloading()
     {
         reloading = true;
-        reloadSound.Play("SFX");
+        reloadSound?.Play("SFX");
         Console.WriteLine("Reloading initiated...");
         reloadTimer!.Fire();
         CreateReloadProgressBar();
@@ -106,7 +109,7 @@ public class Gun : Sprite
         canFire = false;
         cooldownTimer!.Fire();
         bulletsInMagazine--;
-        gunshotSound.Play("SFX");
+        gunshotSound?.Play("SFX");
         FireRayCast();
         UpdateBulletTrail();
         currentBloom = float.Min(MaxBloom, currentBloom + BloomIncrease);
@@ -122,12 +125,14 @@ public class Gun : Sprite
 
     private void ApplyPlayerKnockback()
     {
-        if (Parent is Player player)
+        if (Parent is not Player player)
         {
-            Vector2 mousePosition = Input.WorldMousePosition;
-            Vector2 knockbackDirection = (GlobalPosition - mousePosition).Normalized();
-            player.ApplyKnockback(knockbackDirection * PlayerKnockbackForce);
+            return;
         }
+
+        Vector2 mousePosition = Input.WorldMousePosition;
+        Vector2 knockbackDirection = (GlobalPosition - mousePosition).Normalized();
+        player.ApplyKnockback(knockbackDirection * PlayerKnockbackForce);
     }
 
     private void UpdateBulletTrail()
@@ -165,15 +170,13 @@ public class Gun : Sprite
 
         if (rayCast.IsColliding)
         {
-            Collider? collider = rayCast.Collider;
+            RigidBody? collider = rayCast.Collider;
 
-            if (collider is not null)
+            if (collider is not null && collider is Enemy enemy)
             {
-                if (collider.Parent is Enemy enemy)
-                {
-                    enemy.TakeDamage(Damage);
-                    enemy.ApplyKnockback(angleVector.Normalized() * KnockbackForce);
-                }
+                enemy.TakeDamage(Damage);
+                //enemy.ApplyKnockback(angleVector.Normalized() * EnemyKnockbackForce);
+                enemy.ApplyLinearImpulseToCenter(angleVector.Normalized() * EnemyKnockbackForce * 10000000);
             }
         }
 
@@ -198,6 +201,7 @@ public class Gun : Sprite
         {
             return;
         }
+        
         float reloadProgress = 1.0f - (reloadTimer!.TimeLeft / reloadTimer!.WaitTime);
         reloadProgressBar.Percentage = reloadProgress;
     }
