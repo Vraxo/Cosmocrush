@@ -1,4 +1,5 @@
-﻿using Cherris;
+﻿using System.Net.Sockets;
+using Cherris;
 
 namespace Cosmocrush;
 
@@ -20,7 +21,7 @@ public class Enemy : RigidBody
     private const int Damage = 2;
     private const float Speed = 100f;
     //private const float Speed = 0f;
-    private const float ProximityThreshold = 50f;
+    private const float ProximityThreshold = 64f;
     private const float DamageRadius = 100;
     private const float DamageCooldown = 0.5f;
 
@@ -32,7 +33,7 @@ public class Enemy : RigidBody
 
         navigationAgent!.Region = GetNode<NavigationRegion>("/root/NavigationRegion");
         player = GetNode<Player>("/root/Player");
-        LinearDamping = 1f;
+        LinearDamping = 10f;
     }
 
     public override void Process()
@@ -79,11 +80,12 @@ public class Enemy : RigidBody
         Vector2 targetPosition = navigationAgent.Path[0];
         Vector2 direction = (targetPosition - GlobalPosition).Normalized();
 
-        //ApplyLinearImpulse(direction * Speed, Size / 2);
-
         Vector2 movement = direction * Speed * TimeServer.Delta;
-        Box2DBody?.SetTransform(Box2DBody.Position + movement, Box2DBody.GetAngle());
         
+        //SetTransform(GlobalPosition + movement, Rotation);
+        ApplyLinearImpulseToCenter(movement * 10000);
+        //ApplyForce(movement * 1000);
+
         if (GlobalPosition.DistanceTo(targetPosition) < ProximityThreshold)
         {
             navigationAgent.Path.RemoveAt(0);
@@ -106,9 +108,10 @@ public class Enemy : RigidBody
         }
 
         player?.TakeDamage(Damage);
+        player?.ApplyLinearImpulseToCenter(new(100000, 0));
         lastDamageTime = TimeServer.Elapsed;
     }
-
+    
     // Damage
 
     private void Die()

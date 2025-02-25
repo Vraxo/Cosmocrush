@@ -15,7 +15,7 @@ public class RigidBody : Node2D
     public bool FixedRotation { get; set; } = false;
     public BoxCollider Collider { get; set; }
     
-    public Body? Box2DBody;
+    internal Body? Box2DBody;
 
     public Vector2 Velocity
     {
@@ -45,6 +45,11 @@ public class RigidBody : Node2D
         set => Box2DBody?.SetLinearDampling(value);
     }
 
+    public float Mass
+    {
+        get => Box2DBody?.GetMass() ?? field;
+    } = 0;
+
     // Main
 
     public RigidBody()
@@ -66,6 +71,13 @@ public class RigidBody : Node2D
         PhysicsServer.Instance.Unregister(this);
     }
 
+    // Other (temporary)
+
+    public void SetTransform(Vector2 position, float angle)
+    {
+        Box2DBody?.SetTransform(position, angle);
+    }
+
     // Apply
 
     public void ApplyForce(Vector2 force)
@@ -85,6 +97,12 @@ public class RigidBody : Node2D
 
     public void ApplyLinearImpulseToCenter(Vector2 impulse)
     {
-        Box2DBody?.ApplyLinearImpulseToCenter(impulse);
+        if (Box2DBody is null)
+        {
+            Log.Error("Box2D body is null.");
+            return;
+        }
+
+        Box2DBody.ApplyLinearImpulseToCenter(impulse);
     }
 }

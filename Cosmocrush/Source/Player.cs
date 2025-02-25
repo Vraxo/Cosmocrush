@@ -62,7 +62,7 @@ public class Player : RigidBody
     private void HandleMovement()
     {
         Vector2 direction = Input.GetVector("MoveLeft", "MoveRight", "MoveUp", "MoveDown");
-        Velocity = direction * Speed + knockbackVelocity;
+        LinearVelocity = direction * Speed; // Directly set velocity for snappy movement
     }
 
     private void SufferKnockback()

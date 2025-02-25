@@ -47,7 +47,7 @@ public sealed class PhysicsServer
 
     public void Process()
     {
-        world.Step(TimeStep, VelocityIterations, PositionIterations);
+        world.Step(TimeServer.Delta, VelocityIterations, PositionIterations);
         SyncRigidBodyStates();
     }
 

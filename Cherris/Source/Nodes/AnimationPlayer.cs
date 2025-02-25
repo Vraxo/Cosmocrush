@@ -11,6 +11,10 @@ public class AnimationPlayer : Node
     private Animation? currentAnimation;
     private float animationTime;
 
+    private const bool Debug = false;
+
+    // Main
+
     public override void Ready()
     {
         if (!AutoPlay || DefaultAnimation is null)
@@ -41,6 +45,8 @@ public class AnimationPlayer : Node
         AnimateBetweenKeyframes(prev, next, t);
     }
 
+    // Control
+
     public void Play(string name)
     {
         Play(ResourceLoader.Load<Animation>(name));
@@ -51,7 +57,8 @@ public class AnimationPlayer : Node
         currentAnimation = animation;
         animationTime = 0f;
         Playing = true;
-        Log.Info($"[AnimationPlayer] Started animation: {animation}");
+
+        Log.Info($"[AnimationPlayer] Started animation: {animation}", Debug);
     }
 
     public void Stop()
@@ -59,8 +66,11 @@ public class AnimationPlayer : Node
         Playing = false;
         currentAnimation = null;
         animationTime = 0f;
-        Log.Info("[AnimationPlayer] Animation stopped");
+
+        Log.Info("Animation stopped", Debug);
     }
+
+    // Other
 
     private void AnimateBetweenKeyframes(Animation.Keyframe prev, Animation.Keyframe next, float t)
     {

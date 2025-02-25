@@ -7,9 +7,13 @@ public class NavigationAgent : Node2D
     public NavigationRegion? Region { get; set; }
     public Color Color { get; set; } = new(255, 0, 0, 255);
 
-    private float CellSize => Region?.CellSize ?? 32f;
     private Vector2 lastTargetPosition;
+    private Vector2 lastStartPosition;
+
+    private float CellSize => Region?.CellSize ?? 32f;
+
     private const float TargetMoveThreshold = 1.0f;
+    private const float StartMoveThreshold = 1.0f;
 
     // Main
 
@@ -17,13 +21,18 @@ public class NavigationAgent : Node2D
     {
         base.Process();
 
-        bool notTooClose = TargetPosition.DistanceTo(lastTargetPosition) > TargetMoveThreshold;
+        Vector2 currentStart = GlobalPosition;
+        bool targetMoved = TargetPosition.DistanceTo(lastTargetPosition) > TargetMoveThreshold;
+        bool startMoved = currentStart.DistanceTo(lastStartPosition) > StartMoveThreshold;
 
-        if (Region is not null && notTooClose)
+        if (Region is null || !targetMoved && !startMoved)
         {
-            UpdatePath();
-            lastTargetPosition = TargetPosition;
+            return;
         }
+
+        UpdatePath();
+        lastTargetPosition = TargetPosition;
+        lastStartPosition = currentStart;
     }
 
     // Draw
@@ -54,10 +63,13 @@ public class NavigationAgent : Node2D
             Vector2 start = Path[i];
             Vector2 end = Path[i + 1];
 
-            DrawLine(start,
+            DrawDashedLine(
+                start,
                 end,
-                1,
-                Color);
+                4,
+                8,
+                2,
+                Color.Red);
         }
     }
 
@@ -97,17 +109,22 @@ public class NavigationAgent : Node2D
 
                 float tentativeGScore = gScore[current] + 1;
 
-                if (!gScore.ContainsKey(neighbor) || tentativeGScore < gScore[neighbor])
+                if (gScore.TryGetValue(neighbor, out float value) && tentativeGScore >= value)
                 {
-                    cameFrom[neighbor] = current;
-                    gScore[neighbor] = tentativeGScore;
-                    fScore[neighbor] = gScore[neighbor] + Heuristic(neighbor, goalGrid);
-
-                    if (!openList.Contains(neighbor))
-                    {
-                        openList.Add(neighbor);
-                    }
+                    continue;
                 }
+
+                cameFrom[neighbor] = current;
+                value = tentativeGScore;
+                gScore[neighbor] = value;
+                fScore[neighbor] = gScore[neighbor] + Heuristic(neighbor, goalGrid);
+
+                if (openList.Contains(neighbor))
+                {
+                    continue;
+                }
+
+                openList.Add(neighbor);
             }
         }
     }
@@ -118,9 +135,10 @@ public class NavigationAgent : Node2D
 
         while (cameFrom.ContainsKey(current))
         {
-            Path.Add((current * CellSize) + new Vector2(CellSize / 2, CellSize / 2));
+            Path.Add((current * CellSize) + new Vector2(CellSize / 2));
             current = cameFrom[current];
         }
+
         Path.Reverse();
     }
 
@@ -128,28 +146,38 @@ public class NavigationAgent : Node2D
 
     private static List<Vector2> GetNeighbors(Vector2 node)
     {
-        return new List<Vector2>
+        return new[]
         {
+            // Cardinal directions
             node + new Vector2(1, 0),
             node + new Vector2(-1, 0),
             node + new Vector2(0, 1),
-            node + new Vector2(0, -1)
-        }.Where(n => n.X >= 0 && n.Y >= 0).ToList();
+            node + new Vector2(0, -1),
+            // Diagonal directions
+            node + new Vector2(1, 1),
+            node + new Vector2(-1, -1),
+            node + new Vector2(1, -1),
+            node + new Vector2(-1, 1)
+        }
+        .Where(n => n.X >= 0 && n.Y >= 0)
+        .ToList();
     }
 
     private static Vector2 GetLowestFScoreNode(List<Vector2> openList, Dictionary<Vector2, float> fScore)
     {
-        return openList.OrderBy(v => fScore.ContainsKey(v) ? fScore[v] : float.MaxValue).First();
+        return openList.OrderBy(v => fScore.TryGetValue(v, out float value) ? value : float.MaxValue).First();
     }
 
     private static Vector2 GetGridPosition(Vector2 position)
     {
-        return new(MathF.Floor(position.X / 32f), MathF.Floor(position.Y / 32f));
+        return new(float.Floor(position.X / 32f), float.Floor(position.Y / 32f));
     }
 
     private static float Heuristic(Vector2 a, Vector2 b)
     {
-        return MathF.Abs(a.X - b.X) + MathF.Abs(a.Y - b.Y);
+        var dx = float.Abs(a.X - b.X);
+        var dy = float.Abs(a.Y - b.Y);
+        return float.Max(dx, dy); // Chebyshev distance for 8-direction movement
     }
 
     private Vector2 AdjustTargetPosition(Vector2 target)
@@ -157,7 +185,9 @@ public class NavigationAgent : Node2D
         Vector2 targetGrid = GetGridPosition(target);
 
         if (Region?.IsCellWalkable((int)targetGrid.X, (int)targetGrid.Y) ?? false)
+        {
             return target;
+        }
 
         return FindNearbyWalkablePosition(targetGrid);
     }
@@ -171,11 +201,13 @@ public class NavigationAgent : Node2D
                 for (int dy = -radius; dy <= radius; dy++)
                 {
                     Vector2 neighbor = targetGrid + new Vector2(dx, dy);
-                    
-                    if (Region?.IsCellWalkable((int)neighbor.X, (int)neighbor.Y) ?? false)
+
+                    if (!(Region?.IsCellWalkable((int)neighbor.X, (int)neighbor.Y) ?? false))
                     {
-                        return (neighbor * 32f) + new Vector2(16f, 16f);
+                        continue;
                     }
+
+                    return (neighbor * 32f) + new Vector2(16f, 16f);
                 }
             }
         }

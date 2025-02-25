@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization.Formatters.Binary;
-
-namespace Cherris;
+﻿namespace Cherris;
 
 public static class ExtensionMethods
 {
@@ -27,16 +25,17 @@ public static class ExtensionMethods
         return MathF.Sqrt(MathF.Pow(other.X - vector.X, 2) + MathF.Pow(other.Y - vector.Y, 2));
     }
 
-    public static Vector2 MoveToward(this Vector2 current, Vector2 target, float maxDistanceDelta)
+    public static float AngleTo(this Vector2 current, Vector2 target)
     {
         Vector2 direction = target - current;
-        float distance = direction.Length();
+        var angleRadians = float.Atan2(direction.Y, direction.X);
+        float angleDegrees = angleRadians * (180f / MathF.PI);
 
-        if (distance <= maxDistanceDelta || distance == 0)
+        if (angleDegrees < 0)
         {
-            return target;
+            angleDegrees += 360;
         }
 
-        return current + direction.Normalized() * maxDistanceDelta;
+        return angleDegrees;
     }
 }

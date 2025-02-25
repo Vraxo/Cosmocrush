@@ -418,6 +418,45 @@ public abstract class VisualItem : Node
         }
     }
 
+    public void DrawDashedLine(Vector2 start, Vector2 end, float dashLength, float gapLength, float thickness, Color color)
+    {
+        Vector2 direction = end - start;
+        float totalLength = direction.Length();
+
+        if (totalLength <= 0 || dashLength <= 0 || gapLength <= 0)
+            return;
+
+        direction = Vector2.Normalize(direction);
+
+        float currentPosition = 0f;
+        bool drawingDash = true;
+
+        while (currentPosition < totalLength)
+        {
+            if (drawingDash)
+            {
+                // Calculate dash segment
+                float remaining = totalLength - currentPosition;
+                float segmentLength = Math.Min(dashLength, remaining);
+
+                Vector2 segmentStart = start + direction * currentPosition;
+                Vector2 segmentEnd = segmentStart + direction * segmentLength;
+
+                // Draw the dash segment
+                DrawLine(segmentStart, segmentEnd, thickness, color);
+
+                currentPosition += segmentLength;
+                drawingDash = false;
+            }
+            else
+            {
+                // Skip gap
+                currentPosition += gapLength;
+                drawingDash = true;
+            }
+        }
+    }
+
     // Shader
 
     public void SetShaderValue(int loc, float[] values, ShaderUniformDataType uniformType)
