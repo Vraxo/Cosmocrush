@@ -85,14 +85,14 @@ public class RigidBody : Node2D
         Box2DBody?.ApplyForceToCenter(force);
     }
 
-    public void ApplyLinearImpulse(Vector2 impulse, Vector2 point)
-    {
-        Box2DBody?.ApplyLinearImpulse(impulse, point);
-    }
-
     public void ApplyForceToCenter(Vector2 force)
     {
         Box2DBody?.ApplyForceToCenter(force);
+    }
+
+    public void ApplyLinearImpulse(Vector2 impulse, Vector2 point)
+    {
+        Box2DBody?.ApplyLinearImpulse(impulse, point);
     }
 
     public void ApplyLinearImpulseToCenter(Vector2 impulse)

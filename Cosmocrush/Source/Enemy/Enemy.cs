@@ -1,5 +1,4 @@
-﻿using System.Net.Sockets;
-using Cherris;
+﻿using Cherris;
 
 namespace Cosmocrush;
 
@@ -17,13 +16,17 @@ public class Enemy : RigidBody
 
     private readonly Sound? damageSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/EnemyDamage.mp3");
 
-    private const int MaxHealth = 2000;
+    private Vector2 knockbackVelocity = Vector2.Zero;
+
     private const int Damage = 2;
+    private const int MaxHealth = 2000;
     private const float Speed = 100f;
-    //private const float Speed = 0f;
-    private const float ProximityThreshold = 64f;
-    private const float DamageRadius = 100;
+    private const float ProximityThreshold = 32f;
+    private const float DamageRadius = 48;
     private const float DamageCooldown = 0.5f;
+    private const float KnockbackForce = 25;
+    private const float EnemyKnockbackForce = 40f;
+    private const float KnockbackRecoverySpeed = 0.1f;
 
     // Main
 
@@ -45,6 +48,7 @@ public class Enemy : RigidBody
             return;
         }
 
+        SufferKnockback();
         ChasePlayer();
         LookAtPlayer();
         AttemptToDamagePlayer();
@@ -56,6 +60,13 @@ public class Enemy : RigidBody
     {
         health -= damage;
 
+        // Apply knockback from damage source (player)
+        if (player != null)
+        {
+            Vector2 knockbackDirection = (GlobalPosition - player.GlobalPosition).Normalized();
+            ApplyKnockback(knockbackDirection * EnemyKnockbackForce);
+        }
+
         CreateDamageIndicator(damage);
         hitFlashAnimationPlayer!.Play("Res/Animations/HitFlash.anim.yaml");
         damageParticles!.Emitting = true;
@@ -64,6 +75,13 @@ public class Enemy : RigidBody
         {
             Die();
         }
+    }
+
+    public void ApplyKnockback(Vector2 knockback)
+    {
+        knockbackVelocity = knockbackVelocity.Length() < knockback.Length()
+            ? knockback
+            : knockbackVelocity + knockback;
     }
 
     // Behavior
@@ -79,17 +97,22 @@ public class Enemy : RigidBody
 
         Vector2 targetPosition = navigationAgent.Path[0];
         Vector2 direction = (targetPosition - GlobalPosition).Normalized();
+        Vector2 movement = direction * Speed;
 
-        Vector2 movement = direction * Speed * TimeServer.Delta;
-        
-        //SetTransform(GlobalPosition + movement, Rotation);
-        ApplyLinearImpulseToCenter(movement * 10000);
-        //ApplyForce(movement * 1000);
+        LinearVelocity = movement + knockbackVelocity;
 
         if (GlobalPosition.DistanceTo(targetPosition) < ProximityThreshold)
         {
             navigationAgent.Path.RemoveAt(0);
         }
+    }
+
+    private void SufferKnockback()
+    {
+        knockbackVelocity = Vector2.Lerp(
+            knockbackVelocity,
+            Vector2.Zero,
+            KnockbackRecoverySpeed);
     }
 
     private void LookAtPlayer()
@@ -108,10 +131,13 @@ public class Enemy : RigidBody
         }
 
         player?.TakeDamage(Damage);
-        player?.ApplyLinearImpulseToCenter(new(100000, 0));
+
+        Vector2 knockbackDirection = (GlobalPosition - player!.GlobalPosition).Normalized();
+        player.ApplyKnockback(knockbackDirection * KnockbackForce);
+
         lastDamageTime = TimeServer.Elapsed;
     }
-    
+
     // Damage
 
     private void Die()

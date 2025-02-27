@@ -6,19 +6,17 @@ public class Player : RigidBody
 {
     public int Health { get; private set; } = 100;
 
+    private Vector2 knockbackVelocity = Vector2.Zero;
+
     private readonly Sprite? sprite;
     private readonly Sound? damageSound = ResourceLoader.Load<Sound>("Res/AudioStream/SFX/PlayerDamage.mp3");
 
     private const float Speed = 200f;
-
-    // Knockback variables
-    private Vector2 knockbackVelocity = Vector2.Zero;
-    private const float knockbackRecoverySpeed = 0.1f;
+    private const float KnockbackRecoverySpeed = 0.1f;
 
     public override void Ready()
     {
         base.Ready();
-
         //sprite!.Shader = Shader.Load(null, "Res/Shaders/Glow.shader");
     }
 
@@ -44,14 +42,9 @@ public class Player : RigidBody
 
     public void ApplyKnockback(Vector2 knockback)
     {
-        if (knockbackVelocity.Length() < knockback.Length())
-        {
-            knockbackVelocity = knockback;
-        }
-        else
-        {
-            knockbackVelocity += knockback;
-        }
+        knockbackVelocity = knockbackVelocity.Length() < knockback.Length()
+            ? knockback
+            : knockbackVelocity + knockback;
     }
 
     private void LookAtMouse()
@@ -62,7 +55,7 @@ public class Player : RigidBody
     private void HandleMovement()
     {
         Vector2 direction = Input.GetVector("MoveLeft", "MoveRight", "MoveUp", "MoveDown");
-        LinearVelocity = direction * Speed; // Directly set velocity for snappy movement
+        LinearVelocity = (direction - knockbackVelocity) * Speed;
     }
 
     private void SufferKnockback()
@@ -70,7 +63,7 @@ public class Player : RigidBody
         knockbackVelocity = Vector2.Lerp(
             knockbackVelocity,
             Vector2.Zero,
-            knockbackRecoverySpeed);
+            KnockbackRecoverySpeed);
     }
 
     private void Die()

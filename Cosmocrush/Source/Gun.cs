@@ -21,9 +21,7 @@ public class Gun : Sprite
 
     private const int Damage = 5;
     private const int MagazineSize = 100;
-    private const float EnemyKnockbackForce = 3000000f;
-    //private const float PlayerKnockbackForce = 300f;
-    private const float PlayerKnockbackForce = 0f;
+    private const float EnemyKnockbackForce = 15f;
     private const float MaxBloom = 0.0f;
     private const float BloomIncrease = 0.02f;
     private const float BloomResetSpeed = 0.05f;
@@ -132,7 +130,6 @@ public class Gun : Sprite
 
         Vector2 mousePosition = Input.WorldMousePosition;
         Vector2 knockbackDirection = (GlobalPosition - mousePosition).Normalized();
-        player.ApplyKnockback(knockbackDirection * PlayerKnockbackForce);
     }
 
     private void UpdateBulletTrail()
@@ -176,7 +173,8 @@ public class Gun : Sprite
             {
                 enemy.TakeDamage(Damage);
                 //enemy.ApplyKnockback(angleVector.Normalized() * EnemyKnockbackForce);
-                enemy.ApplyLinearImpulseToCenter(angleVector.Normalized() * EnemyKnockbackForce * 10000000);
+                //enemy.ApplyLinearImpulseToCenter(angleVector.Normalized() * EnemyKnockbackForce * 10000000);
+                enemy.ApplyKnockback(angleVector * EnemyKnockbackForce);
             }
         }
 
