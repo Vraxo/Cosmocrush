@@ -43,6 +43,12 @@ children:
           path: Res/Scenes/HealthBar.yaml
           Position: [25, 500]
 
+        - name: Score
+          type: Score
+          Text: Score
+          Position: [50, 50]
+          ThemeFile: Res/Themes/Label.theme.yaml
+
   - name: Enemy1
     type: Enemy
     path: Res/Scenes/Enemy.yaml

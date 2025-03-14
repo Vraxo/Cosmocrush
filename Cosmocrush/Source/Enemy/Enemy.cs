@@ -4,9 +4,9 @@ namespace Cosmocrush;
 
 public class Enemy : RigidBody
 {
+    private bool alive = true;
     private int health = MaxHealth;
     private double lastDamageTime = -0.5f;
-    private bool alive = true;
 
     private Player? player;
     private readonly Sprite? sprite;
@@ -19,7 +19,7 @@ public class Enemy : RigidBody
     private Vector2 knockbackVelocity = Vector2.Zero;
 
     private const int Damage = 2;
-    private const int MaxHealth = 2000;
+    private const int MaxHealth = 10;
     private const float Speed = 100f;
     private const float ProximityThreshold = 32f;
     private const float DamageRadius = 48;

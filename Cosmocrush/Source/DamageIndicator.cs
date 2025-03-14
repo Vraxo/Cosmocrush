@@ -61,17 +61,15 @@ public class DamageIndicator : Label
     {
         if (MaxHealth <= 0)
         {
-            Theme.OutlineColor = Color.White;
+            Theme.FontColor = Color.White;
             return;
         }
 
-        float ratio = float.Clamp((float)Health / MaxHealth, 0f, 1f);
+        var ratio = float.Clamp((float)Health / MaxHealth, 0f, 1f);
+        var hue = float.Lerp(0f, 120f, ratio);
 
-        // Interpolate hue from 0° (red) to 120° (green)
-        float hue = float.Lerp(0f, 120f, ratio);
+        Color fontColor = Raylib.ColorFromHSV(hue, 1f, 1f);
 
-        Color outlineColor = Raylib.ColorFromHSV(hue, 1f, 1f);
-
-        Theme.OutlineColor = outlineColor;
+        Theme.FontColor = fontColor;
     }
 }

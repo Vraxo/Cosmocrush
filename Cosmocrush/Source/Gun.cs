@@ -19,7 +19,7 @@ public class Gun : Sprite
     private int bulletsInMagazine = MagazineSize;
     private float currentBloom = 0f;
 
-    private const int Damage = 5;
+    private const int Damage = 1;
     private const int MagazineSize = 100;
     private const float EnemyKnockbackForce = 15f;
     private const float MaxBloom = 0.0f;

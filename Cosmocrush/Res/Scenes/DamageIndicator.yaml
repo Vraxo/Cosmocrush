@@ -2,7 +2,6 @@ name: DamageIndicator
 type: DamageIndicator
 InheritScale: false
 Theme:
-  OutlineSize: 1
   Font: Res/Fonts/RaceSport.ttf:64
 destructionTimer: DestructionTimer
 children:
