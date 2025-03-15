@@ -14,10 +14,13 @@ public class Player : RigidBody
     private const float Speed = 200f;
     private const float KnockbackRecoverySpeed = 0.1f;
 
+    private Camera camera;
+
     public override void Ready()
     {
         base.Ready();
         //sprite!.Shader = Shader.Load(null, "Res/Shaders/Glow.shader");
+        camera = GetNode<MainCamera>("/root/MainCamera");
     }
 
     public override void Process()
@@ -27,6 +30,8 @@ public class Player : RigidBody
         SufferKnockback();
         LookAtMouse();
         HandleMovement();
+
+        camera.Position = Position;
     }
 
     public void TakeDamage(int damage)

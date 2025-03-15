@@ -10,4 +10,11 @@ public class MainCamera : Camera
 
         SetAsActive();
     }
+
+    public override void Process()
+    {
+        base.Process();
+
+        Size = DisplayServer.WindowSize;
+    }
 }

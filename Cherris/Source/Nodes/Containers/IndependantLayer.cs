@@ -2,7 +2,7 @@
 
 public class IndependantLayer : Node
 {
-    private readonly Dictionary<Node2D, Vector2> nodePositions = [];
+    private readonly Dictionary<Node2D, Vector2> screenPositions = [];
 
     public override void ProcessBegin()
     {
@@ -10,22 +10,15 @@ public class IndependantLayer : Node
 
         foreach (var child in Children.OfType<Node2D>())
         {
-            nodePositions.Add(child, child.GlobalPosition);
+            if (!screenPositions.TryGetValue(child, out Vector2 value))
+            {
+                Vector2 screenPos = RenderServer.Instance.GetWorldToScreen(child.GlobalPosition);
+                value = screenPos;
+                screenPositions[child] = value;
+            }
 
             child.InheritPosition = false;
-            child.GlobalPosition = RenderServer.Instance.GetScreenToWorld(child.GlobalPosition);
+            child.GlobalPosition = RenderServer.Instance.GetScreenToWorld(value);
         }
-    }
-
-    public override void ProcessEnd()
-    {
-        base.ProcessEnd();
-
-        foreach (Node2D child in nodePositions.Keys)
-        {
-            child.GlobalPosition = nodePositions[child];
-        }
-
-        nodePositions.Clear();
     }
 }

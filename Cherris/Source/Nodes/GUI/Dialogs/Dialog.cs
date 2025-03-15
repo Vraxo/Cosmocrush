@@ -27,6 +27,6 @@ public partial class Dialog : Node2D
 
     private void UpdatePosition()
     {
-        Position = VisualServer.WindowSize / 2;
+        Position = DisplayServer.WindowSize / 2;
     }
 }

@@ -17,10 +17,19 @@ public sealed class RenderServer
 
     private RenderServer()
     {
-        Vector2 windowSize = VisualServer.OriginalWindowSize;
+        Vector2 windowSize = DisplayServer.Instance.OriginalWindowSize;
         renderTexture = Raylib.LoadRenderTexture((int)windowSize.X, (int)windowSize.Y);
 
+        DisplayServer.Instance.WindowSizeChanged += WindowSizeChanged;
+
         //PostProcessingShader = Shader.Load(null, "Res/Shaders/Bloom.fs");
+    }
+
+    private void WindowSizeChanged(Vector2 obj)
+    {
+        renderTexture = Raylib.LoadRenderTexture(
+            (int)DisplayServer.WindowSize.X,
+            (int)DisplayServer.WindowSize.Y);
     }
 
     public void Process()
@@ -60,6 +69,13 @@ public sealed class RenderServer
             : Raylib.GetScreenToWorld2D(position, Camera);
     }
 
+    public Vector2 GetWorldToScreen(Vector2 position)
+    {
+        return Camera is null
+            ? position 
+            : Raylib.GetWorldToScreen2D(position, Camera);
+    }
+
     // Scissor mode
 
     public static void BeginScissorMode(Vector2 position, Vector2 size)
@@ -93,8 +109,8 @@ public sealed class RenderServer
         Camera2D cam = new()
         {
             Target = Camera.GlobalPosition,
-            Offset = VisualServer.WindowSize / 2,
-            Zoom = Camera.Zoom
+            Offset = DisplayServer.WindowSize / 2,
+            Zoom = Camera.Zoom,
         };
 
         Raylib.BeginMode2D(cam);

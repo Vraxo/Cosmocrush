@@ -16,8 +16,8 @@ public class Camera : Node2D
         return new()
         {
             Target = camera.GlobalPosition,
-            Offset = VisualServer.WindowSize / 2,
-            Zoom = camera.Zoom
+            Offset = DisplayServer.WindowSize / 2,
+            Zoom = camera.Zoom,
         };
     }
 }

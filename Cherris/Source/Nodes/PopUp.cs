@@ -312,7 +312,7 @@ public class PopUp : ClickableRectangle
             ? mousePosition.X - (GlobalPosition.X + previousWidth)
             : (GlobalPosition.X - previousWidth) - mousePosition.X;
 
-        if (mousePosition.X < 0 || mousePosition.X > VisualServer.WindowSize.X)
+        if (mousePosition.X < 0 || mousePosition.X > DisplayServer.WindowSize.X)
         {
             return;
         }
@@ -329,7 +329,7 @@ public class PopUp : ClickableRectangle
         float previousY = Size.Y;
         float difference = mousePosition.Y - (GlobalPosition.Y - Origin.Y);
 
-        if (mousePosition.Y < 0 || mousePosition.Y > VisualServer.WindowSize.Y)
+        if (mousePosition.Y < 0 || mousePosition.Y > DisplayServer.WindowSize.Y)
         {
             return;
         }
@@ -341,7 +341,7 @@ public class PopUp : ClickableRectangle
 
     private void ResizeDown(Vector2 mousePosition)
     {
-        if (mousePosition.Y < 0 || mousePosition.Y > VisualServer.WindowSize.Y)
+        if (mousePosition.Y < 0 || mousePosition.Y > DisplayServer.WindowSize.Y)
         {
             return;
         }
@@ -402,9 +402,9 @@ public class PopUp : ClickableRectangle
     private static bool IsMouseInWindow(Vector2 position)
     {
         return position.X >= 0 &&
-               position.X <= VisualServer.WindowSize.X &&
+               position.X <= DisplayServer.WindowSize.X &&
                position.Y >= 0 &&
-               position.Y <= VisualServer.WindowSize.Y;
+               position.Y <= DisplayServer.WindowSize.Y;
     }
 
     private bool IsResizing()

@@ -39,7 +39,7 @@ public class RayCast : Node2D
 
         World.RayCastCallback callback = callbackHandler.ReportFixture;
 
-        PhysicsServer.Instance.world.RayCast(callback, rayStart, rayEnd);
+        PhysicsServer.Instance.PerformRayCast(callback, rayStart, rayEnd);
 
         foreach (var hit in callbackHandler.Hits.OrderBy(h => h.Fraction))
         {

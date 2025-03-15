@@ -1,7 +1,7 @@
 ﻿using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Dynamics.Bodies;
-using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World;
+using static Box2D.NetStandard.Dynamics.World.World;
 
 namespace Cherris;
 
@@ -11,11 +11,10 @@ public sealed class PhysicsServer
     public static PhysicsServer Instance => _instance ??= new();
 
     public List<RigidBody> RigidBodies = [];
-
-    public readonly World world;
     public readonly Dictionary<RigidBody, Body> Bodies = [];
 
-    private const float TimeStep = 1 / 60f;
+    private readonly World world;
+
     private const int VelocityIterations = 6;
     private const int PositionIterations = 2;
 
@@ -24,7 +23,11 @@ public sealed class PhysicsServer
         world = new(new(0, 9.8f));
     }
 
-    // Register
+    public void Process()
+    {
+        world.Step(TimeServer.Delta, VelocityIterations, PositionIterations);
+        SyncRigidBodyStates();
+    }
 
     public void Register(RigidBody rigidBody)
     {
@@ -43,14 +46,6 @@ public sealed class PhysicsServer
         RigidBodies.Remove(rigidBody);
     }
 
-    // Create
-
-    public void Process()
-    {
-        world.Step(TimeServer.Delta, VelocityIterations, PositionIterations);
-        SyncRigidBodyStates();
-    }
-
     private void SyncRigidBodyStates()
     {
         foreach (var kvp in Bodies)
@@ -62,6 +57,11 @@ public sealed class PhysicsServer
             rb.GlobalPosition = new(body.GetPosition().X, body.GetPosition().Y);
             rb.Rotation = body.GetAngle();
         }
+    }
+
+    public void PerformRayCast(RayCastCallback callback, in Vector2 point1, in Vector2 point2)
+    {
+        world.RayCast(callback, point1, point2);
     }
 
     private void CreateBox2DBody(RigidBody rigidBody)

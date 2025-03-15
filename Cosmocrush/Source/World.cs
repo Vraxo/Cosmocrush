@@ -18,7 +18,7 @@ public class World : Node
     {
         base.Process();
 
-        background.Position = VisualServer.WindowSize / 2;
+        background.Position = DisplayServer.WindowSize / 2;
 
         if (Input.IsKeyPressed(KeyCode.Space) && !Tree.Paused)
         {

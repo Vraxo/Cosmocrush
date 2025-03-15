@@ -18,6 +18,6 @@ public class Menu : Node
 
         Raylib_cs.Raylib.DrawFPS(10, 10);
 
-        GetNode<ParticleEmitter>("Particles").SpawnAreaMax = new(0, VisualServer.WindowSize.Y);
+        GetNode<ParticleEmitter>("Particles").SpawnAreaMax = new(0, DisplayServer.WindowSize.Y);
     }
 }

@@ -38,11 +38,11 @@ public class SettingsMenu : Node2D
         UpdateApplyAvailability();
         UpdateButtons();
 
-        sliderContainer!.Position = VisualServer.WindowSize / 2;
+        sliderContainer!.Position = DisplayServer.WindowSize / 2;
 
         sliderContainer!.Position = new(
-            VisualServer.WindowSize.X / 2 - (masterSlider!.Size.X + masterLabel!.Size.X) / 2,
-            VisualServer.WindowSize.Y * 0.25F);
+            DisplayServer.WindowSize.X / 2 - (masterSlider!.Size.X + masterLabel!.Size.X) / 2,
+            DisplayServer.WindowSize.Y * 0.25F);
     }
 
     // Events
@@ -76,7 +76,7 @@ public class SettingsMenu : Node2D
 
     private void UpdateButtons()
     {
-        Vector2 windowSize = VisualServer.WindowSize;
+        Vector2 windowSize = DisplayServer.WindowSize;
 
         float buttonSpacing = 20f;
         

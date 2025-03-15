@@ -15,6 +15,15 @@ public sealed class Score : Label
     {
         base.Process();
 
-        GlobalPosition = new Vector2(25, 25) + RenderServer.Instance.Camera.GlobalPosition;
+        UpdatePosition();
+    }
+
+    private void UpdatePosition()
+    {
+        float screenX = Size.X;
+        float screenY = Size.Y * 4;
+        Vector2 screenPos = new(screenX, screenY);
+
+        Position = RenderServer.Instance.GetScreenToWorld(screenPos);
     }
 }

@@ -1,6 +1,7 @@
 name: HealthBar
 type: HealthBar
 Size: [250, 20]
+HAlignment: Left
 ForegroundTheme:
   Roundness: 0
   FillColor: [0, 228, 48]

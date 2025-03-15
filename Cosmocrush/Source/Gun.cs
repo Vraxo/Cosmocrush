@@ -17,14 +17,10 @@ public class Gun : Sprite
     private bool canFire = true;
     private bool reloading = false;
     private int bulletsInMagazine = MagazineSize;
-    private float currentBloom = 0f;
 
     private const int Damage = 1;
     private const int MagazineSize = 100;
-    private const float EnemyKnockbackForce = 15f;
-    private const float MaxBloom = 0.0f;
-    private const float BloomIncrease = 0.02f;
-    private const float BloomResetSpeed = 0.05f;
+    private const float KnockbackForce = 15f;
 
     // Main
 
@@ -46,11 +42,6 @@ public class Gun : Sprite
         if (reloading)
         {
             UpdateReloadProgressBar();
-        }
-
-        if (!Input.IsActionDown("Fire"))
-        {
-            currentBloom = float.Max(0, currentBloom - BloomResetSpeed * TimeServer.Delta);
         }
     }
 
@@ -110,26 +101,11 @@ public class Gun : Sprite
         gunshotSound?.Play("SFX");
         FireRayCast();
         UpdateBulletTrail();
-        currentBloom = float.Min(MaxBloom, currentBloom + BloomIncrease);
-
-        // Apply knockback to the player
-        ApplyPlayerKnockback();
 
         if (bulletsInMagazine <= 0)
         {
             StartReloading();
         }
-    }
-
-    private void ApplyPlayerKnockback()
-    {
-        if (Parent is not Player player)
-        {
-            return;
-        }
-
-        Vector2 mousePosition = Input.WorldMousePosition;
-        Vector2 knockbackDirection = (GlobalPosition - mousePosition).Normalized();
     }
 
     private void UpdateBulletTrail()
@@ -159,7 +135,6 @@ public class Gun : Sprite
         Vector2 angleVector = mousePosition - GlobalPosition;
 
         var angle = float.Atan2(angleVector.Y, angleVector.X);
-        angle += RandomRange(-currentBloom, currentBloom);
 
         rayCast!.Rotation = angle * 180 / MathF.PI;
         rayCast.GlobalPosition = GlobalPosition;
@@ -172,9 +147,7 @@ public class Gun : Sprite
             if (collider is not null && collider is Enemy enemy)
             {
                 enemy.TakeDamage(Damage);
-                //enemy.ApplyKnockback(angleVector.Normalized() * EnemyKnockbackForce);
-                //enemy.ApplyLinearImpulseToCenter(angleVector.Normalized() * EnemyKnockbackForce * 10000000);
-                enemy.ApplyKnockback(angleVector * EnemyKnockbackForce);
+                enemy.ApplyKnockback(angleVector * KnockbackForce);
             }
         }
 
@@ -199,7 +172,7 @@ public class Gun : Sprite
         {
             return;
         }
-        
+
         float reloadProgress = 1.0f - (reloadTimer!.TimeLeft / reloadTimer!.WaitTime);
         reloadProgressBar.Percentage = reloadProgress;
     }
@@ -212,12 +185,5 @@ public class Gun : Sprite
         }
         reloadProgressBar.Free();
         reloadProgressBar = null;
-    }
-
-    // Utils
-
-    private static float RandomRange(float min, float max)
-    {
-        return (float)(new Random().NextDouble() * (max - min) + min);
     }
 }

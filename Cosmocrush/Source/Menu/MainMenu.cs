@@ -57,12 +57,12 @@ public class MainMenu : Node
     private void UpdateTitle()
     {
         title!.Position = new(
-            VisualServer.WindowSize.X / 2,
+            DisplayServer.WindowSize.X / 2,
             title.Position.Y);
     }
 
     private void UpdateButtonContainer()
     {
-        buttonContainer!.Position = VisualServer.WindowSize / 2;
+        buttonContainer!.Position = DisplayServer.WindowSize / 2;
     }
 }

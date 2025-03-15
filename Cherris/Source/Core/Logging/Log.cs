@@ -22,7 +22,7 @@ public class Log
 
     public static void Info(string message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string filePath = "")
     {
-        string fullMessage = $"[{DateTime.Now:HH:mm:ss}] [ERROR] {Path.GetFileName(filePath)}:{lineNumber} {message}";
+        string fullMessage = $"[{DateTime.Now:HH:mm:ss}] [INFO] {Path.GetFileName(filePath)}:{lineNumber} {message}";
 
         Console.ForegroundColor = infoColor;
         Console.WriteLine(fullMessage);

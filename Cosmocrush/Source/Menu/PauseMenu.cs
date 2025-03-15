@@ -21,8 +21,8 @@ public class PauseMenu : ColorRectangle
     {
         base.Process();
 
-        Size = VisualServer.WindowSize;
-        Position = RenderServer.Instance.GetScreenToWorld(VisualServer.WindowSize / 2);
+        Size = DisplayServer.WindowSize;
+        Position = RenderServer.Instance.GetScreenToWorld(DisplayServer.WindowSize / 2);
     }
 
     private void OnContinueButtonLeftClicked(Button sender)

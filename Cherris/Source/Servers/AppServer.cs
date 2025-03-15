@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
-using YamlDotNet.Serialization;
 using Raylib_cs;
-using System.Runtime.Loader;
+using YamlDotNet.Serialization;
 
 namespace Cherris;
 
@@ -54,6 +53,7 @@ public sealed class AppServer
         CollisionServer.Instance.Process();
         PhysicsServer.Instance.Process();
         RenderServer.Instance.Process();
+        DisplayServer.Instance.Process();
     }
 
     private static void CreateLogFile()
@@ -91,7 +91,7 @@ public sealed class AppServer
     {
         Configuration config = LoadConfig() ?? throw new Exception("Config file is invalid.");
 
-        VisualServer.OriginalWindowSize = new(config.Width, config.Height);
+        DisplayServer.Instance.OriginalWindowSize = new(config.Width, config.Height);
 
         var flags = ConfigFlags.VSyncHint | ConfigFlags.HighDpiWindow | ConfigFlags.AlwaysRunWindow;
 
