@@ -148,6 +148,7 @@ public class Gun : Sprite
             {
                 enemy.TakeDamage(Damage);
                 enemy.ApplyKnockback(angleVector * KnockbackForce);
+                GetNode<ScoreLabel>("/root/ScoreLabel").Points++;
             }
         }
 

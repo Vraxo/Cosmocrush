@@ -142,6 +142,8 @@ public class Enemy : RigidBody
 
     private void Die()
     {
+        Enabled = false;
+
         hitFlashAnimationPlayer!.Stop();
         alive = false;
 

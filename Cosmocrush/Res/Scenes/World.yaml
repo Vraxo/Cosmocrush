@@ -47,7 +47,7 @@ children:
     type: HealthBar
     path: Res/Scenes/HealthBar.yaml
 
-  - name: Score
-    type: Score
+  - name: ScoreLabel
+    type: ScoreLabel
     Text: Score
     ThemeFile: Res/Themes/Label.theme.yaml

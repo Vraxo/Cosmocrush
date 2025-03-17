@@ -2,8 +2,18 @@
 
 namespace Cosmocrush;
 
-public sealed class Score : Label
+public sealed class ScoreLabel : Label
 {
+    public int Points
+    {
+        get;
+        set
+        {
+            Text = $"Score: {Points + 1}";
+            field = value;
+        }
+    } = 0;
+
     public override void Ready()
     {
         base.Ready();

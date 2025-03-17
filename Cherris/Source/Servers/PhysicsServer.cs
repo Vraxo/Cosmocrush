@@ -1,5 +1,6 @@
 ﻿using Box2D.NetStandard.Collision.Shapes;
 using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World;
 using static Box2D.NetStandard.Dynamics.World.World;
 
@@ -20,7 +21,7 @@ public sealed class PhysicsServer
 
     private PhysicsServer()
     {
-        world = new(new(0, 9.8f));
+        world = new World(new(0, 9.8f)); // Gravity set to 9.8 m/s² downward
     }
 
     public void Process()
@@ -32,18 +33,74 @@ public sealed class PhysicsServer
     public void Register(RigidBody rigidBody)
     {
         RigidBodies.Add(rigidBody);
-        CreateBox2DBody(rigidBody);
+        if (rigidBody.Enabled)
+        {
+            CreateBox2DBody(rigidBody);
+        }
     }
 
     public void Unregister(RigidBody rigidBody)
     {
-        if (Bodies.TryGetValue(rigidBody, out Body? body))
+        if (rigidBody.Enabled)
         {
-            world.DestroyBody(body);
-            Bodies.Remove(rigidBody);
+            DestroyBox2DBody(rigidBody);
         }
 
         RigidBodies.Remove(rigidBody);
+    }
+
+    internal void CreateBox2DBody(RigidBody rigidBody)
+    {
+        if (Bodies.ContainsKey(rigidBody))
+        {
+            DestroyBox2DBody(rigidBody);
+        }
+
+        BodyDef bodyDef = new()
+        {
+            type = rigidBody.Type switch
+            {
+                RigidBody.BodyType.Static => BodyType.Static,
+                RigidBody.BodyType.Dynamic => BodyType.Dynamic,
+                RigidBody.BodyType.Kinematic => BodyType.Kinematic,
+                _ => BodyType.Static
+            },
+            position = new(rigidBody.Position.X, rigidBody.Position.Y),
+            angle = rigidBody.Rotation,
+            fixedRotation = rigidBody.FixedRotation,
+            gravityScale = rigidBody.GravityScale,
+        };
+
+        Body body = world.CreateBody(bodyDef);
+        Bodies[rigidBody] = body;
+        rigidBody.Box2DBody = body;
+        CreateBox2DFixture(rigidBody.Collider, body);
+    }
+
+    internal void DestroyBox2DBody(RigidBody rigidBody)
+    {
+        if (Bodies.TryGetValue(rigidBody, out Body body))
+        {
+            world.DestroyBody(body);
+            Bodies.Remove(rigidBody);
+            rigidBody.Box2DBody = null;
+        }
+    }
+
+    private static void CreateBox2DFixture(BoxCollider collider, Body body)
+    {
+        PolygonShape shape = new();
+        shape.SetAsBox(collider.Size.X / 2, collider.Size.Y / 2, new(collider.Offset.X, collider.Offset.Y), 0);
+
+        FixtureDef fixtureDef = new()
+        {
+            shape = shape,
+            density = collider.Density,
+            friction = collider.Friction,
+            restitution = collider.Restitution,
+        };
+
+        body.CreateFixture(fixtureDef);
     }
 
     private void SyncRigidBodyStates()
@@ -62,41 +119,5 @@ public sealed class PhysicsServer
     public void PerformRayCast(RayCastCallback callback, in Vector2 point1, in Vector2 point2)
     {
         world.RayCast(callback, point1, point2);
-    }
-
-    private void CreateBox2DBody(RigidBody rigidBody)
-    {
-        Body body = world.CreateBody(new()
-        {
-            type = rigidBody.Type switch
-            {
-                RigidBody.BodyType.Static => BodyType.Static,
-                RigidBody.BodyType.Dynamic => BodyType.Dynamic,
-                RigidBody.BodyType.Kinematic => BodyType.Kinematic,
-                _ => BodyType.Static
-            },
-            position = new(rigidBody.Position.X, rigidBody.Position.Y),
-            angle = rigidBody.Rotation,
-            fixedRotation = rigidBody.FixedRotation,
-            gravityScale = rigidBody.GravityScale,
-        });
-
-        Bodies[rigidBody] = body;
-        rigidBody.Box2DBody = body;
-        CreateBox2DFixture(rigidBody.Collider, body);
-    }
-
-    private static void CreateBox2DFixture(BoxCollider collider, Body body)
-    {
-        PolygonShape shape = new();
-        shape.SetAsBox(collider.Size.X / 2, collider.Size.Y / 2, new(collider.Offset.X, collider.Offset.Y), 0);
-
-        body.CreateFixture(new()
-        {
-            shape = shape,
-            density = collider.Density,
-            friction = collider.Friction,
-            restitution = collider.Restitution,
-        });
     }
 }
