@@ -1,0 +1,26 @@
+Node: Enemy::Enemy
+Size: [32, 32]
+GravityScale: 0
+sprite: Sprite
+navigationAgent: NavigationAgent
+hitFlashAnimationPlayer: HitFlashAnimationPlayer
+damageParticles: DamageParticles
+children:
+  - Node: AnimationPlayer::HitFlashAnimationPlayer
+
+  - Node: EnemySprite::Sprite
+    Texture: Res/Sprites/RangedEnemy.png
+
+  - Node: ParticleEmitter::DamageParticles
+    Spread: 180
+    Gravity: [0, 0]
+    Color: [255, 0, 0]
+    StartScaleMin: 4
+    StartScaleMax: 8
+    Explosiveness: 1
+    Amount: 25
+    OneShot: true
+    Emitting: false
+    Lifetime: 0.25
+
+  - Node: NavigationAgent::NavigationAgent

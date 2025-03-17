@@ -29,8 +29,8 @@ children:
 
   - Node: MainCamera::MainCamera
 
-  - Node: Enemy::Enemy1
-    path: Res/Scenes/Enemy.yaml
+  - Node: RangedEnemy::Enemy2
+    path: Res/Scenes/Enemies/RangedEnemy.yaml
     Position: [100, 350]
 
   - Node: HealthBar::HealthBar

@@ -1,0 +1,4 @@
+﻿Node: Projectile::Projectile
+children:
+  - Node: ColorRectangle::ColorRectangle
+    Color: [255,255, 0]

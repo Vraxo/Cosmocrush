@@ -39,7 +39,7 @@ public sealed class PackedScene(string path)
         if (!element.TryGetValue("Node", out var nodeDescriptorObj))
             throw new KeyNotFoundException("Element is missing the 'Node' key.");
         var nodeDescriptor = (string)nodeDescriptorObj;
-        var parts = nodeDescriptor.Split(new[] { "::" }, StringSplitOptions.None);
+        var parts = nodeDescriptor.Split(["::"], StringSplitOptions.None);
         if (parts.Length != 2)
             throw new FormatException($"Invalid Node descriptor '{nodeDescriptor}'. Expected 'Type::Name'.");
         var typeName = parts[0];

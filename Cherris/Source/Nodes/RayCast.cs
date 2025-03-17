@@ -2,6 +2,7 @@
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World;
 using System.Numerics;
+using System.Linq;
 
 namespace Cherris;
 
@@ -12,7 +13,7 @@ public class RayCast : Node2D
     public bool IgnoreFirst { get; set; } = false;
     public bool IsColliding { get; private set; }
     public Vector2 CollisionPoint { get; private set; }
-    public RigidBody? Collider { get; private set; }
+    public RigidBody? Collider { get; private set; } // Collider is of type RigidBody now
 
     public Vector2 TargetPosition => new Vector2(
         float.Cos(Rotation * MathF.PI / 180f),
@@ -46,15 +47,24 @@ public class RayCast : Node2D
             Fixture fixture = hit.Fixture;
             Body? body = fixture.Body;
 
-            var rigidBody = PhysicsServer.Instance.Bodies
-                .FirstOrDefault(kvp => kvp.Value == body).Key;
+            Node? node = PhysicsServer.Instance.FindNodeFromBody(body); // Use FindNodeFromBody to get Node?
 
-            if (rigidBody is null || !rigidBody.Collider.Enabled)
+            if (node is null) // Null check for node
             {
                 continue;
             }
 
-            if (!CollisionLayers.Intersect(rigidBody.Collider.CollisionLayers).Any())
+            if (node is not RigidBody rigidBody) // Check if node is a RigidBody and cast
+            {
+                continue; // If it's not a RigidBody, skip it (or handle differently if needed)
+            }
+
+            if (!rigidBody.Collider.Enabled) // Now safe to access rigidBody.Collider because of the cast
+            {
+                continue;
+            }
+
+            if (!CollisionLayers.Intersect(rigidBody.Collider.CollisionLayers).Any()) // Again, safe to access rigidBody.Collider
             {
                 continue;
             }
@@ -66,7 +76,7 @@ public class RayCast : Node2D
             }
 
             IsColliding = true;
-            Collider = rigidBody;
+            Collider = rigidBody; // Now Collider is correctly assigned as RigidBody?
             CollisionPoint = hit.Point;
             Log.Info("Hit: " + Collider.Name);
             return;

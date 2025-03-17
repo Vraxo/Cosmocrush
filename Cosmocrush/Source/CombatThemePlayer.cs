@@ -6,7 +6,7 @@ public partial class CombatThemePlayer : AudioPlayer
 {
     private int currentThemeIndex = -1;
     private readonly Random random = new();
-    private readonly string themePathTemplate = "Res/AudioStream/Music/CombatThemes/CombatTheme{0}.mp3";
+    private readonly string themePathTemplate = "Res/Audio/Music/CombatThemes/CombatTheme{0}.mp3";
 
     public override void Ready()
     {

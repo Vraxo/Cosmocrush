@@ -3,7 +3,7 @@
 public class Node2D : VisualItem
 {
     public Vector2 Position { get; set; } = Vector2.Zero;
-    public float Rotation { get; set; } = 0;
+    public virtual float Rotation { get; set; } = 0;
     public OriginPreset OriginPreset { get; set; } = OriginPreset.Center;
     public bool InheritPosition { get; set; } = true;
     public bool InheritOrigin { get; set; } = false;
@@ -41,7 +41,7 @@ public class Node2D : VisualItem
         set;
     } = new(1, 1);
 
-    public Vector2 GlobalPosition
+    public virtual Vector2 GlobalPosition
     {
         get
         {

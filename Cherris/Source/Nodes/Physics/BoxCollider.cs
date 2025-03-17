@@ -7,6 +7,7 @@ public class BoxCollider : Node2D
     public float Density { get; set; } = 1;
     public float Friction { get; set; } = 0.5f;
     public float Restitution { get; set; } = 0;
+    public bool IsSensor { get; set; } = false;
 
     public BoxCollider()
     {

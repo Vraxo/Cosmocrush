@@ -11,29 +11,25 @@ public class RigidBody : Node2D
         Kinematic
     }
 
-    // Properties
     public BodyType Type { get; set; } = BodyType.Dynamic;
     public bool FixedRotation { get; set; } = false;
     public BoxCollider Collider { get; set; }
 
     internal Body? Box2DBody;
 
-    private bool enabled = true;
-    private float gravityScale = 1;
-    private float linearDamping;
-
-    /// <summary>
-    /// Whether the RigidBody is enabled and participating in the physics simulation.
-    /// </summary>
     public bool Enabled
     {
-        get => enabled;
+        get => field;
         set
         {
-            if (enabled == value) return;
-            enabled = value;
+            if (field == value)
+            {
+                return;
+            }
 
-            if (enabled)
+            field = value;
+
+            if (field)
             {
                 PhysicsServer.Instance.CreateBox2DBody(this);
             }
@@ -43,67 +39,50 @@ public class RigidBody : Node2D
                 Box2DBody = null;
             }
         }
-    }
+    } = true;
 
-    /// <summary>
-    /// The linear velocity of the RigidBody.
-    /// </summary>
     public Vector2 Velocity
     {
         get => Box2DBody?.GetLinearVelocity() ?? Vector2.Zero;
         set => Box2DBody?.SetLinearVelocity(value);
     }
 
-    /// <summary>
-    /// The linear velocity of the RigidBody (alias for Velocity).
-    /// </summary>
     public Vector2 LinearVelocity
     {
         get => Box2DBody?.GetLinearVelocity() ?? Vector2.Zero;
         set => Box2DBody?.SetLinearVelocity(value);
     }
 
-    /// <summary>
-    /// The gravity scale applied to the RigidBody.
-    /// </summary>
     public float GravityScale
     {
-        get => Box2DBody?.GetGravityScale() ?? gravityScale;
+        get => Box2DBody?.GetGravityScale() ?? field;
         set
         {
-            gravityScale = value;
+            field = value;
             Box2DBody?.SetGravityScale(value);
         }
-    }
+    } = 1;
 
-    /// <summary>
-    /// The linear damping applied to the RigidBody.
-    /// </summary>
     public float LinearDamping
     {
-        get => Box2DBody?.GetLinearDamping() ?? linearDamping;
+        get => Box2DBody?.GetLinearDamping() ?? field;
         set
         {
-            linearDamping = value;
+            field = value;
             Box2DBody?.SetLinearDampling(value);
         }
     }
 
-    /// <summary>
-    /// The mass of the RigidBody.
-    /// </summary>
     public float Mass
     {
         get => Box2DBody?.GetMass() ?? field;
     }
 
-    // Constructor
     public RigidBody()
     {
         Collider = (BoxCollider)AddChild(new BoxCollider(), "BoxCollider");
     }
 
-    // Lifecycle Methods
     public override void Ready()
     {
         base.Ready();
@@ -116,7 +95,6 @@ public class RigidBody : Node2D
         PhysicsServer.Instance.Unregister(this);
     }
 
-    // Transform Methods
     public void SetTransform(Vector2 position, float angle)
     {
         Box2DBody?.SetTransform(position, angle);

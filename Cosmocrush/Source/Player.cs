@@ -9,7 +9,7 @@ public class Player : RigidBody
     private Vector2 knockbackVelocity = Vector2.Zero;
 
     private readonly Sprite? sprite;
-    private readonly Sound? damageSound = ResourceLoader.Load<Sound>("Res/AudioStream/SFX/PlayerDamage.mp3");
+    private readonly Sound? damageSound = ResourceLoader.Load<Sound>("Res/Audio/SFX/PlayerDamage.mp3");
     private readonly ParticleEmitter? damageParticles;
 
     private const float Speed = 200f;
