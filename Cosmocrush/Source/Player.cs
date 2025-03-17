@@ -10,11 +10,12 @@ public class Player : RigidBody
 
     private readonly Sprite? sprite;
     private readonly Sound? damageSound = ResourceLoader.Load<Sound>("Res/AudioStream/SFX/PlayerDamage.mp3");
+    private readonly ParticleEmitter? damageParticles;
 
     private const float Speed = 200f;
     private const float KnockbackRecoverySpeed = 0.1f;
 
-    private Camera camera;
+    private Camera? camera;
 
     public override void Ready()
     {
@@ -38,6 +39,8 @@ public class Player : RigidBody
     {
         Health -= damage;
         damageSound?.Play("SFX");
+
+        damageParticles!.Emitting = true;
 
         if (Health <= 0)
         {

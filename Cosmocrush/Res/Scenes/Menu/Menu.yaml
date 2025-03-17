@@ -1,20 +1,15 @@
-﻿name: Menu
-type: Menu
+﻿Node: Menu::Menu
 children:
-  - name: ThemePlayer
-    type: AudioPlayer
-    Audio: Res/Audio/Music/Myenu.mp3
+  - Node: AudioPlayer::ThemePlayer
+    Audio: Res/Audio/Music/Menu.mp3
     AutoPlay: true
     Bus: Music
 
-  - name: Background
-    type: MenuBackground
+  - Node: MenuBackground::Background
     Position: [0, 0]
     Texture: Res/Textures/Background.png
 
-  - name: Particles
-    type: ParticleEmitter
+  - Node: ParticleEmitter::Particles
 
-  - name: MainMenu
-    type: MainMenu
+  - Node: MainMenu::MainMenu
     path: Res/Scenes/Menu/MainMenu.yaml

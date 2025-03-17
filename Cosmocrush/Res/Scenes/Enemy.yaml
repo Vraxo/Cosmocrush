@@ -1,5 +1,4 @@
-name: Enemy
-type: Enemy
+Node: Enemy::Enemy
 Size: [32, 32]
 GravityScale: 0
 sprite: Sprite
@@ -7,15 +6,12 @@ navigationAgent: NavigationAgent
 hitFlashAnimationPlayer: HitFlashAnimationPlayer
 damageParticles: DamageParticles
 children:
-  - name: HitFlashAnimationPlayer
-    type: AnimationPlayer
+  - Node: AnimationPlayer::HitFlashAnimationPlayer
 
-  - name: Sprite
-    type: EnemySprite
+  - Node: EnemySprite::Sprite
     Texture: Res/Sprites/Enemy.png
 
-  - name: DamageParticles
-    type: ParticleEmitter
+  - Node: ParticleEmitter::DamageParticles
     Spread: 180
     Gravity: [0, 0]
     Color: [255, 0, 0]
@@ -27,5 +23,4 @@ children:
     Emitting: false
     Lifetime: 0.25
 
-  - name: NavigationAgent
-    type: NavigationAgent
+  - Node: NavigationAgent::NavigationAgent

@@ -11,9 +11,8 @@ public sealed class PackedScene(string path)
         .WithNamingConvention(CamelCaseNamingConvention.Instance)
         .Build();
 
-    public T Instantiate<T>(bool isRootNode = false) where T : Node
+    public T Instantiate<T>() where T : Node
     {
-        // Reset state for new instantiation
         var deferredNodeAssignments = new List<(Node, string, object)>();
         var namedNodes = new Dictionary<string, Node>();
 
@@ -24,27 +23,29 @@ public sealed class PackedScene(string path)
         return (T)rootNode;
     }
 
-    private Node ParseNode(
-        Dictionary<string, object> element,
-        Node? parent,
-        List<(Node, string, object)> deferredNodeAssignments,
-        Dictionary<string, Node> namedNodes)
+    private Node ParseNode(Dictionary<string, object> element, Node? parent, List<(Node, string, object)> deferredNodeAssignments, Dictionary<string, Node> namedNodes)
     {
         var node = CreateNodeInstance(element);
         ProcessNestedScene(element, ref node);
         SetNodeProperties(element, node, deferredNodeAssignments);
         AddToParent(parent, node);
-        RegisterNode(element, node, namedNodes);
+        RegisterNode(node, namedNodes);
         ProcessChildNodes(element, node, deferredNodeAssignments, namedNodes);
         return node;
     }
 
     private Node CreateNodeInstance(Dictionary<string, object> element)
     {
-        var typeName = (string)element["type"];
+        if (!element.TryGetValue("Node", out var nodeDescriptorObj))
+            throw new KeyNotFoundException("Element is missing the 'Node' key.");
+        var nodeDescriptor = (string)nodeDescriptorObj;
+        var parts = nodeDescriptor.Split(new[] { "::" }, StringSplitOptions.None);
+        if (parts.Length != 2)
+            throw new FormatException($"Invalid Node descriptor '{nodeDescriptor}'. Expected 'Type::Name'.");
+        var typeName = parts[0];
         var nodeType = PackedSceneUtils.ResolveType(typeName);
         var node = (Node)Activator.CreateInstance(nodeType)!;
-        node.Name = (string)element["name"];
+        node.Name = parts[1];
         return node;
     }
 
@@ -52,17 +53,22 @@ public sealed class PackedScene(string path)
     {
         if (element.TryGetValue("path", out var pathValue))
         {
+            if (!element.TryGetValue("Node", out var nodeDescriptorObj))
+                throw new KeyNotFoundException("Element with 'path' is missing the 'Node' key.");
+            var nodeDescriptor = (string)nodeDescriptorObj;
+            var parts = nodeDescriptor.Split(new[] { "::" }, StringSplitOptions.None);
+            if (parts.Length != 2)
+                throw new FormatException($"Invalid Node descriptor '{nodeDescriptor}'. Expected 'Type::Name'.");
+            var nodeName = parts[1];
+
             var scenePath = (string)pathValue;
             var nestedScene = new PackedScene(scenePath);
             node = nestedScene.Instantiate<Node>();
-            node.Name = (string)element["name"];
+            node.Name = nodeName;
         }
     }
 
-    private void SetNodeProperties(
-        Dictionary<string, object> element,
-        Node node,
-        List<(Node, string, object)> deferredNodeAssignments)
+    private void SetNodeProperties(Dictionary<string, object> element, Node node, List<(Node, string, object)> deferredNodeAssignments)
     {
         var properties = element
             .Where(kvp => !IsReservedKey(kvp.Key))
@@ -71,28 +77,22 @@ public sealed class PackedScene(string path)
         PackedSceneUtils.SetProperties(node, properties, deferredNodeAssignments);
     }
 
-    private bool IsReservedKey(string key) =>
-        key is "children" or "name" or "type" or "path";
+    private static bool IsReservedKey(string key)
+    {
+        return key is "children" or "Node" or "path";
+    }
 
-    private void AddToParent(Node? parent, Node node)
+    private static void AddToParent(Node? parent, Node node)
     {
         parent?.AddChild(node, node.Name);
     }
 
-    private void RegisterNode(
-        Dictionary<string, object> element,
-        Node node,
-        Dictionary<string, Node> namedNodes)
+    private static void RegisterNode(Node node, Dictionary<string, Node> namedNodes)
     {
-        var nodeName = (string)element["name"];
-        namedNodes[nodeName] = node;
+        namedNodes[node.Name] = node;
     }
 
-    private void ProcessChildNodes(
-        Dictionary<string, object> element,
-        Node parentNode,
-        List<(Node, string, object)> deferredNodeAssignments,
-        Dictionary<string, Node> namedNodes)
+    private void ProcessChildNodes(Dictionary<string, object> element, Node parentNode, List<(Node, string, object)> deferredNodeAssignments, Dictionary<string, Node> namedNodes)
     {
         if (!element.TryGetValue("children", out var childrenObj)) return;
         var children = ConvertChildrenToList(childrenObj);
@@ -106,15 +106,17 @@ public sealed class PackedScene(string path)
         }
     }
 
-    private List<object> ConvertChildrenToList(object childrenObj) =>
-        childrenObj is List<object> list ? list : new List<object>();
+    private static List<object> ConvertChildrenToList(object childrenObj)
+    {
+        return childrenObj is List<object> list ? list : [];
+    }
 
-    private Dictionary<string, object> ConvertChildDictionary(Dictionary<object, object> childDict) =>
-        childDict.ToDictionary(kvp => kvp.Key.ToString()!, kvp => kvp.Value);
+    private static Dictionary<string, object> ConvertChildDictionary(Dictionary<object, object> childDict)
+    {
+        return childDict.ToDictionary(kvp => kvp.Key.ToString()!, kvp => kvp.Value);
+    }
 
-    private void AssignDeferredNodes(
-        List<(Node, string, object)> deferredNodeAssignments,
-        Dictionary<string, Node> namedNodes)
+    private void AssignDeferredNodes(List<(Node, string, object)> deferredNodeAssignments, Dictionary<string, Node> namedNodes)
     {
         foreach (var (targetNode, memberPath, nodePath) in deferredNodeAssignments)
         {
@@ -122,11 +124,7 @@ public sealed class PackedScene(string path)
         }
     }
 
-    private void AssignDeferredNode(
-        Node targetNode,
-        string memberPath,
-        object nodePath,
-        Dictionary<string, Node> namedNodes)
+    private void AssignDeferredNode(Node targetNode, string memberPath, object nodePath, Dictionary<string, Node> namedNodes)
     {
         string[] pathParts = memberPath.Split('/');
         object currentObject = targetNode;
@@ -168,12 +166,7 @@ public sealed class PackedScene(string path)
         throw new Exception($"Member '{memberName}' not found on type '{type.Name}'.");
     }
 
-    private void AssignNodeToMember(
-        MemberInfo? memberInfo,
-        object targetObject,
-        object nodePath,
-        Node targetNode,
-        Dictionary<string, Node> namedNodes)
+    private static void AssignNodeToMember(MemberInfo? memberInfo, object targetObject, object nodePath, Node targetNode, Dictionary<string, Node> namedNodes)
     {
         if (memberInfo is PropertyInfo propertyInfo && propertyInfo.PropertyType.IsSubclassOf(typeof(Node)))
         {
@@ -191,14 +184,13 @@ public sealed class PackedScene(string path)
         }
     }
 
-    private Node ResolveNodePath(object nodePath, Dictionary<string, Node> namedNodes, Node targetNode)
+    private static Node ResolveNodePath(object nodePath, Dictionary<string, Node> namedNodes, Node targetNode)
     {
         if (nodePath is string pathString)
         {
             if (namedNodes.TryGetValue(pathString, out Node? node))
                 return node;
 
-            // Fallback to GetNode if not found in namedNodes
             return targetNode.GetNode<Node>(pathString);
         }
         throw new Exception($"Unsupported node path type: {nodePath.GetType()}");

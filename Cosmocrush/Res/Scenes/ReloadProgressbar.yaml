@@ -1,5 +1,4 @@
-name: ReloadProgressBar
-type: ProgressBar
+Node: ProgressBar::ReloadProgressBar
 Position: [0, -75]
 Size: [100, 10]
 ForegroundTheme:

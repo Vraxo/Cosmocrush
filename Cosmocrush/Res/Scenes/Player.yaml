@@ -1,15 +1,25 @@
-name: Player
-type: Player
+Node: Player::Player
 Position: [500, 500]
 Size: [32, 32]
 GravityScale: 0
 sprite: Sprite
+damageParticles: DamageParticles
 children:
-  - name: Sprite
-    type: Sprite
+  - Node: Sprite::Sprite
     Texture: Res/Sprites/Player.png
 
-  - name: Gun
-    type: Gun
+  - Node: Gun::Gun
     path: Res/Scenes/Gun.yaml
     Texture: Res/Sprites/Gun.png
+  
+  - Node: ParticleEmitter::DamageParticles
+    Spread: 180
+    Gravity: [0, 0]
+    Color: [255, 0, 0]
+    StartScaleMin: 4
+    StartScaleMax: 8
+    Explosiveness: 1
+    Amount: 25
+    OneShot: true
+    Emitting: false
+    Lifetime: 0.25

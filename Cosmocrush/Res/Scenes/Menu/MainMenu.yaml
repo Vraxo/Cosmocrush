@@ -1,44 +1,38 @@
-name: MainMenu
-type: MainMenu
+Node: MainMenu::MainMenu
 title: Title
 buttonContainer: ButtonContainer
 playButton: ButtonContainer/PlayButton
 settingsButton: ButtonContainer/SettingsButton
 quitButton: ButtonContainer/QuitButton
 children:
-  - name: Title
-    type: Label
-    Position: [500,250]
+  - Node: Label::Title
+    Position: [500, 250]
     Layer: 2
     Text: COSMOCRUSH
     HAlignment: Center
     ThemeFile: Res/Themes/Title.theme.yaml
 
-  - name: ButtonContainer
-    type: VBoxContainer
+  - Node: VBoxContainer::ButtonContainer
     children:
-    - name: PlayButton
-      type: Button
-      path: Res/Scenes/UI/Button.yaml
-      Size: [640,31]
-      Layer: 2
-      FocusNeighborTop: ../QuitButton
-      FocusNeighborBottom: ../SettingsButton
-      Text: Start
-    
-    - name: SettingsButton
-      type: Button
-      path: Res/Scenes/UI/Button.yaml
-      Size: [640,31]
-      Layer: 2
-      FocusNeighborTop: ../PlayButton
-      FocusNeighborBottom: ../QuitButton
-      Text: Settings
-    
-    - name: QuitButton
-      type: Button
-      path: Res/Scenes/UI/Button.yaml
-      Size: [640,31]
-      FocusNeighborTop: ../SettingsButton
-      FocusNeighborBottom: ../PlayButton
-      Text: Quit
+      - Node: Button::PlayButton
+        path: Res/Scenes/UI/Button.yaml
+        Size: [640, 31]
+        Layer: 2
+        FocusNeighborTop: ../QuitButton
+        FocusNeighborBottom: ../SettingsButton
+        Text: Start
+
+      - Node: Button::SettingsButton
+        path: Res/Scenes/UI/Button.yaml
+        Size: [640, 31]
+        Layer: 2
+        FocusNeighborTop: ../PlayButton
+        FocusNeighborBottom: ../QuitButton
+        Text: Settings
+
+      - Node: Button::QuitButton
+        path: Res/Scenes/UI/Button.yaml
+        Size: [640, 31]
+        FocusNeighborTop: ../SettingsButton
+        FocusNeighborBottom: ../PlayButton
+        Text: Quit

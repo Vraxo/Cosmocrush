@@ -1,53 +1,41 @@
-﻿name: World
-type: World
+﻿Node: World::World
 children:
-  - name: CombatThemePlayer
-    type: CombatThemePlayer
+  - Node: CombatThemePlayer::CombatThemePlayer
     Bus: Music
 
-  - name: Background
-    type: ColorRectangle
+  - Node: ColorRectangle::Background
     Color: [0, 0, 0]
     Size: [2000, 2000]
     #Visible: false
 
-  - name: NavigationRegion
-    type: NavigationRegion
+  - Node: NavigationRegion::NavigationRegion
 
-  - name: Rock
-    type: NavigationObstacle
+  - Node: NavigationObstacle::Rock
     path: Res/Scenes/Rock.yaml
     Position: [600, 300]
 
-  - name: UpperWall
-    type: NavigationObstacle
+  - Node: NavigationObstacle::UpperWall
     path: Res/Scenes/Rock.yaml
     Position: [640, 0]
     Scale: [10, 0.1]
 
-  - name: LeftWall
-    type: NavigationObstacle
+  - Node: NavigationObstacle::LeftWall
     path: Res/Scenes/Rock.yaml
     Position: [0, 0]
     Scale: [0.1, 0.5]
 
-  - name: Player
-    type: Player
+  - Node: Player::Player
     path: Res/Scenes/Player.yaml
 
-  - name: MainCamera
-    type: MainCamera
+  - Node: MainCamera::MainCamera
 
-  - name: Enemy1
-    type: Enemy
+  - Node: Enemy::Enemy1
     path: Res/Scenes/Enemy.yaml
     Position: [100, 350]
 
-  - name: HealthBar
-    type: HealthBar
+  - Node: HealthBar::HealthBar
     path: Res/Scenes/HealthBar.yaml
 
-  - name: ScoreLabel
-    type: ScoreLabel
+  - Node: ScoreLabel::ScoreLabel
     Text: Score
     ThemeFile: Res/Themes/Label.theme.yaml

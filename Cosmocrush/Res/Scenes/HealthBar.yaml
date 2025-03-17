@@ -1,5 +1,4 @@
-name: HealthBar
-type: HealthBar
+Node: HealthBar::HealthBar
 Size: [250, 20]
 HAlignment: Left
 ForegroundTheme:

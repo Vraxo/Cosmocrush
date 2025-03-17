@@ -1,26 +1,21 @@
-﻿name: Gun
-type: Gun
+﻿Node: Gun::Gun
 HAlignment: Left
 rayCast: RayCast
 cooldownTimer: CooldownTimer
 reloadTimer: ReloadTimer
 bulletTrail: BulletTrail
 children:
-  - name: RayCast
-    type: RayCast
+  - Node: RayCast::RayCast
     Length: 5000
     #CollisionLayers:
     #  - EnemyHitBox
     #  - RayCastToRock
 
-  - name: BulletTrail
-    type: Line
+  - Node: Line::BulletTrail
     Color: [255, 255, 0]
 
-  - name: CooldownTimer
-    type: Timer
+  - Node: Timer::CooldownTimer
     WaitTime: 0.182
 
-  - name: ReloadTimer
-    type: Timer
+  - Node: Timer::ReloadTimer
     WaitTime: 2

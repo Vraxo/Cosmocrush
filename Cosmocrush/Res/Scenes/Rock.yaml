@@ -1,12 +1,9 @@
-name: Rock
-type: RigidBody
+Node: RigidBody::Rock
 Size: [32, 32]
 Type: Static
 children:
-  - name: NavigationObstacle
-    type: NavigationObstacle
+  - Node: NavigationObstacle::NavigationObstacle
     Size: [64, 64]
 
-  - name: Sprite
-    type: Sprite
+  - Node: Sprite::Sprite
     Texture: Res/Sprites/Rock.png
