@@ -1,8 +1,8 @@
 ﻿namespace Cherris;
 
-public class SliderTheme
+public class SliderStyle
 {
     public BoxStyle Background { get; set; } = new();
     public BoxStyle Foreground { get; set; } = new();
-    public ButtonThemePack Grabber { get; set; } = new();
+    public ButtonStylePack Grabber { get; set; } = new();
 }

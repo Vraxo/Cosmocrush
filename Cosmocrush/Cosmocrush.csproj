@@ -218,22 +218,22 @@
     <None Update="Res\Sprites\Rock.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Themes\Button2.theme.yaml">
+    <None Update="Res\Themes\Button2.style.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Themes\Grabber.theme.yaml">
+    <None Update="Res\Themes\Grabber.style.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Themes\Button.theme.yaml">
+    <None Update="Res\Themes\Button.style.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Themes\ButtonStyle.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Themes\Label.theme.yaml">
+    <None Update="Res\Themes\Label.style.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Res\Themes\Title.theme.yaml">
+    <None Update="Res\Themes\Title.style.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Res\Themes\TitleStyle.ini">

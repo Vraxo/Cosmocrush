@@ -10,7 +10,7 @@ public class Button : Control
 
     public Vector2 TextOffset { get; set; } = Vector2.Zero;
     public Alignment TextAlignment { get; set; } = new();
-    public ButtonThemePack Themes { get; set; } = new();
+    public ButtonStylePack Themes { get; set; } = new();
     public float AvailableWidth { get; set; } = 0;
     public ActionMode LeftClickActionMode { get; set; } = ActionMode.Release;
     public ActionMode RightClickActionMode { get; set; } = ActionMode.Release;
@@ -226,7 +226,7 @@ public class Button : Control
 
     protected override void OnThemeFileChanged(string themeFile)
     {
-        Themes = FileLoader.Load<ButtonThemePack>(themeFile);
+        Themes = FileLoader.Load<ButtonStylePack>(themeFile);
     }
 
     // Draw

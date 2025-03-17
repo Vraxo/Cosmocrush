@@ -10,7 +10,7 @@ children:
     Layer: 2
     Text: COSMOCRUSH
     HAlignment: Center
-    ThemeFile: Res/Themes/Title.theme.yaml
+    ThemeFile: Res/Themes/Title.style.yaml
 
   - Node: VBoxContainer::ButtonContainer
     children:

@@ -1,31 +1,31 @@
 ﻿namespace Cherris;
 
-public sealed class ButtonThemePack
+public sealed class ButtonStylePack
 {
     // States
 
-    public ButtonTheme Current { get; set; } = new();
+    public ButtonStyle Current { get; set; } = new();
 
-    public ButtonTheme Normal { get; set; } = new();
+    public ButtonStyle Normal { get; set; } = new();
 
-    public ButtonTheme Hover { get; set; } = new()
+    public ButtonStyle Hover { get; set; } = new()
     {
         FillColor = DefaultTheme.HoverFill
     };
 
-    public ButtonTheme Pressed { get; set; } = new()
+    public ButtonStyle Pressed { get; set; } = new()
     {
         FillColor = DefaultTheme.Accent
     };
 
-    public ButtonTheme Disabled { get; set; } = new()
+    public ButtonStyle Disabled { get; set; } = new()
     {
         FillColor = DefaultTheme.DisabledFill,
         BorderColor = DefaultTheme.DisabledBorder,
         FontColor = DefaultTheme.DisabledText
     };
 
-    public ButtonTheme Focused { get; set; } = new()
+    public ButtonStyle Focused { get; set; } = new()
     {
         BorderColor = DefaultTheme.FocusBorder,
         BorderLength = 1

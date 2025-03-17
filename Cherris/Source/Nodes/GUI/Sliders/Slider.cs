@@ -6,8 +6,8 @@ public abstract class Slider : Control
     public float MinValue { get; set; } = 0;
     public float MaxValue { get; set; } = 1f;
     public Sound? MoveSound { get; set; }
-    public SliderTheme Theme { get; set; } = new();
-    public ButtonThemePack GrabberTheme { get; set; } = new();
+    public SliderStyle Theme { get; set; } = new();
+    public ButtonStylePack GrabberTheme { get; set; } = new();
     public Vector2 GrabberSize { get; set; } = new(20);
 
     protected bool grabberPressed;
@@ -71,7 +71,7 @@ public abstract class Slider : Control
 
     protected override void OnThemeFileChanged(string themeFile)
     {
-        Theme = FileLoader.Load<SliderTheme>(themeFile);
+        Theme = FileLoader.Load<SliderStyle>(themeFile);
     }
 
     protected void PlaySound()

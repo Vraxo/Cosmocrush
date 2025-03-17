@@ -1,8 +1,8 @@
 ﻿namespace Cherris;
 
-public class LabelTheme
+public class LabelStyle
 {
-    public Font Font { get; set; } = FontCache.Instance.Get("Res/Cherris/RobotoMono.ttf:16");
+    public Font? Font { get; set; } = ResourceLoader.Load<Font>("Res/Cherris/RobotoMono.ttf:16");
     public Color FontColor { get; set; } = DefaultTheme.Text;
     public uint FontSize { get; set; } = 16;
     public int FontSpacing { get; set; } = 0;

@@ -17,7 +17,7 @@ children:
       Text: Master
       #Theme:
       #    Font: Res/Fonts/RaceSport.ttf:16
-      ThemeFile: Res/Themes/Label.theme.yaml
+      ThemeFile: Res/Themes/Label.style.yaml
       children:
         - name: Slider
           type: HSlider
@@ -30,7 +30,7 @@ children:
       type: Label
       HAlignment: Right
       Text: Music
-      ThemeFile: Res/Themes/Label.theme.yaml
+      ThemeFile: Res/Themes/Label.style.yaml
       children:
         - name: Slider
           type: HSlider
@@ -42,7 +42,7 @@ children:
       type: Label
       HAlignment: Right
       Text: SFX
-      ThemeFile: Res/Themes/Label.theme.yaml
+      ThemeFile: Res/Themes/Label.style.yaml
       children:
         - name: Slider
           type: HSlider

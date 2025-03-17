@@ -1,4 +1,4 @@
-﻿using Cherris;
+﻿namespace Cherris;
 
 public class CheckBoxStylePack
 {

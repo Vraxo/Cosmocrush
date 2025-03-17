@@ -38,4 +38,4 @@ children:
 
   - Node: ScoreLabel::ScoreLabel
     Text: Score
-    ThemeFile: Res/Themes/Label.theme.yaml
+    ThemeFile: Res/Themes/Label.style.yaml

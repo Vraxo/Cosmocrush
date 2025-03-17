@@ -9,7 +9,7 @@ public class Label : Control
         Both
     }
 
-    public LabelTheme Theme { get; set; } = new();
+    public LabelStyle Theme { get; set; } = new();
     public bool Clip { get; set; } = false;
     public string Ellipsis { get; set; } = "...";
     public TextCase Case { get; set; } = TextCase.Both;
@@ -75,7 +75,7 @@ public class Label : Control
 
     protected override void OnThemeFileChanged(string themeFile)
     {
-        Theme = FileLoader.Load<LabelTheme>(themeFile);
+        Theme = FileLoader.Load<LabelStyle>(themeFile);
     }
 
     // Drawing

@@ -11,11 +11,11 @@ children:
       - name: ContinueButton
         type: CustomButton
         Text: Continue
-        ThemeFile: Res/Themes/Button2.theme.yaml
+        ThemeFile: Res/Themes/Button2.style.yaml
         Sound: Res/Audio/SFX/Ui.mp3
 
       - name: QuitButton
         type: CustomButton
         Text: Quit
-        ThemeFile: Res/Themes/Button2.theme.yaml
+        ThemeFile: Res/Themes/Button2.style.yaml
         Sound: Res/Audio/SFX/Ui.mp3
