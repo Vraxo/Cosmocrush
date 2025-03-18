@@ -15,7 +15,7 @@ children:
   - Node: ParticleEmitter::DamageParticles
     Spread: 180
     Gravity: [0, 0]
-    Color: [255, 0, 0]
+    Color: [0, 255, 0]
     StartScaleMin: 4
     StartScaleMax: 8
     Explosiveness: 1

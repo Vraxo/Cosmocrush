@@ -1,57 +1,43 @@
 ﻿using Cherris;
-using Box2D.NetStandard.Dynamics.Bodies;
 
-namespace Cosmocrush
+namespace Cosmocrush;
+
+public class Projectile : Area2D
 {
-    public class Projectile : Area2D
+    public float Speed { get; set; } = 500f;
+    public float Direction { get; set; } = 0;
+
+    public override void Ready()
     {
-        public float Speed { get; set; } = 500f;
+        base.Ready();
 
-        private Vector2 _direction = Vector2.Zero;
-        public Vector2 Direction
+        BodyEntered += OnBodyEntered;
+
+        Vector2 directionVector = new(
+            float.Cos(float.DegreesToRadians(Direction)),
+            float.Sin(float.DegreesToRadians(Direction))
+        );
+
+        LinearVelocity = directionVector * Speed;
+    }
+
+    private void OnBodyEntered(Node otherBody)
+    {
+        if (otherBody is not Player player)
         {
-            get => _direction;
-            set => _direction = value.Normalized(); // Ensure direction is normalized
+            return;
         }
 
-        public override void Ready()
-        {
-            base.Ready();
-            BodyEntered += OnBodyEntered;
+        player.TakeDamage(1);
 
-            // Set initial velocity when the projectile is ready
-            if (Box2DBody != null)
-            {
-                var velocity = new Vector2(Direction.X * Speed, Direction.Y * Speed);
-                Box2DBody.SetLinearVelocity(velocity);
-            }
-        }
+        //Vector2 knockbackDirection = (GlobalPosition - player!.GlobalPosition).Normalized();
+        //player.ApplyKnockback(knockbackDirection * KnockbackForce);
 
-        public override void Process()
-        {
-            base.Process();
+        Destroy();
+    }
 
-            // No manual position updates; movement is now physics-driven
-        }
-
-        private void OnBodyEntered(Node otherBody)
-        {
-            if (otherBody is Player player)
-            {
-                Log.Info("Projectile hit Player!");
-                player.TakeDamage(10); // Example: Deal 10 damage to the player
-                Destroy();
-            }
-            else
-            {
-                Log.Info($"Projectile hit something else: {otherBody.Name}");
-                Destroy();
-            }
-        }
-
-        private void Destroy()
-        {
-            Free();
-        }
+    private void Destroy()
+    {
+        Free();
     }
 }

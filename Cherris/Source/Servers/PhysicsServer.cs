@@ -41,7 +41,7 @@ public sealed class PhysicsServer
     public void Process()
     {
         // Step the physics world
-        world.Step(TimeServer.Delta, VelocityIterations, PositionIterations);
+        world.Step(1/60f, VelocityIterations, PositionIterations);
 
         // Sync RigidBody and Area2D states
         SyncRigidBodyStates();

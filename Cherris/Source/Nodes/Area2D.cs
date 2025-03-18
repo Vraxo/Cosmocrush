@@ -7,13 +7,42 @@ public class Area2D : Node2D
     public event Action<Node>? BodyEntered;
     public event Action<Node>? BodyExited;
 
-    public HashSet<Node> OverlappingBodies { get; } = new();
+    public HashSet<Node> OverlappingBodies { get; } = [];
 
     public BoxCollider Collider { get; set; } = new BoxCollider();
 
     public Body? Box2DBody { get; set; }
 
-    public bool Enabled { get; set; } = true;
+    public Vector2 LinearVelocity
+    {
+        get => Box2DBody?.GetLinearVelocity() ?? Vector2.Zero;
+        set => Box2DBody?.SetLinearVelocity(value);
+    }
+
+    public bool Enabled 
+    { 
+        get;
+
+        set
+        {
+            if (field == value)
+            {
+                return;
+            }
+            
+            field = value;
+
+            if (Enabled)
+            {
+                PhysicsServer.Instance.CreateBox2DAreaBody(this);
+            }
+            else
+            {
+                PhysicsServer.Instance.DestroyBox2DAreaBody(this);
+                Box2DBody = null;
+            }
+        }
+    } = true;
 
     public Area2D()
     {
@@ -80,22 +109,6 @@ public class Area2D : Node2D
             {
                 PhysicsServer.Instance.SyncAreaBodyTransform(this);
             }
-        }
-    }
-
-    public bool IsEnabled() => Enabled;
-    public void SetEnabled(bool enabled)
-    {
-        if (Enabled == enabled) return;
-        Enabled = enabled;
-        if (Enabled)
-        {
-            PhysicsServer.Instance.CreateBox2DAreaBody(this);
-        }
-        else
-        {
-            PhysicsServer.Instance.DestroyBox2DAreaBody(this);
-            Box2DBody = null;
         }
     }
 }

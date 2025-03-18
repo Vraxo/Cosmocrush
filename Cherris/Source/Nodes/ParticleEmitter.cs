@@ -20,9 +20,15 @@ public partial class ParticleEmitter : Node2D
     public float Lifetime { get; set; } = 1f;
     public Color Color { get; set; } = Color.White;
 
+    private readonly List<Particle> particles = [];
+    private readonly Random random = new();
+    private float cycleTimer;
+    private bool emitted;
+
     public bool Emitting
     {
         get;
+
         set
         {
             if (field == value)
@@ -32,7 +38,7 @@ public partial class ParticleEmitter : Node2D
 
             field = value;
 
-            if (!(field) || !OneShot)
+            if (!field || !OneShot)
             {
                 return;
             }
@@ -41,11 +47,6 @@ public partial class ParticleEmitter : Node2D
             cycleTimer = 0;
         }
     } = true;
-
-    private readonly List<Particle> particles = [];
-    private readonly Random random = new();
-    private float cycleTimer;
-    private bool emitted;
 
     public override void Process()
     {
@@ -141,7 +142,7 @@ public partial class ParticleEmitter : Node2D
         float startScale = NextFloat(StartScaleMin, StartScaleMax);
         float endScale = NextFloat(EndScaleMin, EndScaleMax);
 
-        return new Particle()
+        return new()
         {
             Position = randomPosition,
             StartScale = startScale,

@@ -5,8 +5,12 @@ sprite: Sprite
 navigationAgent: NavigationAgent
 hitFlashAnimationPlayer: HitFlashAnimationPlayer
 damageParticles: DamageParticles
+damageTimer: DamageTimer
 children:
   - Node: AnimationPlayer::HitFlashAnimationPlayer
+
+  - Node: Timer::DamageTimer
+    WaitTime: 0.5
 
   - Node: EnemySprite::Sprite
     Texture: Res/Sprites/RangedEnemy.png
