@@ -1,6 +1,6 @@
 Node: DamageIndicator::DamageIndicator
 InheritScale: false
-Theme:
+Style:
   Font: Res/Fonts/RaceSport.ttf:64
 destructionTimer: DestructionTimer
 children:

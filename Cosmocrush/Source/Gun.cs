@@ -144,7 +144,7 @@ public class Gun : Sprite
         {
             RigidBody? collider = rayCast.Collider;
 
-            if (collider is not null && collider is Enemy enemy)
+            if (collider is not null && collider is BaseEnemy enemy)
             {
                 enemy.TakeDamage(Damage);
                 enemy.ApplyKnockback(angleVector * KnockbackForce);
