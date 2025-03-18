@@ -25,8 +25,8 @@ public abstract class BaseEnemy : RigidBody
     protected virtual float DamageRadius => 48f;
     protected virtual float DamageCooldown => 0.5f;
     protected virtual float KnockbackForce => 25f;
-    protected virtual float EnemyKnockbackForce => 40f;
-    protected virtual float KnockbackRecoverySpeed => 0.1f;
+    protected virtual float EnemyKnockbackForce => 60f; // Increased knockback force
+    protected virtual float KnockbackRecoverySpeed => 0.05f; // Slower recovery speed
 
     public override void Ready()
     {
@@ -35,7 +35,9 @@ public abstract class BaseEnemy : RigidBody
         navigationAgent!.Region = GetNode<NavigationRegion>("/root/NavigationRegion");
         player = GetNode<Player>("/root/Player");
         health = MaxHealth;
-        LinearDamping = 10f;
+
+        // Reduced LinearDamping to allow knockback to persist
+        LinearDamping = 0.5f; // <--- CRITICAL FIX
 
         damageTimer!.Timeout += (timer) => canShoot = true;
     }
@@ -77,34 +79,41 @@ public abstract class BaseEnemy : RigidBody
 
     public void ApplyKnockback(Vector2 knockback)
     {
-        knockbackVelocity = knockbackVelocity.Length() < knockback.Length()
-            ? knockback
-            : knockbackVelocity + knockback;
+        // Always add knockback to the existing velocity
+        knockbackVelocity += knockback; // <--- CRITICAL FIX
     }
 
     protected virtual void ChasePlayer()
     {
         navigationAgent!.TargetPosition = player!.GlobalPosition;
 
-        if (player is null || navigationAgent.Path.Count == 0 || GlobalPosition.DistanceTo(player.GlobalPosition) < ProximityThreshold)
+        if (player is null || navigationAgent.Path.Count == 0)
         {
             return;
         }
 
-        Vector2 targetPosition = navigationAgent.Path[0];
-        Vector2 direction = (targetPosition - GlobalPosition).Normalized();
-        Vector2 movement = direction * Speed;
+        Vector2 movement = Vector2.Zero;
 
-        LinearVelocity = movement + knockbackVelocity;
-
-        if (GlobalPosition.DistanceTo(targetPosition) < ProximityThreshold)
+        // Only calculate movement if outside proximity threshold
+        if (GlobalPosition.DistanceTo(player.GlobalPosition) >= ProximityThreshold)
         {
-            navigationAgent.Path.RemoveAt(0);
+            Vector2 targetPosition = navigationAgent.Path[0];
+            Vector2 direction = (targetPosition - GlobalPosition).Normalized();
+            movement = direction * Speed;
+
+            if (GlobalPosition.DistanceTo(targetPosition) < ProximityThreshold)
+            {
+                navigationAgent.Path.RemoveAt(0);
+            }
         }
+
+        // Always apply knockbackVelocity regardless of proximity
+        LinearVelocity = movement + knockbackVelocity; // <--- CRITICAL FIX
     }
 
     protected void SufferKnockback()
     {
+        // Gradually reduce knockback velocity over time
         knockbackVelocity = Vector2.Lerp(
             knockbackVelocity,
             Vector2.Zero,

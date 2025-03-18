@@ -2,7 +2,7 @@
 
 namespace Cosmocrush;
 
-public class Enemy : BaseEnemy
+public class MeleeEnemy : BaseEnemy
 {
     protected override void AttemptToDamagePlayer()
     {

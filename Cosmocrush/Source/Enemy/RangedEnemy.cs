@@ -16,14 +16,20 @@ public class RangedEnemy : BaseEnemy
             return;
         }
 
+        CreateProjectile();
+
+        canShoot = false;
+        damageTimer!.Fire();
+    }
+
+    private void CreateProjectile()
+    {
         PackedScene projectileScene = new("Res/Scenes/Projectile.yaml");
+
         var projectile = projectileScene.Instantiate<Projectile>();
         projectile.Position = GlobalPosition;
         projectile.Direction = GlobalPosition.AngleTo(player.GlobalPosition);
 
         Tree.RootNode!.AddChild(projectile);
-
-        canShoot = false;
-        damageTimer!.Fire();
     }
 }

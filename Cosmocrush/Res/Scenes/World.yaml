@@ -29,7 +29,7 @@ children:
 
   - Node: MainCamera::MainCamera
 
-  - Node: RangedEnemy::Enemy2
+  - Node: RangedEnemy::Enemy
     path: Res/Scenes/Enemies/RangedEnemy.yaml
     Position: [100, 350]
 

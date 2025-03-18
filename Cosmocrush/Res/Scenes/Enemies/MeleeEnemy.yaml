@@ -1,4 +1,4 @@
-Node: Enemy::Enemy
+Node: MeleeEnemy::Enemy
 Size: [32, 32]
 GravityScale: 0
 sprite: Sprite
