@@ -32,7 +32,7 @@ public class AnimationPlayer : Node
             return;
         }
 
-        animationTime += TimeServer.Delta;
+        animationTime += Time.Delta;
         var (prev, next) = GetKeyframes(animationTime);
 
         if (prev is null || next is null)

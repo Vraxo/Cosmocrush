@@ -9,7 +9,7 @@ public class Label : Control
         Both
     }
 
-    public LabelStyle Theme { get; set; } = new();
+    public LabelStyle Style { get; set; } = new();
     public bool Clip { get; set; } = false;
     public string Ellipsis { get; set; } = "...";
     public TextCase Case { get; set; } = TextCase.Both;
@@ -75,7 +75,7 @@ public class Label : Control
 
     protected override void OnThemeFileChanged(string themeFile)
     {
-        Theme = FileLoader.Load<LabelStyle>(themeFile);
+        Style = FileLoader.Load<LabelStyle>(themeFile);
     }
 
     // Drawing
@@ -89,31 +89,31 @@ public class Label : Control
 
     private void DrawShadow()
     {
-        if (!Theme.EnableShadow)
+        if (!Style.EnableShadow)
         {
             return;
         }
 
         DrawText(
             displayedText,
-            GlobalPosition - Origin + Theme.ShadowOffset - new Vector2(0, Theme.FontSize / 2),
-            Theme.Font,
-            Theme.FontSize * Scale.Length(),
-            Theme.FontSpacing,
-            Theme.ShadowColor);
+            GlobalPosition - Origin + Style.ShadowOffset - new Vector2(0, Style.FontSize / 2),
+            Style.Font,
+            Style.FontSize * Scale.Length(),
+            Style.FontSpacing,
+            Style.ShadowColor);
     }
 
     private void DrawDisplayedText()
     {
         DrawTextOutlined(
             displayedText,
-            GlobalPosition - Origin - new Vector2(0, Theme.FontSize / 2),
-            Theme.Font,
-            Theme.FontSize * Scale.Length(),
-            Theme.FontSpacing,
-            Theme.FontColor,
-            Theme.OutlineSize,
-            Theme.OutlineColor);
+            GlobalPosition - Origin - new Vector2(0, Style.FontSize / 2),
+            Style.Font,
+            Style.FontSize * Scale.Length(),
+            Style.FontSpacing,
+            Style.FontColor,
+            Style.OutlineSize,
+            Style.OutlineColor);
     }
 
     // Text modification
@@ -130,7 +130,7 @@ public class Label : Control
             return;
         }
 
-        int numFittingCharacters = (int)(Size.X / Theme.Font.Dimensions.X + Theme.FontSpacing);
+        int numFittingCharacters = (int)(Size.X / Style.Font.Dimensions.X + Style.FontSpacing);
 
         if (VisibleCharacters != -1)
         {
@@ -207,13 +207,13 @@ public class Label : Control
     {
         get
         {
-            float scaledFontSize = Theme.FontSize * Scale.Length();
+            float scaledFontSize = Style.FontSize * Scale.Length();
 
             Vector2 textSize = Raylib_cs.Raylib.MeasureTextEx(
-                Theme.Font,
+                Style.Font,
                 displayedText,
                 scaledFontSize,
-                Theme.FontSpacing);
+                Style.FontSpacing);
 
             return new(textSize.X, textSize.Y);
         }
@@ -223,8 +223,8 @@ public class Label : Control
     {
         get
         {
-            float scaledFontSize = Theme.FontSize * Scale.Length();
-            Vector2 textSize = Raylib_cs.Raylib.MeasureTextEx(Theme.Font, displayedText, scaledFontSize, Theme.FontSpacing);
+            float scaledFontSize = Style.FontSize * Scale.Length();
+            Vector2 textSize = Raylib_cs.Raylib.MeasureTextEx(Style.Font, displayedText, scaledFontSize, Style.FontSpacing);
 
             float x = HAlignment switch
             {

@@ -55,7 +55,7 @@ public partial class ParticleEmitter : Node2D
 
         if (Emitting && !(OneShot && emitted))
         {
-            cycleTimer += TimeServer.Delta;
+            cycleTimer += Time.Delta;
             GenerateParticles();
         }
     }
@@ -68,7 +68,7 @@ public partial class ParticleEmitter : Node2D
 
     private void ProcessParticles()
     {
-        float delta = TimeServer.Delta;
+        float delta = Time.Delta;
 
         for (int i = particles.Count - 1; i >= 0; i--)
         {

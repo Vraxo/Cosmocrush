@@ -10,7 +10,7 @@ public class SceneTreeTimer(float waitTime)
 
     public void Process()
     {
-        timePassed += TimeServer.Delta;
+        timePassed += Time.Delta;
 
         if (timePassed >= WaitTime)
         {

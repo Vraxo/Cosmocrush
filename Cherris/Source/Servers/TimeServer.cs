@@ -2,18 +2,23 @@
 
 namespace Cherris;
 
+public sealed class Time
+{
+    public static float Delta => TimeServer.Instance.Delta;
+    public static float Elapsed => TimeServer.Elapsed;
+}
+
 public class TimeServer
 {
-    public static TimeServer Instance { get; } = new();
+    private static TimeServer? _instance;
+    public static TimeServer Instance => _instance ??= new();
 
-    public static float Delta => Instance._delta;
-    public static float Elapsed => Instance._elapsed;
+    public float Delta { get; private set; } = 0;
 
-    private float _delta = 0;
-    private float _elapsed => (float)Raylib.GetTime();
+    public static float Elapsed => (float)Raylib.GetTime();
 
     public void Process()
     {
-        _delta = Raylib.GetFrameTime();
+        Delta = Raylib.GetFrameTime();
     }
 }

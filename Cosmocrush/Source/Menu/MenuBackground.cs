@@ -27,8 +27,8 @@ public class MenuBackground : TextureRectangle
         Vector2 windowCenter = DisplayServer.WindowSize / 2;
 
         // Calculate oscillating offsets
-        float offsetX = amplitude * MathF.Sin(TimeServer.Elapsed * oscillationSpeed);
-        float offsetY = amplitude * MathF.Cos(TimeServer.Elapsed * oscillationSpeed * 0.8f); // Slightly slower Y movement
+        float offsetX = amplitude * MathF.Sin(Time.Elapsed * oscillationSpeed);
+        float offsetY = amplitude * MathF.Cos(Time.Elapsed * oscillationSpeed * 0.8f); // Slightly slower Y movement
 
         // Process the position to stay centered with oscillation
         Position = windowCenter + new Vector2(offsetX, offsetY);

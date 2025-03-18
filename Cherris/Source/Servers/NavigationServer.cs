@@ -28,10 +28,10 @@ public sealed class NavigationServer
 
         foreach (var region in Regions)
         {
-            int startX = (int)Math.Floor(start.X / region.CellSize);
-            int startY = (int)Math.Floor(start.Y / region.CellSize);
-            int endX = (int)Math.Ceiling(end.X / region.CellSize);
-            int endY = (int)Math.Ceiling(end.Y / region.CellSize);
+            var startX = (int)float.Floor(start.X / region.CellSize);
+            var startY = (int)float.Floor(start.Y / region.CellSize);
+            var endX = (int)float.Ceiling(end.X / region.CellSize);
+            var endY = (int)float.Ceiling(end.Y / region.CellSize);
 
             for (int x = startX; x < endX; x++)
             {

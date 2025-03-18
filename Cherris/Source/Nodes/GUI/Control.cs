@@ -116,11 +116,11 @@ public class Control : ClickableRectangle
                         actionHoldTimes[entry.Action] = 0f;
                     }
 
-                    actionHoldTimes[entry.Action] += TimeServer.Delta;
+                    actionHoldTimes[entry.Action] += Time.Delta;
                     float holdTime = actionHoldTimes[entry.Action];
 
-                    bool shouldNavigate = (holdTime <= TimeServer.Delta + float.Epsilon) ||
-                        (holdTime >= InitialDelay && (holdTime - InitialDelay) % RepeatInterval < TimeServer.Delta);
+                    bool shouldNavigate = (holdTime <= Time.Delta + float.Epsilon) ||
+                        (holdTime >= InitialDelay && (holdTime - InitialDelay) % RepeatInterval < Time.Delta);
 
                     if (shouldNavigate)
                     {

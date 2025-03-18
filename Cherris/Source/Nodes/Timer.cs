@@ -34,7 +34,7 @@ public class Timer : Node
 
         if (fired)
         {
-            TimePassed += TimeServer.Delta;
+            TimePassed += Time.Delta;
 
             if (TimePassed >= WaitTime)
             {

@@ -180,7 +180,7 @@ public sealed class SceneTree
         {
             if (tween.ShouldProcess(Paused))
             {
-                tween.Update(TimeServer.Delta);
+                tween.Update(Time.Delta);
             }
 
             if (!tween.Active)

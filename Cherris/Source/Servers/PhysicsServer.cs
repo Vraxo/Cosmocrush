@@ -4,10 +4,6 @@ using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World;
-using Box2D.NetStandard.Dynamics.World.Callbacks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using static Box2D.NetStandard.Dynamics.World.World;
 
 namespace Cherris;

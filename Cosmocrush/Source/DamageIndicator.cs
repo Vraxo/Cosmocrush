@@ -38,7 +38,7 @@ public class DamageIndicator : Label
 
         Position = new(
             Position.X,
-            Position.Y - speed * TimeServer.Delta);
+            Position.Y - speed * Time.Delta);
     }
 
     // Other
@@ -50,7 +50,7 @@ public class DamageIndicator : Label
 
     private void UpdateAlpha()
     {
-        Theme.FontColor = new(
+        Style.FontColor = new(
             (byte)1,
             (byte)1,
             (byte)1,
@@ -61,7 +61,7 @@ public class DamageIndicator : Label
     {
         if (MaxHealth <= 0)
         {
-            Theme.FontColor = Color.White;
+            Style.FontColor = Color.White;
             return;
         }
 
@@ -70,6 +70,6 @@ public class DamageIndicator : Label
 
         Color fontColor = Raylib.ColorFromHSV(hue, 1f, 1f);
 
-        Theme.FontColor = fontColor;
+        Style.FontColor = fontColor;
     }
 }
