@@ -13,7 +13,7 @@ public class Log
 
     public static void Info(string message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string filePath = "")
     {
-        string fullMessage = $"[{DateTime.Now:HH:mm:ss}] [INFO] {Path.GetFileName(filePath)}:{lineNumber} {message}";
+        string fullMessage = $"[{DateTime.Now:HH:mm:ss}] [INFO] [{Path.GetFileName(filePath)}:{lineNumber}] {message}";
         Console.ForegroundColor = infoColor;
         Console.WriteLine(fullMessage);
         Console.ResetColor();
@@ -28,13 +28,13 @@ public class Log
         }
 
         Console.ForegroundColor = infoColor;
-        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [INFO] {Path.GetFileName(filePath)}:{lineNumber} {message}");
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [INFO] [{Path.GetFileName(filePath)}:{lineNumber}] {message}");
         Console.ResetColor();
     }
 
     public static void Warning(string message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string filePath = "")
     {
-        string fullMessage = $"[{DateTime.Now:HH:mm:ss}] [WARNING] {Path.GetFileName(filePath)}:{lineNumber} {message}";
+        string fullMessage = $"[{DateTime.Now:HH:mm:ss}] [WARNING] [{Path.GetFileName(filePath)}:{lineNumber}] {message}";
         Console.ForegroundColor = warningColor;
         Console.WriteLine(fullMessage);
         Console.ResetColor();
@@ -49,7 +49,7 @@ public class Log
         }
 
         Console.ForegroundColor = warningColor;
-        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [WARNING] {Path.GetFileName(filePath)}:{lineNumber} {message}");
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [WARNING] [{Path.GetFileName(filePath)}:{lineNumber}] {message}");
         Console.ResetColor();
     }
 
@@ -70,7 +70,7 @@ public class Log
         }
 
         Console.ForegroundColor = errorColor;
-        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [ERROR] - {Path.GetFileName(filePath)}:{lineNumber} - {message}");
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [ERROR] - [{Path.GetFileName(filePath)}:{lineNumber}] - {message}");
         Console.ResetColor();
     }
 }

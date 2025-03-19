@@ -103,7 +103,7 @@ public sealed class PhysicsServer
         Body body = world.CreateBody(bodyDef);
         Bodies[rigidBody] = body;
         rigidBody.Box2DBody = body;
-        CreateBox2DFixture(rigidBody.Collider, body);
+        CreateBox2DFixture(rigidBody.Collider, body, rigidBody);
     }
 
     internal void DestroyBox2DBody(RigidBody rigidBody)
@@ -150,7 +150,7 @@ public sealed class PhysicsServer
         Body body = world.CreateBody(bodyDef);
         Bodies[area] = body;
         area.Box2DBody = body;
-        CreateBox2DFixture(area.Collider, body);
+        CreateBox2DFixture(area.Collider, body, area);
     }
 
     public void DestroyBox2DAreaBody(Area2D area)
@@ -184,14 +184,23 @@ public sealed class PhysicsServer
         }
     }
 
-    private static void CreateBox2DFixture(BoxCollider collider, Body body)
+    private void CreateBox2DFixture(BoxCollider collider, Body body, CollisionObject2D parent)
     {
-        PolygonShape shape = new();
-        shape.SetAsBox(collider.Size.X / 2, collider.Size.Y / 2, new(collider.Offset.X, collider.Offset.Y), 0);
+        if (collider == null || !collider.Enabled) return;
 
-        FixtureDef fixtureDef = new()
+        var shape = new PolygonShape();
+        shape.SetAsBox(collider.Size.X / 2, collider.Size.Y / 2);
+
+        var filter = new Filter
+        {
+            categoryBits = parent.CollisionLayer,
+            maskBits = parent.CollisionMask
+        };
+
+        var fixtureDef = new FixtureDef
         {
             shape = shape,
+            filter = filter,
             density = collider.Density,
             friction = collider.Friction,
             restitution = collider.Restitution,

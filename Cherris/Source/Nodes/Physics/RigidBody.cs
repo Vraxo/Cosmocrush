@@ -1,8 +1,11 @@
 ﻿using Box2D.NetStandard.Dynamics.Bodies;
+using Box2D.NetStandard.Dynamics.Fixtures;
+using Box2D.NetStandard.Dynamics.World;
+using System.Numerics;
 
 namespace Cherris;
 
-public class RigidBody : Node2D
+public class RigidBody : CollisionObject2D
 {
     public enum BodyType
     {
@@ -13,23 +16,23 @@ public class RigidBody : Node2D
 
     public BodyType Type { get; set; } = BodyType.Dynamic;
     public bool FixedRotation { get; set; } = false;
-    public BoxCollider Collider { get; set; }
 
     internal Body? Box2DBody;
 
+    private bool _enabled = true;
+    private float _gravityScale = 1;
+    private float _linearDamping;
+
     public bool Enabled
     {
-        get => field;
+        get => _enabled;
         set
         {
-            if (field == value)
-            {
-                return;
-            }
+            if (_enabled == value) return;
 
-            field = value;
+            _enabled = value;
 
-            if (field)
+            if (_enabled)
             {
                 PhysicsServer.Instance.CreateBox2DBody(this);
             }
@@ -39,7 +42,7 @@ public class RigidBody : Node2D
                 Box2DBody = null;
             }
         }
-    } = true;
+    }
 
     public Vector2 Velocity
     {
@@ -55,28 +58,25 @@ public class RigidBody : Node2D
 
     public float GravityScale
     {
-        get => Box2DBody?.GetGravityScale() ?? field;
+        get => Box2DBody?.GetGravityScale() ?? _gravityScale;
         set
         {
-            field = value;
+            _gravityScale = value;
             Box2DBody?.SetGravityScale(value);
         }
-    } = 1;
+    }
 
     public float LinearDamping
     {
-        get => Box2DBody?.GetLinearDamping() ?? field;
+        get => Box2DBody?.GetLinearDamping() ?? _linearDamping;
         set
         {
-            field = value;
+            _linearDamping = value;
             Box2DBody?.SetLinearDampling(value);
         }
     }
 
-    public float Mass
-    {
-        get => Box2DBody?.GetMass() ?? field;
-    }
+    public float Mass => Box2DBody?.GetMass() ?? 0;
 
     public RigidBody()
     {
@@ -100,7 +100,6 @@ public class RigidBody : Node2D
         Box2DBody?.SetTransform(position, angle);
     }
 
-    // Force and Impulse Methods
     public void ApplyForce(Vector2 force)
     {
         Box2DBody?.ApplyForceToCenter(force);
@@ -125,5 +124,55 @@ public class RigidBody : Node2D
         }
 
         Box2DBody.ApplyLinearImpulseToCenter(impulse);
+    }
+
+    public void ApplyTorque(float torque)
+    {
+        Box2DBody?.ApplyTorque(torque);
+    }
+
+    public void ApplyAngularImpulse(float impulse)
+    {
+        Box2DBody?.ApplyAngularImpulse(impulse);
+    }
+
+    public Vector2 GetCenterOfMass()
+    {
+        return Box2DBody?.GetWorldCenter() ?? Vector2.Zero;
+    }
+
+    public float GetInertia()
+    {
+        return Box2DBody?.GetInertia() ?? 0;
+    }
+
+    public void SetSleepingAllowed(bool allowed)
+    {
+        Box2DBody?.SetSleepingAllowed(allowed);
+    }
+
+    public bool IsSleepingAllowed()
+    {
+        return Box2DBody?.IsSleepingAllowed() ?? false;
+    }
+
+    public void SetAwake(bool awake)
+    {
+        Box2DBody?.SetAwake(awake);
+    }
+
+    public bool IsAwake()
+    {
+        return Box2DBody?.IsAwake() ?? false;
+    }
+
+    public void SetBullet(bool bullet)
+    {
+        Box2DBody?.SetBullet(bullet);
+    }
+
+    public bool IsBullet()
+    {
+        return Box2DBody?.IsBullet() ?? false;
     }
 }
