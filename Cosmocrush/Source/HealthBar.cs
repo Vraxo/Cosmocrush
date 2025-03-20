@@ -28,10 +28,10 @@ public class HealthBar : ProgressBar
 
     private void UpdatePosition()
     {
-        float screenX = Size.X / 5;
-        float screenY = DisplayServer.WindowSize.Y - Size.Y * 4;
-        Vector2 screenPos = new(screenX, screenY);
-
-        Position = RenderServer.Instance.GetScreenToWorld(screenPos);
+        //float screenX = Size.X / 5;
+        //float screenY = DisplayServer.WindowSize.Y - Size.Y * 4;
+        //Vector2 screenPos = new(screenX, screenY);
+        //
+        //Position = RenderServer.Instance.GetScreenToWorld(screenPos);
     }
 }

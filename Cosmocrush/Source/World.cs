@@ -2,7 +2,7 @@
 
 namespace Cosmocrush;
 
-public class World : Node
+public class World : Node2D
 {
     private ColorRectangle background = new();
     private readonly PackedScene pauseMenuScene = new("Res/Scenes/Menu/PauseMenu.yaml");

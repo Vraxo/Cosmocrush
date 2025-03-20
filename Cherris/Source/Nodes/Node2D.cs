@@ -33,8 +33,8 @@ public class Node2D : VisualItem
     {
         get
         {
-            return InheritScale && Parent is Node2D node2DParent 
-                ? node2DParent.Scale 
+            return InheritScale && Parent is Node2D node2DParent
+                ? node2DParent.Scale
                 : (field);
         }
 
@@ -47,8 +47,8 @@ public class Node2D : VisualItem
         {
             if (Parent is Node2D parentNode)
             {
-                return InheritPosition 
-                    ? parentNode.GlobalPosition + Position 
+                return InheritPosition
+                    ? parentNode.GlobalPosition + Position
                     : (field);
             }
             else
