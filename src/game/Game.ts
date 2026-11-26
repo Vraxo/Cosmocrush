@@ -89,7 +89,7 @@ export class Game {
       0.34,
       0.82
     ));
-    this.composer.addPass(new SMAAPass(window.innerWidth, window.innerHeight));
+    this.composer.addPass(new SMAAPass());
     this.composer.addPass(new OutputPass());
 
     this.createLighting();
