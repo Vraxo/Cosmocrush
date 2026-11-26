@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone } from 'three/addons/utils/SkeletonUtils.js';
 
-export type GameAssetId = 'alien-blind-stalker' | 'alien-deep-lurker';
+export type GameAssetId = 'marine-sci-fi-trooper' | 'alien-blind-stalker' | 'alien-deep-lurker';
 
 export interface LoadedAsset {
   root: THREE.Group;
@@ -16,6 +16,11 @@ interface AssetDefinition {
 }
 
 export const ASSET_SOURCES: Record<GameAssetId, AssetDefinition> = {
+  'marine-sci-fi-trooper': {
+    url: 'https://vinish-models.pages.dev/sci-fi-soldiers/sci-fi-trooper.glb',
+    source: 'https://vinish.dev/free-3d-models/sci-fi-soldiers',
+    license: 'CC-BY-4.0',
+  },
   'alien-blind-stalker': {
     url: 'https://vinish-models.pages.dev/monsters/blind-stalker.glb',
     source: 'https://vinish.dev/free-3d-models/monsters',

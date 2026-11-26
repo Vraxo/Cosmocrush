@@ -87,6 +87,17 @@ export class Player {
   private movementBlend = 0;
   private fireKick = 0;
   private hurtCooldown = 0;
+  private productionModel: THREE.Group | null = null;
+  private productionMixer: THREE.AnimationMixer | null = null;
+  private readonly productionActions = new Map<string, THREE.AnimationAction>();
+  private currentProductionAction: THREE.AnimationAction | null = null;
+  private productionWeapon: THREE.Group | null = null;
+  private rightUpperArm: THREE.Bone | null = null;
+  private rightLowerArm: THREE.Bone | null = null;
+  private rightHand: THREE.Bone | null = null;
+  private leftUpperArm: THREE.Bone | null = null;
+  private leftLowerArm: THREE.Bone | null = null;
+  private leftHand: THREE.Bone | null = null;
 
   constructor(scene: THREE.Scene) {
     this.group.position.copy(this.position);
@@ -121,7 +132,16 @@ export class Player {
     this.position.y = groundHeight(this.position.x, this.position.z);
     this.group.position.copy(this.position);
     this.group.rotation.y = this.yaw;
-    this.updateLocomotion(dt, sprinting);
+    if (this.productionMixer && this.productionModel) {
+      const moving = this.move.lengthSq() > 0.001;
+      this.setProductionAnimation(moving ? (sprinting ? 'run' : 'walk') : 'idle');
+      this.productionMixer.update(dt);
+      this.fireKick = Math.max(0, this.fireKick - dt * 3.8);
+      if (this.productionWeapon) this.productionWeapon.position.z = 0.42 - this.fireKick * 0.12;
+      this.applyWeaponPose();
+    } else {
+      this.updateLocomotion(dt, sprinting);
+    }
   }
 
   public updateCamera(camera: THREE.PerspectiveCamera, dt: number): void {
@@ -137,11 +157,53 @@ export class Player {
 
   public getMuzzlePosition(): THREE.Vector3 {
     this.group.updateMatrixWorld(true);
+    if (this.productionWeapon) {
+      return this.productionWeapon.localToWorld(new THREE.Vector3(0, 0.015, 0.86));
+    }
     return this.weapon.localToWorld(new THREE.Vector3(0, 0.02, -0.96));
   }
 
   public triggerFire(): void {
     this.fireKick = Math.min(0.42, this.fireKick + 0.28);
+  }
+
+  public setProductionModel(model: THREE.Group, animations: THREE.AnimationClip[]): void {
+    if (this.productionModel) this.group.remove(this.productionModel);
+
+    this.productionModel = model;
+    model.updateMatrixWorld(true);
+    const bounds = new THREE.Box3().setFromObject(model);
+    const height = Math.max(0.01, bounds.max.y - bounds.min.y);
+    const scale = 2.18 / height;
+    model.scale.setScalar(scale);
+    model.position.y = -bounds.min.y * scale;
+    // The source is authored facing +Z; the game character faces -Z at yaw zero.
+    model.rotation.y = Math.PI;
+    model.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+        if (object instanceof THREE.SkinnedMesh) object.frustumCulled = false;
+      }
+    });
+    this.group.add(model);
+    this.model.visible = false;
+
+    this.rightUpperArm = this.findRigBone(model, 'upperarm', 1);
+    this.rightLowerArm = this.findRigBone(model, 'lowerarm', 1);
+    this.rightHand = this.findRigBone(model, 'hand', 1);
+    this.leftUpperArm = this.findRigBone(model, 'upperarm', -1);
+    this.leftLowerArm = this.findRigBone(model, 'lowerarm', -1);
+    this.leftHand = this.findRigBone(model, 'hand', -1);
+
+    this.createProductionWeapon(model);
+    this.productionMixer = new THREE.AnimationMixer(model);
+    this.productionActions.clear();
+    for (const clip of animations) {
+      this.productionActions.set(clip.name.toLowerCase(), this.productionMixer.clipAction(clip));
+    }
+    this.currentProductionAction = null;
+    this.setProductionAnimation('idle');
   }
 
   public takeDamage(amount: number): boolean {
@@ -195,6 +257,101 @@ export class Player {
     this.leftElbow.rotation.x = -0.16 - Math.max(0, gait) * 0.15 * this.movementBlend;
     this.rightElbow.rotation.x = -0.1;
     this.weapon.rotation.x = -this.fireKick * 0.7;
+  }
+
+  private findRigBone(model: THREE.Group, part: string, side: number): THREE.Bone | null {
+    const matches: THREE.Bone[] = [];
+    model.traverse((object) => {
+      if (object instanceof THREE.Bone && object.name.toLowerCase().replace(/[^a-z]/g, '').includes(part)) {
+        matches.push(object);
+      }
+    });
+
+    for (const bone of matches) {
+      const localPosition = model.worldToLocal(bone.getWorldPosition(new THREE.Vector3()));
+      if (localPosition.x * side > 0.015) return bone;
+    }
+    return null;
+  }
+
+  private setProductionAnimation(name: string): void {
+    const action = this.productionActions.get(name);
+    if (!action) return;
+    if (action === this.currentProductionAction && action.isRunning()) return;
+
+    const previous = this.currentProductionAction;
+    action.reset();
+    action.enabled = true;
+    action.setLoop(THREE.LoopRepeat, Infinity);
+    action.fadeIn(0.18);
+    action.play();
+    if (previous && previous !== action) previous.fadeOut(0.18);
+    this.currentProductionAction = action;
+  }
+
+  private aimBoneAt(bone: THREE.Bone | null, child: THREE.Bone | null, target: THREE.Vector3): void {
+    if (!bone || !child || !bone.parent || child.position.lengthSq() < 0.0001) return;
+
+    const direction = target.clone().sub(bone.getWorldPosition(new THREE.Vector3()));
+    if (direction.lengthSq() < 0.0001) return;
+    direction.normalize();
+    const parentRotation = bone.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+    direction.applyQuaternion(parentRotation);
+
+    bone.quaternion.setFromUnitVectors(child.position.clone().normalize(), direction);
+    bone.updateMatrixWorld(true);
+  }
+
+  private applyWeaponPose(): void {
+    if (!this.productionModel || !this.productionWeapon) return;
+
+    const rightElbow = this.productionModel.localToWorld(new THREE.Vector3(0.34, 1.46, 0.23));
+    const rightGrip = this.productionModel.localToWorld(new THREE.Vector3(0.17, 1.34, 0.38));
+    const leftElbow = this.productionModel.localToWorld(new THREE.Vector3(-0.28, 1.43, 0.3));
+    const leftGrip = this.productionModel.localToWorld(new THREE.Vector3(-0.09, 1.34, 0.67));
+
+    this.aimBoneAt(this.rightUpperArm, this.rightLowerArm, rightElbow);
+    this.productionModel.updateMatrixWorld(true);
+    this.aimBoneAt(this.rightLowerArm, this.rightHand, rightGrip);
+    this.productionModel.updateMatrixWorld(true);
+    this.aimBoneAt(this.leftUpperArm, this.leftLowerArm, leftElbow);
+    this.productionModel.updateMatrixWorld(true);
+    this.aimBoneAt(this.leftLowerArm, this.leftHand, leftGrip);
+    this.productionModel.updateMatrixWorld(true);
+  }
+
+  private createProductionWeapon(model: THREE.Group): void {
+    const dark = new THREE.MeshStandardMaterial({ color: 0x18232e, roughness: 0.38, metalness: 0.82 });
+    const armor = new THREE.MeshStandardMaterial({ color: 0x788b98, roughness: 0.3, metalness: 0.86 });
+    const cyan = new THREE.MeshStandardMaterial({
+      color: 0x64d9f3,
+      emissive: 0x0e789b,
+      emissiveIntensity: 0.8,
+      metalness: 0.42,
+      roughness: 0.28,
+    });
+
+    const weapon = new THREE.Group();
+    weapon.position.set(0.1, 1.34, 0.42);
+    model.add(weapon);
+    addRoundedBox(weapon, dark, 0, 0, 0.12, 0.22, 0.18, 0.48, 0.04);
+    addRoundedBox(weapon, armor, 0, 0.015, 0.32, 0.17, 0.1, 0.3, 0.025);
+    addRoundedBox(weapon, dark, 0, -0.16, 0.13, 0.14, 0.26, 0.16, 0.025);
+    addRoundedBox(weapon, dark, 0, 0.115, 0.1, 0.1, 0.11, 0.17, 0.02);
+    addRoundedBox(weapon, cyan, 0.116, 0.02, 0.22, 0.022, 0.06, 0.22, 0.008);
+
+    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.38, 14), armor);
+    barrel.rotation.x = Math.PI / 2;
+    barrel.position.set(0, 0.015, 0.67);
+    barrel.castShadow = true;
+    weapon.add(barrel);
+
+    const muzzle = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.055, 14), dark);
+    muzzle.rotation.x = Math.PI / 2;
+    muzzle.position.set(0, 0.015, 0.86);
+    muzzle.castShadow = true;
+    weapon.add(muzzle);
+    this.productionWeapon = weapon;
   }
 
   private createMarine(): void {
