@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { clone } from 'three/addons/utils/SkeletonUtils.js';
+import { LoadedAsset } from '../assets/AssetLibrary';
 import { AlienEnemy } from './Enemy';
 
 export interface EnemyHit {
@@ -11,21 +12,21 @@ export class EnemyManager {
   private readonly enemies: AlienEnemy[] = [];
   private nextId = 1;
   private randomState = 7281;
-  private adultModel: THREE.Group | null = null;
-  private juvenileModel: THREE.Group | null = null;
+  private stalkerAsset: LoadedAsset | null = null;
+  private lurkerAsset: LoadedAsset | null = null;
   public wave = 1;
 
   constructor(private readonly scene: THREE.Scene, private readonly groundHeight: (x: number, z: number) => number) {
     this.spawnWave(10);
   }
 
-  public setProductionModels(adult: THREE.Group, juvenile: THREE.Group): void {
-    this.adultModel = adult;
-    this.juvenileModel = juvenile;
+  public setProductionModels(stalker: LoadedAsset | null, lurker: LoadedAsset | null): void {
+    this.stalkerAsset = stalker;
+    this.lurkerAsset = lurker;
 
     for (const enemy of this.enemies) {
-      const source = enemy.variant === 1 ? this.juvenileModel : this.adultModel;
-      enemy.setProductionModel(clone(source) as THREE.Group);
+      const source = this.assetFor(enemy.variant);
+      if (source) enemy.setProductionModel(clone(source.root) as THREE.Group, source.animations);
     }
   }
 
@@ -89,10 +90,15 @@ export class EnemyManager {
         z,
         variant
       );
-      const source = variant === 1 ? this.juvenileModel : this.adultModel;
-      if (source) enemy.setProductionModel(clone(source) as THREE.Group);
+      const source = this.assetFor(variant);
+      if (source) enemy.setProductionModel(clone(source.root) as THREE.Group, source.animations);
       this.enemies.push(enemy);
     }
+  }
+
+  private assetFor(variant: number): LoadedAsset | null {
+    if (variant === 1) return this.lurkerAsset ?? this.stalkerAsset;
+    return this.stalkerAsset ?? this.lurkerAsset;
   }
 
   private random(): number {
