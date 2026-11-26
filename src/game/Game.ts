@@ -1,10 +1,4 @@
 import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
-import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { AssetLibrary } from '../assets/AssetLibrary';
 import { EnemyManager } from '../entities/EnemyManager';
 import { Arena } from '../world/Arena';
@@ -19,7 +13,6 @@ export class Game {
   private readonly renderer: THREE.WebGLRenderer;
   private readonly environmentTarget: THREE.WebGLRenderTarget;
   private readonly assets = new AssetLibrary();
-  private readonly composer: EffectComposer;
   private readonly scene = new THREE.Scene();
   private readonly camera: THREE.PerspectiveCamera;
   private readonly input: Input;
@@ -55,12 +48,12 @@ export class Game {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.92;
+    this.renderer.toneMappingExposure = 0.68;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.environmentTarget = createEnvironmentMap(this.renderer);
     this.scene.environment = this.environmentTarget.texture;
-    this.scene.environmentIntensity = 0.72;
+    this.scene.environmentIntensity = 0.22;
 
     this.scene.background = new THREE.Color(0x101827);
     this.scene.fog = new THREE.FogExp2(0x192438, 0.00335);
@@ -68,29 +61,7 @@ export class Game {
     this.camera = new THREE.PerspectiveCamera(67, window.innerWidth / window.innerHeight, 0.1, 650);
     this.camera.position.set(0, 4, 18);
 
-    this.composer = new EffectComposer(this.renderer);
-    this.composer.addPass(new RenderPass(this.scene, this.camera));
-
-    // GTAO adds contact grounding to rocks, armor panels, and outpost geometry.
-    // Run it below native resolution to keep the effect practical at 1440p.
-    const gtao = new GTAOPass(
-      this.scene,
-      this.camera,
-      Math.max(1, Math.floor(window.innerWidth * 0.68)),
-      Math.max(1, Math.floor(window.innerHeight * 0.68))
-    );
-    gtao.output = GTAOPass.OUTPUT.Denoise;
-    gtao.blendIntensity = 0.9;
-    this.composer.addPass(gtao);
-
-    this.composer.addPass(new UnrealBloomPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.14,
-      0.28,
-      1.25
-    ));
-    this.composer.addPass(new SMAAPass());
-    this.composer.addPass(new OutputPass());
+    // Render the scene directly while keeping the baseline free of full-screen glow/AO passes.
 
     this.createLighting();
 
@@ -151,7 +122,7 @@ export class Game {
     this.elapsed += dt;
 
     this.update(dt);
-    this.composer.render();
+    this.renderer.render(this.scene, this.camera);
     this.input.endFrame();
 
     this.fpsTimer += dt;
@@ -273,10 +244,10 @@ export class Game {
   }
 
   private createLighting(): void {
-    const hemisphere = new THREE.HemisphereLight(0x9ab6d9, 0x1b1b22, 1.25);
+    const hemisphere = new THREE.HemisphereLight(0x9ab6d9, 0x1b1b22, 0.72);
     this.scene.add(hemisphere);
 
-    const key = new THREE.DirectionalLight(0xffd4aa, 2.25);
+    const key = new THREE.DirectionalLight(0xffd4aa, 1.35);
     key.position.set(-38, 58, 24);
     key.castShadow = true;
     key.shadow.mapSize.set(2048, 2048);
@@ -291,15 +262,15 @@ export class Game {
     this.scene.add(key);
     this.scene.add(key.target);
 
-    const coolFill = new THREE.DirectionalLight(0x82baff, 0.85);
+    const coolFill = new THREE.DirectionalLight(0x82baff, 0.35);
     coolFill.position.set(42, 22, -56);
     this.scene.add(coolFill);
 
-    const horizonFill = new THREE.PointLight(0x3d87d1, 16, 110, 2);
+    const horizonFill = new THREE.PointLight(0x3d87d1, 3.5, 85, 2);
     horizonFill.position.set(16, 11, -70);
     this.scene.add(horizonFill);
 
-    const warmRim = new THREE.PointLight(0xff854b, 12, 52, 2);
+    const warmRim = new THREE.PointLight(0xff854b, 2.8, 42, 2);
     warmRim.position.set(-34, 8, -20);
     this.scene.add(warmRim);
   }
@@ -310,6 +281,5 @@ export class Game {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
-    this.composer.setSize(width, height);
   }
 }
