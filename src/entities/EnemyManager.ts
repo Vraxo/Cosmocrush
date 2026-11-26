@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { clone } from 'three/addons/utils/SkeletonUtils.js';
 import { AlienEnemy } from './Enemy';
 
 export interface EnemyHit {
@@ -10,10 +11,22 @@ export class EnemyManager {
   private readonly enemies: AlienEnemy[] = [];
   private nextId = 1;
   private randomState = 7281;
+  private adultModel: THREE.Group | null = null;
+  private juvenileModel: THREE.Group | null = null;
   public wave = 1;
 
   constructor(private readonly scene: THREE.Scene, private readonly groundHeight: (x: number, z: number) => number) {
     this.spawnWave(10);
+  }
+
+  public setProductionModels(adult: THREE.Group, juvenile: THREE.Group): void {
+    this.adultModel = adult;
+    this.juvenileModel = juvenile;
+
+    for (const enemy of this.enemies) {
+      const source = enemy.variant === 1 ? this.juvenileModel : this.adultModel;
+      enemy.setProductionModel(clone(source) as THREE.Group);
+    }
   }
 
   public get aliveCount(): number {
@@ -76,6 +89,8 @@ export class EnemyManager {
         z,
         variant
       );
+      const source = variant === 1 ? this.juvenileModel : this.adultModel;
+      if (source) enemy.setProductionModel(clone(source) as THREE.Group);
       this.enemies.push(enemy);
     }
   }

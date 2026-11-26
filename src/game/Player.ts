@@ -27,11 +27,14 @@ export class Player {
   public shield = 75;
 
   private readonly model = new THREE.Group();
+  private readonly importedModelContainer = new THREE.Group();
+  private importedAimingModel: THREE.Group | null = null;
+  private importedAdvancingModel: THREE.Group | null = null;
   private readonly leftLeg = new THREE.Group();
   private readonly rightLeg = new THREE.Group();
   private readonly leftArm = new THREE.Group();
   private readonly rightArm = new THREE.Group();
-  private readonly cameraOffset = new THREE.Vector3(0, 3.25, 7.6);
+  private readonly cameraOffset = new THREE.Vector3(-1.05, 2.65, 6.15);
   private readonly forward = new THREE.Vector3();
   private readonly move = new THREE.Vector3();
   private animationTime = 0;
@@ -39,7 +42,7 @@ export class Player {
 
   constructor(scene: THREE.Scene) {
     this.group.position.copy(this.position);
-    this.group.add(this.model);
+    this.group.add(this.model, this.importedModelContainer);
     scene.add(this.group);
     this.createMarine();
   }
@@ -57,6 +60,7 @@ export class Player {
       this.move.copy(this.forward).multiplyScalar(forwardInput).addScaledVector(right, sideInput);
       const moving = this.move.lengthSq() > 0.001;
       if (moving) this.move.normalize();
+      this.setImportedPose(moving);
 
       const sprinting = input.isDown('ShiftLeft') || input.isDown('ShiftRight');
       const speed = sprinting ? 8.6 : 5.6;
@@ -85,14 +89,47 @@ export class Player {
     camera.position.lerp(desiredPosition, 1 - Math.exp(-dt * 5.5));
 
     this.forward.set(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
-    const target = this.position.clone().addScaledVector(this.forward, 3.4);
-    target.y += 1.72;
+    const target = this.position.clone().addScaledVector(this.forward, 15.5);
+    target.y += 1.62;
     camera.lookAt(target);
   }
 
   public getMuzzlePosition(): THREE.Vector3 {
     this.group.updateMatrixWorld(true);
-    return this.group.localToWorld(new THREE.Vector3(0, 1.6, -2.0));
+    return this.group.localToWorld(new THREE.Vector3(0.12, 1.48, -1.55));
+  }
+
+  public setProductionModels(aiming: THREE.Group, advancing: THREE.Group): void {
+    this.importedModelContainer.clear();
+    this.importedAimingModel = this.prepareImportedModel(aiming);
+    this.importedAdvancingModel = this.prepareImportedModel(advancing);
+    this.importedModelContainer.add(this.importedAimingModel, this.importedAdvancingModel);
+    this.importedAimingModel.visible = true;
+    this.importedAdvancingModel.visible = false;
+    this.model.visible = false;
+  }
+
+  private prepareImportedModel(model: THREE.Group): THREE.Group {
+    model.updateMatrixWorld(true);
+    const bounds = new THREE.Box3().setFromObject(model);
+    const height = Math.max(0.01, bounds.max.y - bounds.min.y);
+    const scale = 1.9 / height;
+    model.scale.setScalar(scale);
+    model.position.y = -bounds.min.y * scale;
+    model.rotation.y = Math.PI;
+    model.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+      }
+    });
+    return model;
+  }
+
+  private setImportedPose(moving: boolean): void {
+    if (!this.importedAimingModel || !this.importedAdvancingModel) return;
+    this.importedAimingModel.visible = !moving;
+    this.importedAdvancingModel.visible = moving;
   }
 
   public takeDamage(amount: number): boolean {
