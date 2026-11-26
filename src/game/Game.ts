@@ -100,9 +100,11 @@ export class Game {
 
   private loadProductionAssets(): void {
     void Promise.all([
+      this.assets.instantiate('marine-sci-fi-trooper'),
       this.assets.instantiate('alien-blind-stalker'),
       this.assets.instantiate('alien-deep-lurker'),
-    ]).then(([stalker, lurker]) => {
+    ]).then(([marine, stalker, lurker]) => {
+      if (marine) this.player.setProductionModel(marine.root, marine.animations);
       this.enemies.setProductionModels(stalker, lurker);
     });
   }
