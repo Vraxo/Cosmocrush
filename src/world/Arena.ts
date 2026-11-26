@@ -142,6 +142,7 @@ export class Arena {
       ship.group.position.x += ship.speed * dt;
       ship.group.position.y += Math.sin(time * 0.32 + ship.phase) * dt * 0.65;
       if (ship.group.position.x > 125) ship.group.position.x = -125;
+      if (ship.group.position.x < -125) ship.group.position.x = 125;
     }
   }
 

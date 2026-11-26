@@ -65,7 +65,8 @@ export class CombatEffects {
       }
     }
 
-    for (const object of this.scene.children) {
+    for (let i = this.scene.children.length - 1; i >= 0; i--) {
+      const object = this.scene.children[i];
       if (object.userData.transient) {
         object.userData.life -= dt;
         if (object.userData.life <= 0) {

@@ -88,7 +88,7 @@ export class Game {
     });
 
     window.addEventListener('cosmocrush:deploy', () => this.deploy());
-    window.addEventListener('cosmocrush:resume', () => this.input.requestPointerLock());
+    window.addEventListener('cosmocrush:resume', () => this.resumeMission());
     window.addEventListener('cosmocrush:continue', () => this.continueMission());
     window.addEventListener('resize', () => this.resize());
   }
@@ -207,6 +207,14 @@ export class Game {
     if (this.deployed) return;
     this.deployed = true;
     this.hud.setDeployed(true);
+    this.input.requestPointerLock();
+  }
+
+  private resumeMission(): void {
+    if (this.player.health <= 0) {
+      this.player.restore();
+      this.hud.setVitals(this.player.health, this.player.shield);
+    }
     this.input.requestPointerLock();
   }
 
