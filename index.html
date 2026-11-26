@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07101a" />
+    <meta name="description" content="Cosmocrush — a cinematic sci-fi outpost defense prototype." />
+    <title>Cosmocrush | Outpost Defense</title>
+  </head>
+  <body>
+    <div id="game-root">
+      <canvas id="game-canvas" aria-label="Cosmocrush game scene"></canvas>
+
+      <div class="vignette"></div>
+      <div class="scanlines"></div>
+
+      <header class="top-left">
+        <div class="brand-lockup">
+          <span class="brand-mark">C</span>
+          <span>COSMOCRUSH</span>
+          <span class="build-tag">PRE-ALPHA 0.1</span>
+        </div>
+        <div class="objective-panel glass-panel">
+          <div class="objective-heading"><span class="objective-diamond"></span> DEFEND THE OUTPOST</div>
+          <div class="objective-line"><span class="objective-dot"></span> Eliminate the alien swarm</div>
+          <div class="objective-progress"><span id="objective-progress"></span></div>
+        </div>
+      </header>
+
+      <div class="compass">
+        <span>W</span><i></i><span>N</span><i></i><span>E</span>
+        <div class="compass-marker"></div>
+      </div>
+
+      <div class="performance-readout">
+        <span>FPS <b id="fps-value">60</b></span>
+        <span>LATENCY <b>32 ms</b></span>
+      </div>
+
+      <div class="center-reticle">
+        <span class="reticle-top"></span>
+        <span class="reticle-right"></span>
+        <span class="reticle-bottom"></span>
+        <span class="reticle-left"></span>
+        <span class="reticle-dot"></span>
+      </div>
+      <div id="hit-marker" class="hit-marker">×</div>
+
+      <footer class="bottom-hud">
+        <section class="vitals-panel">
+          <div class="vital-row">
+            <div class="vital-icon">+</div>
+            <div class="vital-data">
+              <div class="vital-label"><span>SUIT INTEGRITY</span><b id="health-number">100</b></div>
+              <div class="bar-track"><div id="health-fill" class="bar-fill health-fill"></div></div>
+            </div>
+          </div>
+          <div class="vital-row">
+            <div class="vital-icon shield-icon">◇</div>
+            <div class="vital-data">
+              <div class="vital-label"><span>ENERGY SHIELD</span><b id="shield-number">75</b></div>
+              <div class="bar-track"><div id="shield-fill" class="bar-fill shield-fill"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="combat-readout">
+          <div class="weapon-name">MK-7 <span>CARBINE</span></div>
+          <div class="ammo-line">
+            <span class="ammo-current" id="ammo-current">24</span>
+            <span class="ammo-divider">/</span>
+            <span class="ammo-reserve" id="ammo-reserve">120</span>
+          </div>
+          <div class="weapon-meta"><span class="ammo-symbol">▤</span> FULL METAL JACKET <span class="reload-hint">[R] RELOAD</span></div>
+        </div>
+      </footer>
+
+      <div class="wave-status">
+        <span class="wave-pulse"></span>
+        <span id="wave-label">THREAT DETECTED</span>
+        <b id="enemy-count">10</b>
+      </div>
+
+      <div class="control-hint">
+        <span>W A S D <b>MOVE</b></span>
+        <span>MOUSE <b>AIM</b></span>
+        <span>LMB <b>FIRE</b></span>
+        <span>SHIFT <b>SPRINT</b></span>
+        <span>R <b>RELOAD</b></span>
+        <span>ESC <b>PAUSE</b></span>
+      </div>
+
+      <div id="damage-flash" class="damage-flash"></div>
+
+      <div id="intro-layer" class="screen-layer">
+        <div class="intro-card">
+          <div class="eyebrow"><span class="eyebrow-line"></span> FRONTIER COMMAND // PRIORITY TRANSMISSION</div>
+          <div class="intro-title">OUTPOST <em>SEVEN</em></div>
+          <p class="intro-copy">The perimeter has collapsed. A hostile swarm is converging on your position. Hold the line until extraction arrives.</p>
+          <div class="mission-row">
+            <div><span>OPERATION</span><b>LAST LIGHT</b></div>
+            <div><span>SECTOR</span><b>KEPLER-186F</b></div>
+            <div><span>THREAT</span><b class="threat-value">CRITICAL</b></div>
+          </div>
+          <button id="deploy-button" class="primary-button"><span>DEPLOY TO BATTLEFIELD</span><b>→</b></button>
+          <div class="intro-footnote">CLICK TO CAPTURE MOUSE · HEADPHONES RECOMMENDED</div>
+        </div>
+      </div>
+
+      <div id="pause-layer" class="screen-layer is-hidden">
+        <div class="pause-card">
+          <div class="eyebrow">TACTICAL INTERFACE // LINK INTERRUPTED</div>
+          <div class="pause-title">PAUSED</div>
+          <p>Return to the combat zone when ready.</p>
+          <button id="resume-button" class="primary-button"><span>RESUME MISSION</span><b>→</b></button>
+        </div>
+      </div>
+
+      <div id="reload-indicator" class="reload-indicator is-hidden">RELOADING<span>···</span></div>
+      <div id="mission-complete" class="screen-layer is-hidden">
+        <div class="pause-card">
+          <div class="eyebrow">FRONTIER COMMAND // SECTOR SECURED</div>
+          <div class="pause-title">OUTPOST <em>HELD</em></div>
+          <p>The immediate swarm has been neutralized. More contacts may be inbound.</p>
+          <button id="continue-button" class="primary-button"><span>CONTINUE DEFENDING</span><b>→</b></button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
