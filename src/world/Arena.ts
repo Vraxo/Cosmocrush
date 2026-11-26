@@ -431,7 +431,7 @@ export class Arena {
         roughness: 0.88,
         metalness: 0.015,
         emissive: 0x142c49,
-        emissiveIntensity: 0.2,
+        emissiveIntensity: 0.04,
       })
     );
     planet.position.set(68, 54, -182);
@@ -443,11 +443,11 @@ export class Arena {
       new THREE.ShaderMaterial({
         transparent: true,
         side: THREE.BackSide,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
         depthWrite: false,
         uniforms: { glowColor: { value: new THREE.Color(0x6ca9f2) } },
         vertexShader: 'varying vec3 vNormal; varying vec3 vView; void main(){ vec4 world=modelMatrix*vec4(position,1.0); vNormal=normalize(mat3(modelMatrix)*normal); vView=normalize(cameraPosition-world.xyz); gl_Position=projectionMatrix*viewMatrix*world; }',
-        fragmentShader: 'uniform vec3 glowColor; varying vec3 vNormal; varying vec3 vView; void main(){ float rim=pow(1.0-max(dot(normalize(vNormal),normalize(vView)),0.0),2.3); gl_FragColor=vec4(glowColor, rim*0.72); }',
+        fragmentShader: 'uniform vec3 glowColor; varying vec3 vNormal; varying vec3 vView; void main(){ float rim=pow(1.0-max(dot(normalize(vNormal),normalize(vView)),0.0),2.3); gl_FragColor=vec4(glowColor, rim*0.16); }',
       })
     );
     atmosphere.position.copy(planet.position);
