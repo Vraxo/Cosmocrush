@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone } from 'three/addons/utils/SkeletonUtils.js';
-import { LoadedAsset } from '../assets/AssetLibrary';
+import type { LoadedAsset } from '../assets/AssetLibrary';
 import { AlienEnemy } from './Enemy';
 
 export interface EnemyHit {
