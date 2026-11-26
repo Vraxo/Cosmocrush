@@ -99,6 +99,7 @@ export class Player {
     this.hurtCooldown = Math.max(0, this.hurtCooldown - dt);
 
     let sprinting = false;
+    this.move.set(0, 0, 0);
     if (input.isLocked) {
       this.yaw -= input.consumeMouseDeltaX() * 0.00235;
       const forwardInput = Number(input.isDown('KeyW')) - Number(input.isDown('KeyS'));
@@ -136,7 +137,7 @@ export class Player {
 
   public getMuzzlePosition(): THREE.Vector3 {
     this.group.updateMatrixWorld(true);
-    return this.weapon.localToWorld(new THREE.Vector3(0, 0.02, -1.42));
+    return this.weapon.localToWorld(new THREE.Vector3(0, 0.02, -0.96));
   }
 
   public triggerFire(): void {
@@ -187,10 +188,10 @@ export class Player {
     this.rightKnee.rotation.x = Math.max(0, -rightSwing) * (sprinting ? 1.15 : 0.72);
     this.leftKnee.rotation.z = 0;
     this.rightKnee.rotation.z = 0;
-    this.leftArm.rotation.x = 0.96 - gait * 0.13 * this.movementBlend;
-    this.rightArm.rotation.x = 0.96 + gait * 0.13 * this.movementBlend + this.fireKick;
-    this.leftArm.rotation.z = -0.3 - gait * 0.035 * this.movementBlend;
-    this.rightArm.rotation.z = 0.045 + gait * 0.035 * this.movementBlend;
+    this.leftArm.rotation.x = 0.54 - gait * 0.12 * this.movementBlend;
+    this.rightArm.rotation.x = 0.34 + gait * 0.12 * this.movementBlend + this.fireKick;
+    this.leftArm.rotation.z = 0.28 - gait * 0.035 * this.movementBlend;
+    this.rightArm.rotation.z = -0.12 + gait * 0.035 * this.movementBlend;
     this.leftElbow.rotation.x = -0.16 - Math.max(0, gait) * 0.15 * this.movementBlend;
     this.rightElbow.rotation.x = -0.1;
     this.weapon.rotation.x = -this.fireKick * 0.7;
@@ -274,22 +275,22 @@ export class Player {
     addRoundedBox(this.head, brightArmor, 0, 2.33, 0.03, 0.13, 0.12, 0.16, 0.035);
 
     // Articulated legs with separate knee and ankle pivots.
-    this.leftLeg.position.set(-0.23, 0.84, 0.015);
-    this.rightLeg.position.set(0.23, 0.84, 0.015);
+    this.leftLeg.position.set(-0.23, 0.91, 0.015);
+    this.rightLeg.position.set(0.23, 0.91, 0.015);
     for (const [leg, knee, side] of [
       [this.leftLeg, this.leftKnee, -1],
       [this.rightLeg, this.rightKnee, 1],
     ] as const) {
-      addCapsule(leg, undersuit, 0.17, 0.39, 0, -0.25, 0);
-      addRoundedBox(leg, armor, 0, -0.24, -0.13, 0.32, 0.36, 0.15, 0.055);
-      addSphere(leg, darkArmor, 0, -0.53, -0.03, 0.18, 0.17, 0.17);
-      knee.position.set(0, -0.56, 0);
+      addCapsule(leg, undersuit, 0.15, 0.33, 0, -0.22, 0);
+      addRoundedBox(leg, armor, 0, -0.22, -0.13, 0.3, 0.32, 0.14, 0.05);
+      addSphere(leg, darkArmor, 0, -0.43, -0.03, 0.17, 0.16, 0.16);
+      knee.position.set(0, -0.43, 0);
       leg.add(knee);
-      addCapsule(knee, darkArmor, 0.13, 0.35, 0, -0.22, 0.015);
-      addRoundedBox(knee, brightArmor, 0, -0.22, -0.105, 0.26, 0.27, 0.095, 0.04);
-      addRoundedBox(knee, armor, 0, -0.48, -0.16, 0.28, 0.14, 0.42, 0.045);
-      addRoundedBox(knee, darkArmor, 0, -0.51, 0.02, 0.24, 0.11, 0.2, 0.035);
-      addRoundedBox(knee, cyan, 0, -0.13, -0.16, 0.11, 0.035, 0.025, 0.01);
+      addCapsule(knee, darkArmor, 0.13, 0.32, 0, -0.18, 0.015);
+      addRoundedBox(knee, brightArmor, 0, -0.17, -0.105, 0.25, 0.25, 0.09, 0.04);
+      addRoundedBox(knee, armor, 0, -0.39, -0.16, 0.28, 0.14, 0.42, 0.045);
+      addRoundedBox(knee, darkArmor, 0, -0.41, 0.02, 0.24, 0.11, 0.2, 0.035);
+      addRoundedBox(knee, cyan, 0, -0.11, -0.16, 0.11, 0.035, 0.025, 0.01);
       addRoundedBox(leg, red, side * 0.14, -0.27, -0.18, 0.045, 0.13, 0.04, 0.01);
     }
 
