@@ -55,7 +55,7 @@ export class Game {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.12;
+    this.renderer.toneMappingExposure = 0.92;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.environmentTarget = createEnvironmentMap(this.renderer);
@@ -85,9 +85,9 @@ export class Game {
 
     this.composer.addPass(new UnrealBloomPass(
       new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.36,
-      0.34,
-      0.82
+      0.14,
+      0.28,
+      1.25
     ));
     this.composer.addPass(new SMAAPass());
     this.composer.addPass(new OutputPass());
@@ -273,10 +273,10 @@ export class Game {
   }
 
   private createLighting(): void {
-    const hemisphere = new THREE.HemisphereLight(0x9ab6d9, 0x1b1b22, 1.7);
+    const hemisphere = new THREE.HemisphereLight(0x9ab6d9, 0x1b1b22, 1.25);
     this.scene.add(hemisphere);
 
-    const key = new THREE.DirectionalLight(0xffd4aa, 3.1);
+    const key = new THREE.DirectionalLight(0xffd4aa, 2.25);
     key.position.set(-38, 58, 24);
     key.castShadow = true;
     key.shadow.mapSize.set(2048, 2048);
@@ -291,15 +291,15 @@ export class Game {
     this.scene.add(key);
     this.scene.add(key.target);
 
-    const coolFill = new THREE.DirectionalLight(0x82baff, 1.25);
+    const coolFill = new THREE.DirectionalLight(0x82baff, 0.85);
     coolFill.position.set(42, 22, -56);
     this.scene.add(coolFill);
 
-    const horizonFill = new THREE.PointLight(0x3d87d1, 32, 110, 2);
+    const horizonFill = new THREE.PointLight(0x3d87d1, 16, 110, 2);
     horizonFill.position.set(16, 11, -70);
     this.scene.add(horizonFill);
 
-    const warmRim = new THREE.PointLight(0xff854b, 24, 52, 2);
+    const warmRim = new THREE.PointLight(0xff854b, 12, 52, 2);
     warmRim.position.set(-34, 8, -20);
     this.scene.add(warmRim);
   }
