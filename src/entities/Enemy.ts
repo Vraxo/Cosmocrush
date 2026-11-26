@@ -11,6 +11,9 @@ export class AlienEnemy {
   public age = 0;
   public deathTimer = 0;
   private readonly limbs: THREE.Group[] = [];
+  private readonly proceduralVisual = new THREE.Group();
+  public readonly variant: number;
+  private productionModel: THREE.Group | null = null;
   private readonly bodyMaterial: THREE.MeshStandardMaterial;
   private readonly eyeMaterial: THREE.MeshStandardMaterial;
   private readonly shellMaterial: THREE.MeshPhysicalMaterial;
@@ -18,6 +21,7 @@ export class AlienEnemy {
 
   constructor(scene: THREE.Scene, id: number, x: number, y: number, z: number, variant: number) {
     this.id = id;
+    this.variant = variant;
     this.position.set(x, y, z);
     this.size = variant === 2 ? 1.18 : variant === 1 ? 0.9 : 1;
     const bodyColor = variant === 1 ? 0x392b36 : variant === 2 ? 0x342b40 : 0x3e3035;
@@ -38,6 +42,7 @@ export class AlienEnemy {
     });
 
     scene.add(this.group);
+    this.group.add(this.proceduralVisual);
     this.group.position.copy(this.position);
     this.buildBody(variant);
   }
@@ -77,8 +82,32 @@ export class AlienEnemy {
       this.limbs[i].rotation.z = (i === 0 || i === 2 ? -1 : 1) * 0.08;
     }
     this.group.position.y += Math.sin(this.age * 5.2) * 0.035;
-    this.hitSphere.center.set(this.position.x, this.position.y + 1.05 * this.size, this.position.z);
-    this.hitSphere.radius = 1.25 * this.size;
+    const hitScale = this.variant === 1 ? 0.62 : this.size;
+    this.hitSphere.center.set(this.position.x, this.position.y + 1.05 * hitScale, this.position.z);
+    this.hitSphere.radius = 1.25 * hitScale;
+  }
+
+  public setProductionModel(model: THREE.Group): void {
+    if (this.productionModel) this.group.remove(this.productionModel);
+    this.proceduralVisual.visible = false;
+    this.productionModel = model;
+
+    model.updateMatrixWorld(true);
+    const bounds = new THREE.Box3().setFromObject(model);
+    const height = Math.max(0.01, bounds.max.y - bounds.min.y);
+    const juvenileScale = this.variant === 1 ? 0.62 : 1;
+    const scale = juvenileScale * 1.82 / height;
+    model.scale.setScalar(scale);
+    model.position.y = -bounds.min.y * scale;
+    // The source models face +Z; this game's enemy forward axis is -Z.
+    model.rotation.y = Math.PI;
+    model.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+      }
+    });
+    this.group.add(model);
   }
 
   public damage(amount: number): boolean {
@@ -98,7 +127,8 @@ export class AlienEnemy {
 
   public dispose(scene: THREE.Scene): void {
     scene.remove(this.group);
-    this.group.traverse((object) => {
+    const disposableRoot = this.productionModel ? this.proceduralVisual : this.group;
+    disposableRoot.traverse((object) => {
       if (object instanceof THREE.Mesh) {
         object.geometry.dispose();
         if (Array.isArray(object.material)) {
@@ -113,7 +143,7 @@ export class AlienEnemy {
   private buildBody(variant: number): void {
     this.group.scale.setScalar(this.size);
     const body = new THREE.Group();
-    this.group.add(body);
+    this.proceduralVisual.add(body);
 
     const abdomen = new THREE.Mesh(new THREE.SphereGeometry(0.72, 24, 18), this.bodyMaterial);
     abdomen.scale.set(0.92, 0.68, 1.12);

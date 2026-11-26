@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createArmorMaterial, createRegolithMaterial, createRockMaterial } from '../rendering/SurfaceMaterials';
 
 type Random = () => number;
 
@@ -8,39 +9,6 @@ function randomFrom(seed: number): Random {
     state = (state * 1664525 + 1013904223) >>> 0;
     return state / 4294967296;
   };
-}
-
-function makeSurfaceTexture(): THREE.CanvasTexture {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 512;
-  const context = canvas.getContext('2d');
-  if (!context) throw new Error('Canvas texture generation is unavailable.');
-
-  const image = context.createImageData(canvas.width, canvas.height);
-  const random = randomFrom(901);
-  for (let y = 0; y < canvas.height; y++) {
-    for (let x = 0; x < canvas.width; x++) {
-      const i = (y * canvas.width + x) * 4;
-      const broad = Math.sin(x * 0.027 + Math.sin(y * 0.019) * 3.1) * 9
-        + Math.cos(y * 0.031 + Math.cos(x * 0.016) * 2.4) * 8;
-      const grit = (random() - 0.5) * 32;
-      const seam = Math.max(0, Math.sin((x * 0.72 + y * 0.31) * 0.09)) * 5;
-      const value = 43 + broad + grit - seam;
-      image.data[i] = Math.max(18, Math.min(92, value + 7));
-      image.data[i + 1] = Math.max(20, Math.min(86, value + 10));
-      image.data[i + 2] = Math.max(24, Math.min(92, value + 15));
-      image.data[i + 3] = 255;
-    }
-  }
-  context.putImageData(image, 0, 0);
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(13, 13);
-  texture.anisotropy = 8;
-  return texture;
 }
 
 function makePlanetTexture(): THREE.CanvasTexture {
@@ -100,7 +68,7 @@ function addBox(
 }
 
 function makeRockGeometry(seed: number): THREE.IcosahedronGeometry {
-  const geometry = new THREE.IcosahedronGeometry(1, 1);
+  const geometry = new THREE.IcosahedronGeometry(1, 2);
   const position = geometry.attributes.position;
   const random = randomFrom(seed);
   for (let i = 0; i < position.count; i++) {
@@ -125,6 +93,8 @@ export class Arena {
     this.createSky(scene);
     this.createTerrain();
     this.createRockField();
+    this.createCliffField();
+    this.createGroundDebris();
     this.createOutpost();
     this.createPlanetaryBackdrop(scene);
     this.createShips(scene);
@@ -189,7 +159,7 @@ export class Arena {
   }
 
   private createTerrain(): void {
-    const geometry = new THREE.PlaneGeometry(260, 260, 170, 170);
+    const geometry = new THREE.PlaneGeometry(260, 260, 220, 220);
     geometry.rotateX(-Math.PI / 2);
     const positions = geometry.attributes.position;
     for (let i = 0; i < positions.count; i++) {
@@ -199,36 +169,22 @@ export class Arena {
     }
     geometry.computeVertexNormals();
 
-    const ground = new THREE.Mesh(
-      geometry,
-      new THREE.MeshStandardMaterial({
-        map: makeSurfaceTexture(),
-        color: 0xc4cbd2,
-        roughness: 0.96,
-        metalness: 0.025,
-        bumpMap: makeSurfaceTexture(),
-        bumpScale: 0.085,
-      })
-    );
+    const ground = new THREE.Mesh(geometry, createRegolithMaterial());
     ground.receiveShadow = true;
     this.root.add(ground);
 
-    const darkRock = new THREE.MeshStandardMaterial({ color: 0x303946, roughness: 0.93, metalness: 0.08 });
-    const paleRock = new THREE.MeshStandardMaterial({ color: 0x58616c, roughness: 0.9, metalness: 0.05 });
     const scorched = new THREE.MeshStandardMaterial({ color: 0x202630, roughness: 1 });
     const ridge = addBox(this.root, scorched, 0, -3.8, -128, 260, 7, 12);
     ridge.receiveShadow = true;
-    void darkRock;
-    void paleRock;
   }
 
   private createRockField(): void {
     const random = randomFrom(443);
     const geometry = makeRockGeometry(390);
     const materials = [
-      new THREE.MeshStandardMaterial({ color: 0x343d48, roughness: 0.96, metalness: 0.035 }),
-      new THREE.MeshStandardMaterial({ color: 0x56616c, roughness: 0.91, metalness: 0.02 }),
-      new THREE.MeshStandardMaterial({ color: 0x242d38, roughness: 0.98, metalness: 0.025 }),
+      createRockMaterial(0x68717c),
+      createRockMaterial(0x78818b),
+      createRockMaterial(0x39434e),
     ];
 
     const rocks = new THREE.InstancedMesh(geometry, materials[0], 280);
@@ -269,13 +225,91 @@ export class Arena {
     this.root.add(foreground);
   }
 
+  private createCliffField(): void {
+    const random = randomFrom(1443);
+    const geometry = makeRockGeometry(777);
+    const material = createRockMaterial(0x8795a2);
+    const cliffs = new THREE.InstancedMesh(geometry, material, 66);
+    const dummy = new THREE.Object3D();
+
+    for (let i = 0; i < 66; i++) {
+      const side = i < 34 ? -1 : 1;
+      const x = side < 0
+        ? -43 - random() * 59
+        : 42 + random() * 58;
+      const z = -94 + random() * 142;
+      const height = 5.5 + Math.pow(random(), 0.65) * 15;
+      const width = height * (0.34 + random() * 0.5);
+      dummy.position.set(x, this.getHeight(x, z) + height + 0.05, z);
+      dummy.rotation.set((random() - 0.5) * 0.42, random() * Math.PI * 2, (random() - 0.5) * 0.35);
+      dummy.scale.set(width, height, width * (0.55 + random() * 0.5));
+      dummy.updateMatrix();
+      cliffs.setMatrixAt(i, dummy.matrix);
+      const tint = new THREE.Color().setHSL(0.58 + random() * 0.055, 0.1 + random() * 0.1, 0.2 + random() * 0.1);
+      cliffs.setColorAt(i, tint);
+    }
+
+    cliffs.castShadow = true;
+    cliffs.receiveShadow = true;
+    cliffs.instanceMatrix.needsUpdate = true;
+    this.root.add(cliffs);
+  }
+
+  private createGroundDebris(): void {
+    const random = randomFrom(2941);
+    const geometry = new THREE.IcosahedronGeometry(1, 1);
+    const material = createRockMaterial(0x818b94);
+    const debris = new THREE.InstancedMesh(geometry, material, 190);
+    const dummy = new THREE.Object3D();
+
+    for (let i = 0; i < 190; i++) {
+      const side = random() > 0.5 ? 1 : -1;
+      const x = side * (7.8 + random() * 24);
+      const z = -3 + random() * 51;
+      const size = 0.14 + Math.pow(random(), 2) * 1.18;
+      dummy.position.set(x, this.getHeight(x, z) + size * 0.28 - 0.07, z);
+      dummy.rotation.set(random() * 0.7, random() * Math.PI * 2, random() * 0.7);
+      dummy.scale.set(size * (0.6 + random() * 0.9), size * (0.22 + random() * 0.42), size * (0.55 + random() * 0.8));
+      dummy.updateMatrix();
+      debris.setMatrixAt(i, dummy.matrix);
+      const tint = new THREE.Color().setHSL(0.56 + random() * 0.07, 0.08 + random() * 0.13, 0.24 + random() * 0.12);
+      debris.setColorAt(i, tint);
+    }
+
+    debris.castShadow = true;
+    debris.receiveShadow = true;
+    debris.instanceMatrix.needsUpdate = true;
+    this.root.add(debris);
+
+    const craterGeometry = new THREE.TorusGeometry(1, 0.055, 7, 36);
+    const craterMaterial = new THREE.MeshStandardMaterial({
+      color: 0x1b2028,
+      roughness: 0.99,
+      metalness: 0,
+    });
+    const craters = new THREE.InstancedMesh(craterGeometry, craterMaterial, 9);
+    for (let i = 0; i < 9; i++) {
+      const angle = random() * Math.PI * 2;
+      const radius = 9 + random() * 28;
+      const x = Math.cos(angle) * radius;
+      const z = 7 + Math.sin(angle) * radius;
+      const size = 0.9 + random() * 2.1;
+      dummy.position.set(x, this.getHeight(x, z) - 0.16, z);
+      dummy.rotation.set(Math.PI / 2 + (random() - 0.5) * 0.15, 0, 0);
+      dummy.scale.set(size, size * (0.7 + random() * 0.3), size);
+      dummy.updateMatrix();
+      craters.setMatrixAt(i, dummy.matrix);
+    }
+    this.root.add(craters);
+  }
+
   private createOutpost(): void {
     const base = new THREE.Group();
     base.position.set(-27, this.getHeight(-27, -22) + 0.1, -22);
     this.root.add(base);
 
-    const armor = new THREE.MeshStandardMaterial({ color: 0x343f4b, metalness: 0.72, roughness: 0.48 });
-    const brightArmor = new THREE.MeshStandardMaterial({ color: 0x667887, metalness: 0.82, roughness: 0.34 });
+    const armor = createArmorMaterial(0x52616e);
+    const brightArmor = createArmorMaterial(0x889aa7);
     const dark = new THREE.MeshStandardMaterial({ color: 0x101923, metalness: 0.56, roughness: 0.65 });
     const red = new THREE.MeshStandardMaterial({ color: 0x842f37, metalness: 0.48, roughness: 0.62 });
     const glass = new THREE.MeshStandardMaterial({ color: 0x83d9ef, emissive: 0x1c9ecf, emissiveIntensity: 1.9, metalness: 0.34, roughness: 0.22 });
@@ -328,6 +362,45 @@ export class Arena {
       addBox(base, warm, i * 5.8, 2.5, 2, 0.24, 0.14, 0.2);
     }
 
+    // Layered utility hardware breaks up the large flat building surfaces.
+    for (let i = 0; i < 8; i++) {
+      const x = -15.5 + i * 4.4;
+      addBox(base, dark, x, 2.5, -13.7, 1.6, 1.5, 0.55);
+      addBox(base, brightArmor, x, 3.24, -13.42, 1.25, 0.08, 0.08);
+      for (let slot = 0; slot < 4; slot++) {
+        addBox(base, brightArmor, x - 0.48 + slot * 0.32, 2.52, -13.38, 0.075, 0.78, 0.08);
+      }
+    }
+
+    // Exterior pressure conduits, routed around the forward wall and generator bay.
+    const conduitMaterial = new THREE.MeshStandardMaterial({ color: 0x778895, metalness: 0.84, roughness: 0.34 });
+    const conduitPaths = [
+      [new THREE.Vector3(-15, 2.2, -5.5), new THREE.Vector3(-15, 4.6, -5.5), new THREE.Vector3(-12, 4.6, -5.5), new THREE.Vector3(-12, 5.9, -5.5)],
+      [new THREE.Vector3(12, 1.9, -10), new THREE.Vector3(13, 1.9, -10), new THREE.Vector3(13, 4.5, -10), new THREE.Vector3(11, 4.5, -10)],
+      [new THREE.Vector3(-5, 0.7, -12), new THREE.Vector3(-5, 1.8, -12), new THREE.Vector3(0, 1.8, -12), new THREE.Vector3(0, 2.5, -12)],
+    ];
+    for (const points of conduitPaths) {
+      const curve = new THREE.CatmullRomCurve3(points);
+      const pipe = new THREE.Mesh(new THREE.TubeGeometry(curve, 28, 0.095, 8, false), conduitMaterial);
+      pipe.castShadow = true;
+      pipe.receiveShadow = true;
+      base.add(pipe);
+    }
+
+    // A raised radar dish and communications mast give the silhouette scale.
+    const dish = new THREE.Mesh(
+      new THREE.SphereGeometry(1.7, 22, 14, 0, Math.PI * 2, 0, Math.PI * 0.48),
+      brightArmor
+    );
+    dish.position.set(11.8, 8.6, -8.7);
+    dish.rotation.x = Math.PI;
+    dish.castShadow = true;
+    base.add(dish);
+    addBox(base, dark, 11.8, 7.65, -8.7, 0.24, 2.0, 0.24);
+    const redBeacon = new THREE.PointLight(0xff554c, 4.2, 15, 2);
+    redBeacon.position.set(-10, 10.3, -8);
+    base.add(redBeacon);
+
     const antenna = new THREE.Group();
     antenna.position.set(-10, 7, -8);
     base.add(antenna);
@@ -351,7 +424,7 @@ export class Arena {
 
   private createPlanetaryBackdrop(scene: THREE.Scene): void {
     const planet = new THREE.Mesh(
-      new THREE.SphereGeometry(37, 96, 64),
+      new THREE.SphereGeometry(48, 128, 80),
       new THREE.MeshStandardMaterial({
         map: makePlanetTexture(),
         color: 0xc3d8ea,
@@ -366,7 +439,7 @@ export class Arena {
     scene.add(planet);
 
     const atmosphere = new THREE.Mesh(
-      new THREE.SphereGeometry(38.1, 64, 48),
+      new THREE.SphereGeometry(49.5, 96, 64),
       new THREE.ShaderMaterial({
         transparent: true,
         side: THREE.BackSide,

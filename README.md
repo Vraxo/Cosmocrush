@@ -1,6 +1,6 @@
 # Cosmocrush
 
-A TypeScript + Three.js sci-fi shooter prototype. The first playable slice is **Outpost Seven**: a third-person combat encounter on a hostile frontier world, built around a cinematic alien-outpost scene.
+A TypeScript + Three.js sci-fi shooter prototype. **Outpost Seven** is a cinematic frontier-world defense encounter: survive the first alien swarm, clear the landing perimeter, and hold the line.
 
 ## Run locally
 
@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open the local Vite URL, select **Deploy to Battlefield**, and click the scene to capture the mouse.
+Open the Vite URL, select **Deploy to Battlefield**, and click the scene to capture the mouse.
 
 ## Controls
 
@@ -22,28 +22,38 @@ Open the local Vite URL, select **Deploy to Battlefield**, and click the scene t
 - **R** — reload
 - **Escape** — release the pointer / pause
 
-## Current slice
+## Graphics pipeline
 
-- Procedural rocky terrain, debris fields, and a modular frontier outpost
-- Planetary sky, stars, distant ships, atmospheric fog, and cinematic lighting
-- Third-person armored marine and animated procedural alien swarm
-- Hitscan rifle, tracers, hit feedback, shield and suit damage, ammunition, and waves
-- Responsive mission HUD and pointer-lock controls
+- Three.js 0.187 with ACES tone mapping, soft shadow maps, PMREM environment lighting, GTAO, bloom, and SMAA.
+- Layered rocky terrain with generated albedo, normal, and roughness maps; instanced rock fields, cliffs, debris, and impact craters.
+- Modular outpost geometry with PBR armor surfaces, pressure conduits, vent banks, beacons, and emissive lighting.
+- Planetary sky, star field, distant spacecraft, atmospheric fog, and floating dust.
+- Production GLB model loader with cached, independently cloned scenes and automatic procedural fallbacks.
 
-The initial characters and environment are procedural art placeholders. The renderer and scene are intentionally structured to support production GLB assets, authored animations, PBR texture sets, and more advanced effects without tying gameplay to a particular asset source.
+## External model assets
+
+The game attempts to load CC0-licensed models from the 3DAssets.dev CDN. A network connection is needed for the upgraded character models; if those downloads fail, the original local procedural models remain playable. Sources and license details are recorded in [assets/ATTRIBUTIONS.md](assets/ATTRIBUTIONS.md).
+
+The current imported gunner and alien models are static-pose meshes, not fully rigged animation assets. The gunner switches between separate aiming and advancing poses. The next asset pass should replace these with rigged characters and authored locomotion / combat clips.
 
 ## Architecture
 
-- `src/game` — frame loop, input, and player
-- `src/world` — arena, lighting, terrain, and large environment set pieces
-- `src/entities` — enemy construction and swarm behavior
-- `src/ui` — DOM HUD
-- `src/rendering` — post-processing and temporary combat effects
+- `src/game` — frame loop, input, player movement, combat, and camera
+- `src/world` — arena layout, terrain, outpost, and planetary set pieces
+- `src/entities` — alien models, pursuit, hit handling, and wave spawning
+- `src/assets` — model registry, CDN loading, caching, and scene cloning
+- `src/rendering` — environment lighting, surface maps, post-processing support, dust, and combat effects
+- `src/ui` — DOM-based mission HUD
 
-## Quality goals
+The new game is independent of Caveria's voxel world, chunk mesher, and block materials.
 
-The first pass targets a stable, scalable 1440p desktop experience. Rendering quality is configurable in one place; the scene does not depend on Caveria's voxel world, chunk mesher, or block materials.
+## Build
+
+```sh
+npm run check
+npm run build
+```
 
 ## License
 
-MIT.
+MIT for the project code. Third-party model assets retain their CC0 1.0 license as recorded in the asset register.
