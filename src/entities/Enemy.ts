@@ -14,6 +14,10 @@ export class AlienEnemy {
   private readonly proceduralVisual = new THREE.Group();
   public readonly variant: number;
   private productionModel: THREE.Group | null = null;
+  private productionMixer: THREE.AnimationMixer | null = null;
+  private readonly productionActions = new Map<string, THREE.AnimationAction>();
+  private currentProductionAction: THREE.AnimationAction | null = null;
+  private attackAnimationRemaining = 0;
   private readonly bodyMaterial: THREE.MeshStandardMaterial;
   private readonly eyeMaterial: THREE.MeshStandardMaterial;
   private readonly shellMaterial: THREE.MeshPhysicalMaterial;
@@ -49,11 +53,19 @@ export class AlienEnemy {
 
   public update(dt: number, playerPosition: THREE.Vector3, groundHeight: (x: number, z: number) => number, onAttack: () => void): void {
     this.age += dt;
+    if (this.attackAnimationRemaining > 0) {
+      this.attackAnimationRemaining = Math.max(0, this.attackAnimationRemaining - dt);
+    }
+
     if (!this.alive) {
       this.deathTimer -= dt;
-      this.group.rotation.z += dt * 2.8;
-      this.group.position.y -= dt * 1.8;
-      this.group.scale.multiplyScalar(Math.max(0.9, 1 - dt * 0.8));
+      if (this.productionMixer) {
+        this.productionMixer.update(dt);
+      } else {
+        this.group.rotation.z += dt * 2.8;
+        this.group.position.y -= dt * 1.8;
+        this.group.scale.multiplyScalar(Math.max(0.9, 1 - dt * 0.8));
+      }
       return;
     }
 
@@ -66,48 +78,91 @@ export class AlienEnemy {
       const speed = this.size > 1.1 ? 2.1 : 2.7;
       this.position.x += dx / distance * speed * dt;
       this.position.z += dz / distance * speed * dt;
+      this.setProductionAnimation(distance > 12 ? 'run' : 'walk');
     } else {
       this.attackTimer -= dt;
       if (this.attackTimer <= 0) {
         this.attackTimer = 1.25 + Math.random() * 0.45;
+        const attackDuration = this.setProductionAnimation('attack', false);
+        this.attackAnimationRemaining = attackDuration;
         onAttack();
+      } else if (this.attackAnimationRemaining <= 0) {
+        this.setProductionAnimation('idle');
       }
     }
 
     this.position.y = groundHeight(this.position.x, this.position.z);
     this.group.position.copy(this.position);
-    const stride = Math.sin(this.age * 8.8) * (distance > 2 ? 0.52 : 0.1);
-    for (let i = 0; i < this.limbs.length; i++) {
-      this.limbs[i].rotation.x = stride * (i % 2 === 0 ? 1 : -1);
-      this.limbs[i].rotation.z = (i === 0 || i === 2 ? -1 : 1) * 0.08;
+    if (this.productionMixer) {
+      this.productionMixer.update(dt);
+    } else {
+      const phase = this.age * 8.8;
+      const stride = Math.sin(phase) * (distance > 2 ? 0.42 : 0.08);
+      for (let i = 0; i < this.limbs.length; i++) {
+        const row = Math.floor(i / 2);
+        const tripodPhase = (row === 1 ? Math.PI : 0) + (i % 2 === 0 ? 0 : Math.PI);
+        const swing = Math.sin(phase + tripodPhase) * (distance > 2 ? 0.38 : 0.06);
+        this.limbs[i].rotation.x = swing;
+        this.limbs[i].rotation.z = (i % 2 === 0 ? -1 : 1) * (0.08 + Math.max(0, swing) * 0.12);
+      }
+      this.proceduralVisual.rotation.x = Math.sin(phase * 0.5) * 0.025;
+      this.proceduralVisual.position.y = Math.sin(phase * 2) * 0.025 * (distance > 2 ? 1 : 0.3);
     }
-    this.group.position.y += Math.sin(this.age * 5.2) * 0.035;
     const hitScale = this.variant === 1 ? 0.62 : this.size;
     this.hitSphere.center.set(this.position.x, this.position.y + 1.05 * hitScale, this.position.z);
     this.hitSphere.radius = 1.25 * hitScale;
   }
 
-  public setProductionModel(model: THREE.Group): void {
+  public setProductionModel(model: THREE.Group, animations: THREE.AnimationClip[]): void {
     if (this.productionModel) this.group.remove(this.productionModel);
+    this.productionMixer = null;
+    this.productionActions.clear();
+    this.currentProductionAction = null;
     this.proceduralVisual.visible = false;
     this.productionModel = model;
 
     model.updateMatrixWorld(true);
     const bounds = new THREE.Box3().setFromObject(model);
     const height = Math.max(0.01, bounds.max.y - bounds.min.y);
-    const juvenileScale = this.variant === 1 ? 0.62 : 1;
-    const scale = juvenileScale * 1.82 / height;
+    const targetHeight = this.variant === 1 ? 1.75 : this.variant === 2 ? 2.35 : 2.05;
+    const scale = targetHeight / height;
     model.scale.setScalar(scale);
     model.position.y = -bounds.min.y * scale;
-    // The source models face +Z; this game's enemy forward axis is -Z.
+    // The source creatures face +Z; this game's enemy forward axis is -Z.
     model.rotation.y = Math.PI;
     model.traverse((object) => {
       if (object instanceof THREE.Mesh) {
         object.castShadow = true;
         object.receiveShadow = true;
+        if (object instanceof THREE.SkinnedMesh) object.frustumCulled = false;
       }
     });
     this.group.add(model);
+
+    if (animations.length > 0) {
+      this.productionMixer = new THREE.AnimationMixer(model);
+      for (const clip of animations) {
+        this.productionActions.set(clip.name.toLowerCase(), this.productionMixer.clipAction(clip));
+      }
+      this.setProductionAnimation('idle');
+    }
+  }
+
+  private setProductionAnimation(name: string, loop = true): number {
+    const action = this.productionActions.get(name);
+    if (!action) return 0;
+    if (action === this.currentProductionAction && action.isRunning()) return action.getClip().duration;
+
+    const previous = this.currentProductionAction;
+    action.reset();
+    action.enabled = true;
+    action.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, loop ? Infinity : 1);
+    action.clampWhenFinished = !loop;
+    action.fadeIn(0.2);
+    action.play();
+    if (previous && previous !== action) previous.fadeOut(0.2);
+    this.currentProductionAction = action;
+    return action.getClip().duration;
   }
 
   public damage(amount: number): boolean {
@@ -117,7 +172,8 @@ export class AlienEnemy {
     this.shellMaterial.emissiveIntensity = 1.1;
     if (this.health <= 0) {
       this.alive = false;
-      this.deathTimer = 0.42;
+      this.deathTimer = this.setProductionAnimation('die', false) || 0.85;
+      this.attackAnimationRemaining = 0;
       this.group.scale.setScalar(this.size);
       return true;
     }
