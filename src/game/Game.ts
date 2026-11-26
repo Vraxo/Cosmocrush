@@ -100,17 +100,10 @@ export class Game {
 
   private loadProductionAssets(): void {
     void Promise.all([
-      this.assets.instantiate('marine-aiming'),
-      this.assets.instantiate('marine-advancing'),
-      this.assets.instantiate('alien-adult'),
-      this.assets.instantiate('alien-juvenile'),
-    ]).then(([aiming, advancing, adult, juvenile]) => {
-      if (aiming && advancing) {
-        this.player.setProductionModels(aiming.root, advancing.root);
-      }
-      if (adult && juvenile) {
-        this.enemies.setProductionModels(adult.root, juvenile.root);
-      }
+      this.assets.instantiate('alien-blind-stalker'),
+      this.assets.instantiate('alien-deep-lurker'),
+    ]).then(([stalker, lurker]) => {
+      this.enemies.setProductionModels(stalker, lurker);
     });
   }
 
@@ -190,6 +183,7 @@ export class Game {
     const end = hit?.point ?? this.raycaster.ray.origin.clone().addScaledVector(this.raycaster.ray.direction, 95);
 
     this.effects.fire(muzzle, end);
+    this.player.triggerFire();
     if (hit) {
       this.effects.impact(hit.point, 0xff6d64);
       this.enemies.damage(hit.enemyId, 35);
