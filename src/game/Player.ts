@@ -1,7 +1,25 @@
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { Input } from './Input';
 
-function addBox(
+function addCapsule(
+  parent: THREE.Object3D,
+  material: THREE.Material,
+  radius: number,
+  length: number,
+  x: number,
+  y: number,
+  z: number
+): THREE.Mesh {
+  const mesh = new THREE.Mesh(new THREE.CapsuleGeometry(radius, length, 5, 10), material);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  return mesh;
+}
+
+function addRoundedBox(
   parent: THREE.Object3D,
   material: THREE.Material,
   x: number,
@@ -9,10 +27,33 @@ function addBox(
   z: number,
   width: number,
   height: number,
-  depth: number
+  depth: number,
+  radius = 0.06
 ): THREE.Mesh {
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
+  const mesh = new THREE.Mesh(
+    new RoundedBoxGeometry(width, height, depth, 3, Math.min(radius, width / 3, height / 3, depth / 3)),
+    material
+  );
   mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  return mesh;
+}
+
+function addSphere(
+  parent: THREE.Object3D,
+  material: THREE.Material,
+  x: number,
+  y: number,
+  z: number,
+  scaleX: number,
+  scaleY: number,
+  scaleZ: number
+): THREE.Mesh {
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), material);
+  mesh.position.set(x, y, z);
+  mesh.scale.set(scaleX, scaleY, scaleZ);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   parent.add(mesh);
@@ -27,22 +68,29 @@ export class Player {
   public shield = 75;
 
   private readonly model = new THREE.Group();
-  private readonly importedModelContainer = new THREE.Group();
-  private importedAimingModel: THREE.Group | null = null;
-  private importedAdvancingModel: THREE.Group | null = null;
+  private readonly torso = new THREE.Group();
+  private readonly head = new THREE.Group();
   private readonly leftLeg = new THREE.Group();
   private readonly rightLeg = new THREE.Group();
+  private readonly leftKnee = new THREE.Group();
+  private readonly rightKnee = new THREE.Group();
   private readonly leftArm = new THREE.Group();
   private readonly rightArm = new THREE.Group();
-  private readonly cameraOffset = new THREE.Vector3(-1.05, 2.65, 6.15);
+  private readonly leftElbow = new THREE.Group();
+  private readonly rightElbow = new THREE.Group();
+  private readonly weapon = new THREE.Group();
   private readonly forward = new THREE.Vector3();
   private readonly move = new THREE.Vector3();
+  private readonly right = new THREE.Vector3();
+  private readonly cameraOffset = new THREE.Vector3(-1.05, 2.65, 6.15);
   private animationTime = 0;
+  private movementBlend = 0;
+  private fireKick = 0;
   private hurtCooldown = 0;
 
   constructor(scene: THREE.Scene) {
     this.group.position.copy(this.position);
-    this.group.add(this.model, this.importedModelContainer);
+    this.group.add(this.model);
     scene.add(this.group);
     this.createMarine();
   }
@@ -50,37 +98,30 @@ export class Player {
   public update(dt: number, input: Input, groundHeight: (x: number, z: number) => number): void {
     this.hurtCooldown = Math.max(0, this.hurtCooldown - dt);
 
+    let sprinting = false;
+    this.move.set(0, 0, 0);
     if (input.isLocked) {
       this.yaw -= input.consumeMouseDeltaX() * 0.00235;
       const forwardInput = Number(input.isDown('KeyW')) - Number(input.isDown('KeyS'));
       const sideInput = Number(input.isDown('KeyD')) - Number(input.isDown('KeyA'));
 
       this.forward.set(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
-      const right = new THREE.Vector3(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
-      this.move.copy(this.forward).multiplyScalar(forwardInput).addScaledVector(right, sideInput);
+      this.right.set(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
+      this.move.copy(this.forward).multiplyScalar(forwardInput).addScaledVector(this.right, sideInput);
       const moving = this.move.lengthSq() > 0.001;
       if (moving) this.move.normalize();
-      this.setImportedPose(moving);
 
-      const sprinting = input.isDown('ShiftLeft') || input.isDown('ShiftRight');
+      sprinting = input.isDown('ShiftLeft') || input.isDown('ShiftRight');
       const speed = sprinting ? 8.6 : 5.6;
       this.position.addScaledVector(this.move, speed * dt);
       this.position.x = THREE.MathUtils.clamp(this.position.x, -104, 104);
       this.position.z = THREE.MathUtils.clamp(this.position.z, -104, 104);
-
-      if (moving) this.animationTime += dt * (sprinting ? 12.2 : 9.0);
-      else this.animationTime += dt * 2.2;
-
-      const gait = moving ? Math.sin(this.animationTime) : Math.sin(this.animationTime) * 0.12;
-      this.leftLeg.rotation.x = gait * (sprinting ? 0.68 : 0.48);
-      this.rightLeg.rotation.x = -gait * (sprinting ? 0.68 : 0.48);
-      this.model.position.y = moving ? Math.abs(gait) * 0.045 : Math.sin(this.animationTime) * 0.012;
-      this.group.rotation.y = this.yaw;
-      this.model.rotation.y = 0;
     }
 
     this.position.y = groundHeight(this.position.x, this.position.z);
     this.group.position.copy(this.position);
+    this.group.rotation.y = this.yaw;
+    this.updateLocomotion(dt, sprinting);
   }
 
   public updateCamera(camera: THREE.PerspectiveCamera, dt: number): void {
@@ -96,40 +137,11 @@ export class Player {
 
   public getMuzzlePosition(): THREE.Vector3 {
     this.group.updateMatrixWorld(true);
-    return this.group.localToWorld(new THREE.Vector3(0.12, 1.48, -1.55));
+    return this.weapon.localToWorld(new THREE.Vector3(0, 0.02, -0.96));
   }
 
-  public setProductionModels(aiming: THREE.Group, advancing: THREE.Group): void {
-    this.importedModelContainer.clear();
-    this.importedAimingModel = this.prepareImportedModel(aiming);
-    this.importedAdvancingModel = this.prepareImportedModel(advancing);
-    this.importedModelContainer.add(this.importedAimingModel, this.importedAdvancingModel);
-    this.importedAimingModel.visible = true;
-    this.importedAdvancingModel.visible = false;
-    this.model.visible = false;
-  }
-
-  private prepareImportedModel(model: THREE.Group): THREE.Group {
-    model.updateMatrixWorld(true);
-    const bounds = new THREE.Box3().setFromObject(model);
-    const height = Math.max(0.01, bounds.max.y - bounds.min.y);
-    const scale = 1.9 / height;
-    model.scale.setScalar(scale);
-    model.position.y = -bounds.min.y * scale;
-    model.rotation.y = Math.PI;
-    model.traverse((object) => {
-      if (object instanceof THREE.Mesh) {
-        object.castShadow = true;
-        object.receiveShadow = true;
-      }
-    });
-    return model;
-  }
-
-  private setImportedPose(moving: boolean): void {
-    if (!this.importedAimingModel || !this.importedAdvancingModel) return;
-    this.importedAimingModel.visible = !moving;
-    this.importedAdvancingModel.visible = moving;
+  public triggerFire(): void {
+    this.fireKick = Math.min(0.42, this.fireKick + 0.28);
   }
 
   public takeDamage(amount: number): boolean {
@@ -150,101 +162,169 @@ export class Player {
     this.hurtCooldown = 0;
   }
 
+  private updateLocomotion(dt: number, sprinting: boolean): void {
+    const moving = this.move.lengthSq() > 0.001;
+    this.movementBlend = THREE.MathUtils.damp(this.movementBlend, moving ? 1 : 0, 8, dt);
+    this.fireKick = Math.max(0, this.fireKick - dt * 3.8);
+
+    const cadence = sprinting ? 12.8 : 8.6;
+    this.animationTime += dt * (moving ? cadence : 1.8);
+    const phase = this.animationTime;
+    const gait = Math.sin(phase);
+    const oppositeGait = Math.sin(phase + Math.PI);
+    const stride = this.movementBlend * (sprinting ? 0.66 : 0.46);
+    const breath = Math.sin(phase * 0.5) * 0.012 * (1 - this.movementBlend);
+
+    this.model.position.y = Math.abs(Math.sin(phase * 2)) * 0.035 * this.movementBlend + breath;
+    this.torso.position.y = 1.07 + Math.sin(phase * 2) * 0.018 * this.movementBlend + breath;
+    this.torso.rotation.x = 0.035 * this.movementBlend + Math.sin(phase * 0.5) * 0.012;
+    this.torso.rotation.z = Math.sin(phase) * 0.018 * this.movementBlend;
+
+    const leftSwing = gait * stride;
+    const rightSwing = oppositeGait * stride;
+    this.leftLeg.rotation.x = leftSwing;
+    this.rightLeg.rotation.x = rightSwing;
+    this.leftKnee.rotation.x = Math.max(0, -leftSwing) * (sprinting ? 1.15 : 0.72);
+    this.rightKnee.rotation.x = Math.max(0, -rightSwing) * (sprinting ? 1.15 : 0.72);
+    this.leftKnee.rotation.z = 0;
+    this.rightKnee.rotation.z = 0;
+    this.leftArm.rotation.x = 0.54 - gait * 0.12 * this.movementBlend;
+    this.rightArm.rotation.x = 0.34 + gait * 0.12 * this.movementBlend + this.fireKick;
+    this.leftArm.rotation.z = 0.28 - gait * 0.035 * this.movementBlend;
+    this.rightArm.rotation.z = -0.12 + gait * 0.035 * this.movementBlend;
+    this.leftElbow.rotation.x = -0.16 - Math.max(0, gait) * 0.15 * this.movementBlend;
+    this.rightElbow.rotation.x = -0.1;
+    this.weapon.rotation.x = -this.fireKick * 0.7;
+  }
+
   private createMarine(): void {
-    const undersuit = new THREE.MeshStandardMaterial({ color: 0x111a23, roughness: 0.78, metalness: 0.32 });
-    const armor = new THREE.MeshStandardMaterial({ color: 0x9aa6ae, roughness: 0.52, metalness: 0.58 });
-    const darkArmor = new THREE.MeshStandardMaterial({ color: 0x26313d, roughness: 0.62, metalness: 0.64 });
-    const red = new THREE.MeshStandardMaterial({ color: 0x732c35, roughness: 0.58, metalness: 0.52 });
-    const visor = new THREE.MeshPhysicalMaterial({ color: 0x101c29, roughness: 0.16, metalness: 0.82, clearcoat: 1, emissive: 0x06263a, emissiveIntensity: 0.6 });
-    const cyan = new THREE.MeshStandardMaterial({ color: 0x5edcff, emissive: 0x119acb, emissiveIntensity: 2.6, metalness: 0.36, roughness: 0.24 });
-    const rifle = new THREE.MeshStandardMaterial({ color: 0x202b36, roughness: 0.4, metalness: 0.78 });
-    const barrel = new THREE.MeshStandardMaterial({ color: 0x9baab3, roughness: 0.27, metalness: 0.92 });
+    const undersuit = new THREE.MeshStandardMaterial({ color: 0x111923, roughness: 0.78, metalness: 0.34 });
+    const armor = new THREE.MeshStandardMaterial({ color: 0x8997a2, roughness: 0.38, metalness: 0.72 });
+    const brightArmor = new THREE.MeshStandardMaterial({ color: 0xb9c4cb, roughness: 0.32, metalness: 0.78 });
+    const darkArmor = new THREE.MeshStandardMaterial({ color: 0x202c38, roughness: 0.52, metalness: 0.66 });
+    const red = new THREE.MeshStandardMaterial({ color: 0x73313a, roughness: 0.5, metalness: 0.56 });
+    const visor = new THREE.MeshPhysicalMaterial({
+      color: 0x101b2a,
+      roughness: 0.12,
+      metalness: 0.8,
+      clearcoat: 1,
+      emissive: 0x0b2637,
+      emissiveIntensity: 0.45,
+    });
+    const cyan = new THREE.MeshStandardMaterial({
+      color: 0x64d9f3,
+      emissive: 0x0e789b,
+      emissiveIntensity: 0.8,
+      metalness: 0.42,
+      roughness: 0.28,
+    });
+    const rifle = new THREE.MeshStandardMaterial({ color: 0x18232e, roughness: 0.38, metalness: 0.82 });
+    const barrel = new THREE.MeshStandardMaterial({ color: 0x82929f, roughness: 0.28, metalness: 0.9 });
 
-    addBox(this.model, undersuit, 0, 1.18, 0, 0.72, 0.78, 0.42);
-    addBox(this.model, armor, 0, 1.42, -0.06, 0.82, 0.48, 0.48);
-    addBox(this.model, darkArmor, 0, 0.94, 0.02, 0.72, 0.2, 0.45);
-    addBox(this.model, red, -0.39, 1.4, -0.03, 0.13, 0.44, 0.5);
-    addBox(this.model, darkArmor, 0, 1.1, 0.245, 0.35, 0.24, 0.035);
-    addBox(this.model, cyan, 0.27, 1.43, -0.314, 0.07, 0.27, 0.035);
-    addBox(this.model, darkArmor, 0, 0.78, 0.01, 0.62, 0.32, 0.4);
+    this.model.add(this.torso, this.head, this.leftLeg, this.rightLeg, this.leftArm, this.rightArm);
 
-    const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.39, 24, 18), armor);
-    helmet.scale.set(1, 1.02, 0.95);
-    helmet.position.set(0, 1.94, -0.02);
-    helmet.castShadow = true;
-    this.model.add(helmet);
+    // Pelvis and layered torso armour.
+    addRoundedBox(this.torso, darkArmor, 0, -0.03, 0.015, 0.68, 0.38, 0.43, 0.1);
+    addRoundedBox(this.torso, undersuit, 0, 0.2, 0.015, 0.73, 0.7, 0.42, 0.12);
+    addRoundedBox(this.torso, armor, 0, 0.32, -0.2, 0.82, 0.58, 0.22, 0.09);
+    addRoundedBox(this.torso, brightArmor, 0, 0.43, -0.32, 0.58, 0.34, 0.08, 0.045);
+    addRoundedBox(this.torso, darkArmor, 0, 0.02, -0.235, 0.46, 0.17, 0.08, 0.035);
 
-    const face = new THREE.Mesh(new THREE.SphereGeometry(0.295, 24, 16), visor);
-    face.scale.set(1, 0.62, 0.44);
-    face.position.set(0, 1.91, -0.315);
-    this.model.add(face);
-    addBox(this.model, darkArmor, 0, 1.68, -0.31, 0.35, 0.12, 0.13);
-    addBox(this.model, cyan, -0.34, 1.96, -0.015, 0.07, 0.16, 0.17);
-    addBox(this.model, cyan, 0.34, 1.96, -0.015, 0.07, 0.16, 0.17);
-    addBox(this.model, darkArmor, 0, 1.78, 0.31, 0.57, 0.58, 0.35);
-    addBox(this.model, armor, 0, 1.83, 0.48, 0.48, 0.36, 0.08);
-    addBox(this.model, cyan, 0, 2.07, 0.525, 0.22, 0.08, 0.035);
+    for (let i = 0; i < 3; i++) {
+      addRoundedBox(this.torso, darkArmor, 0, 0.14 - i * 0.15, -0.245, 0.46 - i * 0.025, 0.055, 0.055, 0.02);
+    }
 
+    // Shoulder plates, chest insignia, and the compact rear power unit.
     for (const side of [-1, 1]) {
-      const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.27, 16, 12), side < 0 ? red : armor);
-      shoulder.scale.set(1.18, 0.9, 1.05);
-      shoulder.position.set(side * 0.52, 1.52, -0.01);
-      shoulder.castShadow = true;
-      this.model.add(shoulder);
-      addBox(this.model, darkArmor, side * 0.53, 1.23, -0.02, 0.24, 0.3, 0.3);
+      const shoulder = addSphere(this.torso, side < 0 ? red : armor, side * 0.48, 0.43, -0.02, 0.31, 0.24, 0.31);
+      shoulder.rotation.z = side * -0.16;
+      addRoundedBox(this.torso, darkArmor, side * 0.48, 0.17, 0.02, 0.25, 0.28, 0.27, 0.07);
+      addRoundedBox(this.torso, brightArmor, side * 0.48, 0.42, -0.235, 0.18, 0.08, 0.035, 0.02);
+    }
+    addRoundedBox(this.torso, darkArmor, 0, 0.31, 0.26, 0.56, 0.58, 0.28, 0.08);
+    addRoundedBox(this.torso, armor, 0, 0.35, 0.42, 0.42, 0.46, 0.12, 0.055);
+    addRoundedBox(this.torso, cyan, 0.24, 0.42, -0.28, 0.055, 0.2, 0.025, 0.012);
+    addRoundedBox(this.torso, red, -0.25, 0.4, -0.29, 0.055, 0.21, 0.025, 0.012);
+
+    const pack = new THREE.Group();
+    pack.position.set(0, 0.3, 0.43);
+    this.torso.add(pack);
+    addRoundedBox(pack, darkArmor, 0, 0, 0.06, 0.55, 0.7, 0.28, 0.08);
+    addRoundedBox(pack, armor, 0, 0.04, 0.22, 0.34, 0.42, 0.08, 0.04);
+    for (const side of [-1, 1]) {
+      addRoundedBox(pack, red, side * 0.3, 0.06, 0.04, 0.12, 0.43, 0.23, 0.035);
+      const vent = addRoundedBox(pack, brightArmor, side * 0.19, 0.04, 0.27, 0.055, 0.25, 0.025, 0.01);
+      vent.rotation.z = side * 0.08;
+    }
+    const packLight = new THREE.Mesh(new THREE.SphereGeometry(0.07, 16, 10), cyan);
+    packLight.position.set(0, 0.38, 0.16);
+    pack.add(packLight);
+
+    // Helmet shell, recessed visor, cheek plates, and side comms hardware.
+    const helmet = addSphere(this.head, armor, 0, 0, 0, 0.39, 0.43, 0.38);
+    helmet.position.y = 1.92;
+    addSphere(this.head, darkArmor, 0, 1.7, 0.015, 0.32, 0.15, 0.34);
+    const visorMesh = addRoundedBox(this.head, visor, 0, 1.97, -0.315, 0.52, 0.2, 0.12, 0.075);
+    visorMesh.rotation.x = -0.08;
+    addRoundedBox(this.head, cyan, 0, 2.075, -0.36, 0.24, 0.025, 0.025, 0.01);
+    for (const side of [-1, 1]) {
+      addRoundedBox(this.head, brightArmor, side * 0.38, 1.91, -0.01, 0.12, 0.22, 0.27, 0.045);
+      addRoundedBox(this.head, darkArmor, side * 0.4, 1.93, -0.2, 0.08, 0.1, 0.08, 0.025);
+      addSphere(this.head, cyan, side * 0.4, 1.93, -0.22, 0.035, 0.035, 0.025);
+    }
+    addRoundedBox(this.head, brightArmor, 0, 2.33, 0.03, 0.13, 0.12, 0.16, 0.035);
+
+    // Articulated legs with separate knee and ankle pivots.
+    this.leftLeg.position.set(-0.23, 0.91, 0.015);
+    this.rightLeg.position.set(0.23, 0.91, 0.015);
+    for (const [leg, knee, side] of [
+      [this.leftLeg, this.leftKnee, -1],
+      [this.rightLeg, this.rightKnee, 1],
+    ] as const) {
+      addCapsule(leg, undersuit, 0.15, 0.33, 0, -0.22, 0);
+      addRoundedBox(leg, armor, 0, -0.22, -0.13, 0.3, 0.32, 0.14, 0.05);
+      addSphere(leg, darkArmor, 0, -0.43, -0.03, 0.17, 0.16, 0.16);
+      knee.position.set(0, -0.43, 0);
+      leg.add(knee);
+      addCapsule(knee, darkArmor, 0.13, 0.32, 0, -0.18, 0.015);
+      addRoundedBox(knee, brightArmor, 0, -0.17, -0.105, 0.25, 0.25, 0.09, 0.04);
+      addRoundedBox(knee, armor, 0, -0.39, -0.16, 0.28, 0.14, 0.42, 0.045);
+      addRoundedBox(knee, darkArmor, 0, -0.41, 0.02, 0.24, 0.11, 0.2, 0.035);
+      addRoundedBox(knee, cyan, 0, -0.11, -0.16, 0.11, 0.035, 0.025, 0.01);
+      addRoundedBox(leg, red, side * 0.14, -0.27, -0.18, 0.045, 0.13, 0.04, 0.01);
     }
 
-    this.leftLeg.position.set(-0.23, 0.78, 0);
-    this.rightLeg.position.set(0.23, 0.78, 0);
-    this.model.add(this.leftLeg, this.rightLeg);
-    for (const leg of [this.leftLeg, this.rightLeg]) {
-      const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.19, 0.55, 10), undersuit);
-      thigh.position.y = -0.3;
-      thigh.castShadow = true;
-      leg.add(thigh);
-      const plate = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.33, 0.12), armor);
-      plate.position.set(0, -0.28, -0.11);
-      plate.castShadow = true;
-      leg.add(plate);
-      const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.42, 10), darkArmor);
-      shin.position.set(0, -0.68, -0.015);
-      shin.castShadow = true;
-      leg.add(shin);
-      addBox(leg, armor, 0, -0.89, -0.14, 0.3, 0.17, 0.48);
-      addBox(leg, cyan, 0, -0.64, -0.14, 0.16, 0.045, 0.045);
+    // Arms are raised in a continuous ready-to-fire stance, not swapped poses.
+    this.leftArm.position.set(-0.5, 1.57, -0.015);
+    this.rightArm.position.set(0.5, 1.57, -0.015);
+    for (const [arm, elbow, side] of [
+      [this.leftArm, this.leftElbow, -1],
+      [this.rightArm, this.rightElbow, 1],
+    ] as const) {
+      addCapsule(arm, undersuit, 0.15, 0.36, side * 0.025, -0.23, 0.02);
+      const shoulder = addRoundedBox(arm, side < 0 ? red : armor, side * 0.015, -0.05, 0.015, 0.34, 0.25, 0.34, 0.075);
+      shoulder.rotation.z = side * -0.12;
+      elbow.position.set(side * 0.04, -0.43, -0.04);
+      arm.add(elbow);
+      addCapsule(elbow, darkArmor, 0.125, 0.33, 0, -0.21, -0.03);
+      addRoundedBox(elbow, armor, 0, -0.2, -0.135, 0.25, 0.3, 0.1, 0.04);
+      addRoundedBox(elbow, brightArmor, 0, -0.1, -0.19, 0.15, 0.055, 0.025, 0.012);
+      addSphere(elbow, darkArmor, 0, -0.43, -0.04, 0.14, 0.13, 0.14);
     }
 
-    this.leftArm.position.set(-0.49, 1.42, -0.04);
-    this.rightArm.position.set(0.49, 1.42, -0.04);
-    this.model.add(this.leftArm, this.rightArm);
-    for (const [arm, side] of [[this.leftArm, -1], [this.rightArm, 1]] as const) {
-      const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.53, 10), undersuit);
-      upper.rotation.x = -0.85;
-      upper.position.set(side * 0.035, -0.16, -0.18);
-      upper.castShadow = true;
-      arm.add(upper);
-      const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.15, 0.48, 10), armor);
-      forearm.rotation.x = -1.0;
-      forearm.position.set(side * 0.04, -0.28, -0.49);
-      forearm.castShadow = true;
-      arm.add(forearm);
-      const glove = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), darkArmor);
-      glove.position.set(side * 0.04, -0.41, -0.7);
-      arm.add(glove);
-    }
-
-    const weapon = new THREE.Group();
-    weapon.position.set(0, 1.31, -0.63);
-    this.model.add(weapon);
-    addBox(weapon, rifle, 0, 0, -0.37, 0.24, 0.24, 0.9);
-    addBox(weapon, darkArmor, 0, 0.12, -0.32, 0.19, 0.08, 0.78);
-    addBox(weapon, barrel, 0, 0.025, -0.93, 0.095, 0.095, 0.56);
-    addBox(weapon, darkArmor, 0, -0.17, -0.28, 0.13, 0.28, 0.18);
-    addBox(weapon, darkArmor, 0, 0.23, -0.28, 0.08, 0.11, 0.26);
-    addBox(weapon, cyan, 0.126, 0.01, -0.4, 0.025, 0.09, 0.28);
-    const muzzle = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.15, 12), barrel);
+    // Compact magnetic assault rifle with a clear barrel, receiver, optic and side rail.
+    this.weapon.position.set(0.02, -0.48, -0.24);
+    this.rightArm.add(this.weapon);
+    addRoundedBox(this.weapon, rifle, 0, 0, -0.35, 0.23, 0.23, 0.82, 0.045);
+    addRoundedBox(this.weapon, darkArmor, 0, 0.12, -0.31, 0.19, 0.09, 0.58, 0.025);
+    addRoundedBox(this.weapon, armor, 0, -0.05, -0.7, 0.14, 0.08, 0.42, 0.02);
+    addRoundedBox(this.weapon, darkArmor, 0, -0.17, -0.24, 0.13, 0.28, 0.18, 0.025);
+    addRoundedBox(this.weapon, darkArmor, 0, 0.22, -0.24, 0.08, 0.13, 0.23, 0.02);
+    addRoundedBox(this.weapon, cyan, 0.124, 0.02, -0.38, 0.025, 0.075, 0.25, 0.008);
+    const muzzle = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.16, 14), barrel);
     muzzle.rotation.x = Math.PI / 2;
-    muzzle.position.z = -1.24;
-    weapon.add(muzzle);
+    muzzle.position.z = -0.83;
+    this.weapon.add(muzzle);
+    addRoundedBox(this.weapon, brightArmor, 0, 0.19, -0.23, 0.12, 0.06, 0.12, 0.02);
   }
 }
