@@ -30,16 +30,16 @@ export function createEnvironmentMap(renderer: THREE.WebGLRenderer): THREE.WebGL
   );
   scene.add(shell);
 
-  panel(scene, 0xb9d6f4, 2.1, new THREE.Vector3(0, 12, -3), new THREE.Euler(-Math.PI / 2.5, 0, 0), 18, 11);
-  panel(scene, 0x8bc9f4, 1.2, new THREE.Vector3(-13, 2, -3), new THREE.Euler(0, Math.PI / 2, 0), 10, 13);
-  panel(scene, 0x5a9ee7, 1.35, new THREE.Vector3(12, 1, -7), new THREE.Euler(0, -Math.PI / 2, 0), 8, 12);
-  panel(scene, 0xffb278, 1.5, new THREE.Vector3(-5, -4, 12), new THREE.Euler(0.15, Math.PI, 0), 12, 5);
-  panel(scene, 0xeff6ff, 0.9, new THREE.Vector3(0, -12, -2), new THREE.Euler(Math.PI / 2, 0, 0), 12, 8);
+  panel(scene, 0xb9d6f4, 1.1, new THREE.Vector3(0, 12, -3), new THREE.Euler(-Math.PI / 2.5, 0, 0), 18, 11);
+  panel(scene, 0x8bc9f4, 0.7, new THREE.Vector3(-13, 2, -3), new THREE.Euler(0, Math.PI / 2, 0), 10, 13);
+  panel(scene, 0x5a9ee7, 0.75, new THREE.Vector3(12, 1, -7), new THREE.Euler(0, -Math.PI / 2, 0), 8, 12);
+  panel(scene, 0xffb278, 0.8, new THREE.Vector3(-5, -4, 12), new THREE.Euler(0.15, Math.PI, 0), 12, 5);
+  panel(scene, 0xeff6ff, 0.6, new THREE.Vector3(0, -12, -2), new THREE.Euler(Math.PI / 2, 0, 0), 12, 8);
 
-  const key = new THREE.PointLight(0xe9f3ff, 420, 80, 2);
+  const key = new THREE.PointLight(0xe9f3ff, 120, 80, 2);
   key.position.set(-11, 15, 13);
   scene.add(key);
-  const fill = new THREE.PointLight(0x6baeff, 280, 65, 2);
+  const fill = new THREE.PointLight(0x6baeff, 80, 65, 2);
   fill.position.set(13, 1, -11);
   scene.add(fill);
 
