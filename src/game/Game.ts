@@ -2,16 +2,23 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { AssetLibrary } from '../assets/AssetLibrary';
 import { EnemyManager } from '../entities/EnemyManager';
 import { Arena } from '../world/Arena';
+import { AtmosphericDust } from '../rendering/AtmosphericDust';
 import { CombatEffects } from '../rendering/CombatEffects';
+import { createEnvironmentMap } from '../rendering/EnvironmentLighting';
 import { Hud } from '../ui/Hud';
 import { Input } from './Input';
 import { Player } from './Player';
 
 export class Game {
   private readonly renderer: THREE.WebGLRenderer;
+  private readonly environmentTarget: THREE.WebGLRenderTarget;
+  private readonly assets = new AssetLibrary();
   private readonly composer: EffectComposer;
   private readonly scene = new THREE.Scene();
   private readonly camera: THREE.PerspectiveCamera;
@@ -20,6 +27,7 @@ export class Game {
   private readonly arena: Arena;
   private readonly enemies: EnemyManager;
   private readonly effects: CombatEffects;
+  private readonly dust: AtmosphericDust;
   private readonly hud: Hud;
   private readonly raycaster = new THREE.Raycaster();
   private lastTime = 0;
@@ -49,22 +57,39 @@ export class Game {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.12;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.environmentTarget = createEnvironmentMap(this.renderer);
+    this.scene.environment = this.environmentTarget.texture;
+    this.scene.environmentIntensity = 0.72;
 
     this.scene.background = new THREE.Color(0x101827);
     this.scene.fog = new THREE.FogExp2(0x192438, 0.00335);
 
-    this.camera = new THREE.PerspectiveCamera(64, window.innerWidth / window.innerHeight, 0.1, 650);
+    this.camera = new THREE.PerspectiveCamera(67, window.innerWidth / window.innerHeight, 0.1, 650);
     this.camera.position.set(0, 4, 18);
 
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
+
+    // GTAO adds contact grounding to rocks, armor panels, and outpost geometry.
+    // Run it below native resolution to keep the effect practical at 1440p.
+    const gtao = new GTAOPass(
+      this.scene,
+      this.camera,
+      Math.max(1, Math.floor(window.innerWidth * 0.68)),
+      Math.max(1, Math.floor(window.innerHeight * 0.68))
+    );
+    gtao.output = GTAOPass.OUTPUT.Denoise;
+    gtao.blendIntensity = 0.9;
+    this.composer.addPass(gtao);
+
     this.composer.addPass(new UnrealBloomPass(
       new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.48,
-      0.42,
-      0.78
+      0.36,
+      0.34,
+      0.82
     ));
+    this.composer.addPass(new SMAAPass(window.innerWidth, window.innerHeight));
     this.composer.addPass(new OutputPass());
 
     this.createLighting();
@@ -77,11 +102,13 @@ export class Game {
 
     this.enemies = new EnemyManager(this.scene, (x, z) => this.arena.getHeight(x, z));
     this.effects = new CombatEffects(this.scene);
+    this.dust = new AtmosphericDust(this.scene);
     this.input = new Input(canvas);
     this.hud = new Hud();
     this.hud.setVitals(this.player.health, this.player.shield);
     this.hud.setAmmo(this.ammo, this.reserveAmmo);
     this.hud.setEnemyCount(this.enemies.aliveCount, this.enemies.wave);
+    this.loadProductionAssets();
 
     this.input.onLockChange((locked) => {
       if (this.deployed) this.hud.setPaused(!locked);
@@ -98,6 +125,22 @@ export class Game {
     this.running = true;
     this.lastTime = performance.now();
     requestAnimationFrame(this.loop);
+  }
+
+  private loadProductionAssets(): void {
+    void Promise.all([
+      this.assets.instantiate('marine-aiming'),
+      this.assets.instantiate('marine-advancing'),
+      this.assets.instantiate('alien-adult'),
+      this.assets.instantiate('alien-juvenile'),
+    ]).then(([aiming, advancing, adult, juvenile]) => {
+      if (aiming && advancing) {
+        this.player.setProductionModels(aiming.root, advancing.root);
+      }
+      if (adult && juvenile) {
+        this.enemies.setProductionModels(adult.root, juvenile.root);
+      }
+    });
   }
 
   private readonly loop = (now: number): void => {
@@ -124,6 +167,7 @@ export class Game {
 
   private update(dt: number): void {
     this.arena.update(dt, this.elapsed);
+    this.dust.update(this.elapsed);
     this.player.update(dt, this.input, (x, z) => this.arena.getHeight(x, z));
     this.player.updateCamera(this.camera, dt);
     this.enemies.update(dt, this.player.position, () => {
